@@ -1,0 +1,114 @@
+<html>
+<head>
+<head>
+<style>
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+
+}
+
+li {
+  float: left;
+  border-right:1px solid #bbb;
+}
+
+li:last-child {
+  border-right: none;
+}
+
+li a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+li a:hover:not(.active) {
+  background-color: #111;
+}
+
+.active {
+  background-color: #04AA6D;
+}
+</style>
+<style>
+body { 
+  background-image: url('bgimg1.jpg');
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: top;
+  background-size:2000px 900px;
+</style>
+<style>
+div.ex1 {
+  padding-top: 40px;
+  border: 1px solid black;
+  margin-top:15px;
+  margin-bottom: 100px;
+  margin-right: 600px;
+  margin-left: 600px;
+  background-color: #ffffcc;
+}
+</style>
+</head>
+<body>
+<style>div.ex2 {
+  padding-top: 5px;
+  border:1px solid black;
+  margin-right: 90px;
+  margin-left: 90px;
+  background-color: #33ffff;
+  </style>
+  <style>
+</style>
+<font size="5" color="#ffffff" >
+<center style="background-color:;">Delvin Diamond Tools</center>
+<center>Somarsampettai</center>
+<center>Trichy,102</center>
+<h4><center>PURCHASE</center></h4>
+</font>
+<ul>
+  <li><a class="active" href="home.html">Home</a></li>
+  <li><a href="view1.php">show records(purchase)</a></li>
+  <li><a href="project.html">Sales</a></li>
+  <li ><a href="#about">About</a></li>
+</ul>
+<form method="POST" action="save1.php">
+<font size="5" color="#ffffff">
+<table align="center" style= "color:white;" >
+<tr style="color.white">
+	<td>Enter GST Number:</td>
+	<td><input type="textbox" name="gst" placeholder="enter GST number" required><br></td>
+</tr>
+<tr>
+	<td>Enter company:</td>
+	<td><input type="textbox" name="name" placeholder="enter company name" required><br></td>
+</tr>
+<tr>
+	<td>Enter Bill Number:</td>
+	<td><input type="number" name="bill" placeholder="enter Bill number" required><br></td>
+<tr>
+<td>Enter Date:</td>
+	<td><input type="date" name="date" placeholder="enter date" required><br></td>
+</tr>
+<tr>
+	<td>Enter taxable amount:</td>
+	<td><input type="textbox" name="amt" placeholder="enter taxable amount" required><br></font></td>
+</tr></font>
+</table>
+<center><input type="radio" name="type" i value="tngst">TNGST<br>
+<input type="radio" name="type" i value="igst">IGST<br>
+<input type="submit" value="save"><br>
+</center></body>
+</form>
+</body>
+</html>
+<html>
+<head>
+
+</head>
+<body>
