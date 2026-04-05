@@ -34,7 +34,7 @@
     $date = $_POST["date"];
     $GSTNO = strtoupper($_POST["gst"]);
     $bill = $_POST["bill"];
-    $name = strtoupper($_POST["name"]);
+    $name = strtoupper($_POST["companyname"]); 
     $amt = $_POST["amt"];
     $CGST = $amt * 0.09;
     $SGST = $amt * 0.09;
@@ -77,7 +77,7 @@
     }
     ?>
     <br>
-    <a href="project.html" class="btn btn-primary">Home Page</a>
+    <a href="index.php" class="btn btn-primary">Home Page</a>
     <a href="view.php" class="btn btn-secondary">Records Saved</a>
   </div>
 

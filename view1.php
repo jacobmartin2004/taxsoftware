@@ -62,6 +62,8 @@
           <center>Trichy,102</center>
         </font>
         <hr>
+        <center>Purchase</center>
+       <hr>
         <?php
         // Include connection file
         include("conn.php");
@@ -148,8 +150,11 @@
   </div>
   <br>
   <center>
-    <a href="index.html" class="btn btn-outline-primary">Home Page</a><br><br>
-    <a href="printpurchase.php" class="btn btn-outline-primary">Print Purchase of the Month</a>
+    <a href="index.php" class="btn btn-outline-primary">Home Page</a><br><br>
+    <a href="printpurchase.php" class="btn btn-outline-primary">Print Purchase of the Month</a><br><br>
+    <form action="empty_table.php" method="post">
+        <button type="submit" class="btn btn-danger">Empty</button>
+    </form>
   </center>
 </body>
 </html>

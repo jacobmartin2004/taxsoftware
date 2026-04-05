@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 03, 2024 at 07:05 AM
--- Server version: 10.4.28-MariaDB
--- PHP Version: 8.2.4
+-- Generation Time: Oct 02, 2024 at 02:30 PM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,8 +18,53 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `id21953952_delvin`
+-- Database: `delvin`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `companydata`
+--
+
+CREATE TABLE `companydata` (
+  `id` int(11) NOT NULL,
+  `companyname` varchar(255) NOT NULL,
+  `gstno` varchar(20) NOT NULL,
+  `gsttype` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `companydata`
+--
+
+INSERT INTO `companydata` (`id`, `companyname`, `gstno`, `gsttype`) VALUES
+(17, 'SUNRISE ENTERPRISES', '29ACMPK0591Q1ZS', 'igst'),
+(18, 'SUNDARAM FASTENERS LTD', '33AAACS8779D1Z7', 'tngst'),
+(19, 'SAIDEV ENTERPRISES', '33ADZFS2976B1ZN', 'tngst'),
+(20, 'PALS ENTERPRISES', '33AAAFP3636M1Z7', 'tngst'),
+(21, 'I.E.S AGENCIES', '33AAAFI5552K1ZF', 'tngst'),
+(22, 'HONESTY HARDWARE MART', '33AJQPS2641L1ZR', 'tngst'),
+(23, 'LAKSHMI CARD CLOTHING MFG', '33AAACL3521E1Z6', 'tngst'),
+(24, 'SUPER FINE NEEDLES PVT LTD', '29AACCS6550L1ZW', 'igst'),
+(25, 'MOGLI LABS INDIA PVT LTD', '33AAJCM7312H1ZL', 'tngst'),
+(26, 'THE PROFESSIONAL COURIERS', '33AAKPK8983G2Z9', 'tngst'),
+(27, 'NOVELTY DIAMOND TOOLS & PRODUCTS', '33ADWPD0161G1ZT', 'tngst'),
+(28, 'WIN WIN DIAMOND PRODUCTS', '33AJBPR5326E1ZI', 'tngst'),
+(29, 'J.D.DIAMOND INDUSTRIES', '24AXTPG5293K1ZV', '25p'),
+(30, 'A.VADIVEL & CO', '33AADPV9874C1ZE', 'tngst'),
+(31, 'THE PRECISION SCIENTIFIC CO', '33AJIPK3213G1ZO', 'tngst'),
+(32, 'RENOLD CHAIN INDIA PVT LTP', '33AADCR9839E1Z8', 'tngst'),
+(33, 'RANE AUTOMOTIVE INDIA PVT LTD', '05AAACR3147C1ZX', 'igst'),
+(34, 'N.M.BELT CENTRE', '33AADFN1633R1Z3', 'tngst'),
+(35, 'SREE GANESH AGENCIES', '33BJFPK8575D1Z5', 'tngst'),
+(36, 'SRI RANGANATHAR VALVES PVT LTD', '33AALCS5492C1ZA', 'tngst'),
+(37, 'M.S.V.ENTERPRISES', '33ALVPY7788D1Z3', 'tngst'),
+(38, 'UNIVERSAL HARDWARE & TOOLS COR', '33AAAFU6771G1Z5', 'tngst'),
+(40, 'PARAS DIAMOND CO(%25GST)', '24CMXPS4074B1ZP', '25p'),
+(41, 'SARASWATHI AGENCIES 6%', '33AEEPR4761D2ZM', '6p'),
+(42, 'M.P.M. MUTHU GENERAL STORE', '33AAAFM8415D1ZQ', 'igst'),
+(44, 'ALIF TRADER', '33AADFA2185M1ZH', 'tngst');
 
 -- --------------------------------------------------------
 
@@ -39,20 +84,6 @@ CREATE TABLE `delvin` (
   `date` varchar(30) NOT NULL,
   `igst` decimal(11,1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `delvin`
---
-
-INSERT INTO `delvin` (`sno`, `GSTNO`, `cname`, `bill`, `taxamt`, `cgst`, `sgst`, `Total`, `date`, `igst`) VALUES
-(0, '33AABCV0736A1Z0', 'VENKATESA ENGG CONSULTANT PVT LTD', 132, 10350.0, 931.5, 931.5, 12213, '2024-01-03', 0.0),
-(0, '33AJQPS2641L1ZR', 'HONESTY HARDWARE MART', 133, 13000.0, 1170.0, 1170.0, 15340, '2024-01-10', 0.0),
-(0, '33AAACR3147C1ZY', 'RANE AUTOMOTIVE INDIA PVT LTD', 134, 19500.0, 1755.0, 1755.0, 23010, '2024-01-11', 0.0),
-(0, '33AADCM9688C1ZA', 'MICRO SHARP NEEDLES PVT LTD', 135, 21000.0, 1890.0, 1890.0, 24780, '2024-01-19', 0.0),
-(0, '33AGUPS0637D1ZB', 'SOUTHERN TOOLS & HARDWARE', 136, 5075.0, 456.8, 456.8, 5989, '2024-01-20', 0.0),
-(0, '33AALCS5492C1ZA', 'SRI RANGANATHAR VALVES PVT LTD', 137, 4725.0, 425.3, 425.3, 5576, '2024-01-24', 0.0),
-(0, '33BJFPK8575D1Z5', 'SREE GANESH AGENCIES', 138, 9675.0, 870.8, 870.8, 11417, '2024-01-30', 0.0),
-(0, '33AAACT1279M1Z6', 'RANE ENGINE VALVES LTD', 139, 12000.0, 1080.0, 1080.0, 14160, '2024-01-31', 0.0);
 
 -- --------------------------------------------------------
 
@@ -74,19 +105,14 @@ CREATE TABLE `purchase` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `purchase`
---
-
-INSERT INTO `purchase` (`sno`, `GSTNO`, `cname`, `taxamt`, `cgst`, `sgst`, `igst`, `Total`, `date`, `bill`) VALUES
-(0, '33AAMFA9025H1Z1', 'ASHIKHA TOOLS', 326.0, 29.3, 29.3, 0.0, 385, '2024-01-23', 26925),
-(0, '33AAKPK8983G2Z9', 'THE PROFESSIONAL COURIERS', 1110.0, 99.9, 99.9, 0.0, 1310, '2024-01-01', 47075),
-(0, '33AADPV9874C1ZE', 'A.VADIVEL & CO', 2461.0, 221.5, 221.5, 0.0, 2904, '2024-01-23', 2898),
-(0, '24AXTPG5293K1ZV', 'J.D.DIAMOND INDUSTRIED', 7731.9, 0.0, 0.0, 19.0, 7751, '2024-01-01', 732324),
-(0, '24AXTPG5293K1ZV', 'J.D.DIAMOND INDUSTRIED', 14212.8, 0.0, 0.0, 36.0, 14249, '2024-01-12', 762324);
-
---
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `companydata`
+--
+ALTER TABLE `companydata`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `delvin`
@@ -99,6 +125,16 @@ ALTER TABLE `delvin`
 --
 ALTER TABLE `purchase`
   ADD UNIQUE KEY `taxamt` (`taxamt`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `companydata`
+--
+ALTER TABLE `companydata`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

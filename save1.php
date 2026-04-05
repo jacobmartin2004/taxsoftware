@@ -41,12 +41,12 @@
       $date = $_POST["date"];
       $GSTNO = strtoupper($_POST["gst"]);
       $bill = $_POST["bill"];
-      $name = strtoupper($_POST["name"]);
+      $name = strtoupper($_POST["companyname"]); 
       $amt = $_POST["amt"];
       $CGST = $amt * 0.09;
       $SGST = $amt * 0.09;
       $IGST = $amt * 0.18;
-      $p25 = $amt * 0.025;
+      $p25 = $amt * 0.0025;
       $p6 = $amt * 0.06;
       $total = $amt + $IGST;
       $total25 = $amt + $p25;
@@ -101,7 +101,7 @@
       }
       ?>
       <br>
-      <a href="index.html" class="btn btn-primary">Home Page</a>
+      <a href="index.php" class="btn btn-primary">Home Page</a>
       <a href="view1.php" class="btn btn-secondary">Records Saved</a>
     </div>
   </div>
