@@ -146,7 +146,7 @@ function numToWords($n) {
             background: #1a2942; color: #fff; padding: 20px 30px;
             display: flex; justify-content: space-between; align-items: center;
         }
-        .inv-header .brand h2 { font-size: 22px; font-weight: 900; letter-spacing: 1px; margin-bottom: 2px; color: #fff; }
+        .inv-header .brand h2 { font-size: 22px; font-weight: 900; letter-spacing: 1px; margin-bottom: 2px; color: #000; }
         .inv-header .brand p { font-size: 11px; opacity: 0.8; }
         .inv-header .inv-type {
             background: #e8a838; color: #1a2942; font-weight: 800;
@@ -232,7 +232,8 @@ function numToWords($n) {
         <div class="brand">
             <h2>DELVIN DIAMOND TOOL INDUSTRIES</h2>
             <p>1/56, Easu Street, Somarasampettai (PO), Trichy - 620 102</p>
-            <p>Ph: 0431-2607224, 098424 07224 | Email: delvinvincent@yahoo.com</p>
+            <p>Ph: 0431-2607224 | 0431-2607524 | 9842407224</p>
+            <p>Email: delvinvincent@yahoo.com</p>
         </div>
         <div class="inv-type"><?php echo $page_title; ?></div>
     </div>
@@ -241,7 +242,7 @@ function numToWords($n) {
     <div class="gst-bar">
         <div><span>GSTIN:</span> <strong>33AAAPY1027F1Z3</strong></div>
         <div><span>HSN Code:</span> <strong>68042110</strong></div>
-        <div><span>Invoice #:</span> <strong><?php echo $bill; ?></strong></div>
+        <div><span>Invoice Number:</span> <strong><?php echo $bill; ?></strong></div>
         <div><span>Date:</span> <strong><?php echo htmlspecialchars($date); ?></strong></div>
     </div>
 
@@ -364,7 +365,7 @@ function numToWords($n) {
         </div>
         <div class="sign">
             <p style="font-weight:700; color:#1a2942;">for DELVIN DIAMOND TOOL INDUSTRIES</p>
-            <div class="line">Authorised Signatory</div>
+            <div class="line">Proprietor / Manager</div>
         </div>
     </div>
 </div>
