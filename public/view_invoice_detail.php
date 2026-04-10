@@ -252,7 +252,8 @@ function numToWords($n) {
         </div>
     </div>
 
-    <!-- Items Table -->
+    <!-- Items Table (Sales only) -->
+    <?php if ($type !== 'purchase'): ?>
     <div class="inv-table">
         <table>
             <thead>
@@ -261,13 +262,22 @@ function numToWords($n) {
                     <th>Description</th>
                     <th class="text-center">Qty</th>
                     <th class="text-center">Rate (&#8377;)</th>
-                    <th>Amount (&#8377;)</th>
+                    <th class="text-center">Taxable Amt</th>
+                    <?php if ($inv['cgst'] > 0 || $inv['sgst'] > 0): ?>
+                    <th class="text-center"><?php echo $cgst_label; ?></th>
+                    <th class="text-center"><?php echo $sgst_label; ?></th>
+                    <?php endif; ?>
+                    <?php if ($inv['igst'] > 0): ?>
+                    <th class="text-center">IGST (18%)</th>
+                    <?php endif; ?>
+                    <th>Total (&#8377;)</th>
                 </tr>
             </thead>
             <tbody>
             <?php if (count($items) > 0): ?>
             <?php
             $sno = 1;
+            $item_count = count($items);
             foreach ($items as $it):
                 $gross = $it['qty'] * $it['rate'];
                 $disc_amt = 0;
@@ -276,6 +286,11 @@ function numToWords($n) {
                     $disc_amt = $gross * $it['discount_pct'] / 100;
                     $net = $gross - $disc_amt;
                 }
+                // Distribute GST proportionally across items
+                $item_cgst = ($inv['taxamt'] > 0) ? ($net / $inv['taxamt']) * $inv['cgst'] : 0;
+                $item_sgst = ($inv['taxamt'] > 0) ? ($net / $inv['taxamt']) * $inv['sgst'] : 0;
+                $item_igst = ($inv['taxamt'] > 0) ? ($net / $inv['taxamt']) * $inv['igst'] : 0;
+                $item_total = $net + $item_cgst + $item_sgst + $item_igst;
             ?>
                 <tr>
                     <td><?php echo $sno++; ?></td>
@@ -287,7 +302,15 @@ function numToWords($n) {
                     </td>
                     <td class="text-center"><?php echo $it['qty']; ?></td>
                     <td class="text-center"><?php echo number_format($it['rate'], 2); ?></td>
-                    <td><?php echo number_format($net, 2); ?></td>
+                    <td class="text-center"><?php echo number_format($net, 2); ?></td>
+                    <?php if ($inv['cgst'] > 0 || $inv['sgst'] > 0): ?>
+                    <td class="text-center"><?php echo number_format($item_cgst, 2); ?></td>
+                    <td class="text-center"><?php echo number_format($item_sgst, 2); ?></td>
+                    <?php endif; ?>
+                    <?php if ($inv['igst'] > 0): ?>
+                    <td class="text-center"><?php echo number_format($item_igst, 2); ?></td>
+                    <?php endif; ?>
+                    <td><?php echo number_format($item_total, 2); ?></td>
                 </tr>
             <?php endforeach; ?>
             <?php else: ?>
@@ -296,12 +319,21 @@ function numToWords($n) {
                     <td>DIAMOND TOOLS (As per Invoice)</td>
                     <td class="text-center">-</td>
                     <td class="text-center">-</td>
-                    <td><?php echo number_format($inv['taxamt'], 2); ?></td>
+                    <td class="text-center"><?php echo number_format($inv['taxamt'], 2); ?></td>
+                    <?php if ($inv['cgst'] > 0 || $inv['sgst'] > 0): ?>
+                    <td class="text-center"><?php echo number_format($inv['cgst'], 2); ?></td>
+                    <td class="text-center"><?php echo number_format($inv['sgst'], 2); ?></td>
+                    <?php endif; ?>
+                    <?php if ($inv['igst'] > 0): ?>
+                    <td class="text-center"><?php echo number_format($inv['igst'], 2); ?></td>
+                    <?php endif; ?>
+                    <td><?php echo number_format($inv['Total'], 2); ?></td>
                 </tr>
             <?php endif; ?>
             </tbody>
         </table>
     </div>
+    <?php endif; ?>
 
     <!-- Summary -->
     <div class="inv-summary">
