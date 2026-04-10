@@ -48,10 +48,12 @@ $result = $conn->query($sql);
     <style>
         :root { --primary: #1a2942; --accent: #e8a838; --bg: #f1f5f9; }
         body { background: var(--bg); font-family: 'Segoe UI', system-ui, sans-serif; color: #1e293b; }
-        .top-nav { background: var(--primary); padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; }
+        .top-nav { background: var(--primary); padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; position: relative; }
         .top-nav a { color: rgba(255,255,255,0.8); text-decoration: none; font-size: 14px; padding: 6px 14px; border-radius: 6px; transition: all 0.2s; }
         .top-nav a:hover, .top-nav a.active { background: rgba(255,255,255,0.1); color: #fff; }
         .top-nav .brand { color: var(--accent); font-weight: 700; font-size: 15px; }
+        .top-nav .nav-links { display: flex; gap: 4px; flex-wrap: wrap; }
+        .top-nav .menu-toggle { display: none; background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; }
         .page-wrap { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
         .card-box { background: #fff; border-radius: 10px; border: 1px solid #e2e8f0; padding: 24px; margin-bottom: 20px; }
         .card-box h4 { font-weight: 700; color: var(--primary); margin-bottom: 20px; }
@@ -63,13 +65,27 @@ $result = $conn->query($sql);
         .search-box i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
         .badge-tngst { background: #dbeafe; color: #1d4ed8; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
         .badge-igst { background: #fef3c7; color: #b45309; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+        @media (max-width: 768px) {
+            .top-nav { flex-wrap: wrap; padding: 10px 16px; }
+            .top-nav .menu-toggle { display: block; }
+            .top-nav .nav-links { display: none; width: 100%; flex-direction: column; padding-top: 10px; }
+            .top-nav .nav-links.show { display: flex; }
+            .top-nav .nav-links a { padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+            .page-wrap { padding: 0 8px; margin: 12px auto; }
+            .card-box { padding: 14px; }
+            .table { font-size: 12px; }
+            .table thead th, .table tbody td { padding: 8px 6px; }
+            .form-control, .form-select { font-size: 16px; }
+            .btn { width: 100%; margin-bottom: 8px; }
+        }
     </style>
 </head>
 
 <body>
     <nav class="top-nav">
         <span class="brand">DELVIN DIAMOND TOOLS</span>
-        <div>
+        <button class="menu-toggle" onclick="this.nextElementSibling.classList.toggle('show')"><i class="bi bi-list"></i></button>
+        <div class="nav-links">
             <a href="../public/index.php"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
             <a href="../public/create_invoice.php"><i class="bi bi-receipt"></i> Invoice</a>
             <a href="../public/create_purchase.php"><i class="bi bi-cart-plus"></i> Purchase</a>

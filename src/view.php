@@ -26,10 +26,12 @@ $months = ['01'=>'January','02'=>'February','03'=>'March','04'=>'April','05'=>'M
   <style>
     :root { --primary: #1a2942; --accent: #e8a838; }
     body { background: #f1f5f9; font-family: 'Segoe UI', system-ui, sans-serif; }
-    .top-nav { background: var(--primary); padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; }
+    .top-nav { background: var(--primary); padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; position: relative; }
     .top-nav a { color: rgba(255,255,255,0.8); text-decoration: none; font-size: 14px; padding: 6px 14px; border-radius: 6px; transition: all 0.2s; }
     .top-nav a:hover, .top-nav a.active { background: rgba(255,255,255,0.1); color: #fff; }
     .top-nav .brand { color: var(--accent); font-weight: 700; font-size: 15px; }
+    .top-nav .nav-links { display: flex; gap: 4px; flex-wrap: wrap; }
+    .top-nav .menu-toggle { display: none; background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; }
     .page-card { max-width: 1100px; margin: 24px auto; background: #fff; border-radius: 10px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); overflow: hidden; }
     .page-header { background: var(--primary); color: #fff; padding: 20px 28px; }
     .page-header h4 { margin: 0; font-weight: 700; }
@@ -51,12 +53,31 @@ $months = ['01'=>'January','02'=>'February','03'=>'March','04'=>'April','05'=>'M
     .btn-pr:hover { background: #2c3e5a; color: #fff; }
     .btn-outline { background: #fff; color: var(--primary); border: 1px solid #d1d5db; }
     .btn-outline:hover { background: #f1f5f9; color: var(--primary); }
+    @media (max-width: 768px) {
+        .top-nav { flex-wrap: wrap; padding: 10px 16px; }
+        .top-nav .menu-toggle { display: block; }
+        .top-nav .nav-links { display: none; width: 100%; flex-direction: column; padding-top: 10px; }
+        .top-nav .nav-links.show { display: flex; }
+        .top-nav .nav-links a { padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .page-card { margin: 10px; border-radius: 8px; }
+        .page-header { padding: 14px 16px; }
+        .filter-bar { padding: 12px 16px; flex-direction: column; }
+        .filter-bar select { width: 100%; font-size: 16px; }
+        .filter-bar .btn-filter { width: 100%; padding: 10px; }
+        .table-wrap { padding: 0 8px 12px; }
+        .sales-table { font-size: 11px; min-width: 600px; }
+        .sales-table th, .sales-table td { padding: 6px 4px; }
+        .totals-bar { padding: 12px 16px; gap: 16px; font-size: 12px; }
+        .actions-bottom { flex-direction: column; padding: 12px 16px; }
+        .actions-bottom .btn { width: 100%; justify-content: center; }
+    }
   </style>
 </head>
 <body>
 <nav class="top-nav">
     <span class="brand">DELVIN DIAMOND TOOLS</span>
-    <div>
+    <button class="menu-toggle" onclick="this.nextElementSibling.classList.toggle('show')"><i class="bi bi-list"></i></button>
+    <div class="nav-links">
         <a href="../public/index.php"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
         <a href="../public/create_invoice.php"><i class="bi bi-receipt"></i> Invoice</a>
         <a href="../public/create_purchase.php"><i class="bi bi-cart-plus"></i> Purchase</a>

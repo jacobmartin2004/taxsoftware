@@ -160,16 +160,37 @@ $month_names = ['','January','February','March','April','May','June','July','Aug
             border-top: 2px solid var(--primary);
         }
 
+        .top-nav .nav-links { display: flex; gap: 4px; flex-wrap: wrap; }
+        .top-nav .menu-toggle { display: none; background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; }
+
         @media (max-width: 768px) {
-            .filter-bar { flex-direction: column; }
+            .top-nav { flex-wrap: wrap; padding: 10px 16px; }
+            .top-nav .menu-toggle { display: block; }
+            .top-nav .nav-links { display: none; width: 100%; flex-direction: column; padding-top: 10px; }
+            .top-nav .nav-links.show { display: flex; }
+            .top-nav .nav-links a { padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+            .page-wrap { padding: 10px; }
+            .page-header { padding: 14px 16px; margin-bottom: 14px; flex-direction: column; gap: 8px; text-align: center; }
+            .page-header h3 { font-size: 16px; }
+            .filter-bar { flex-direction: column; padding: 12px; }
+            .filter-bar .fg { width: 100%; }
+            .filter-bar select { width: 100%; }
+            .filter-bar .btn-filter { width: 100%; }
+            .type-tabs a { padding: 8px 14px; font-size: 12px; }
             .inv-table-wrap { overflow-x: auto; }
+            .inv-table-wrap table { min-width: 700px; }
+            .inv-table-wrap thead th { padding: 10px 8px; font-size: 11px; }
+            .inv-table-wrap tbody td { padding: 10px 8px; font-size: 13px; }
+            .view-btn, .edit-btn, .del-btn { padding: 6px 10px; font-size: 11px; margin-bottom: 4px; display: inline-block; }
+            .dl-btn { width: calc(100% - 20px); justify-content: center; }
         }
     </style>
 </head>
 <body>
 <nav class="top-nav">
     <span class="brand">DELVIN DIAMOND TOOLS</span>
-    <div>
+    <button class="menu-toggle" onclick="this.nextElementSibling.classList.toggle('show')"><i class="bi bi-list"></i></button>
+    <div class="nav-links">
         <a href="index.php"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
         <a href="create_invoice.php"><i class="bi bi-receipt"></i> Invoice</a>
         <a href="create_purchase.php"><i class="bi bi-cart-plus"></i> Purchase</a>

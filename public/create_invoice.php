@@ -27,21 +27,42 @@ $next_bill = ($inv_row['maxbill'] ?? 0) + 1;
     <style>
         :root { --primary: #1a2942; --accent: #e8a838; }
         body { background-color: #f1f5f9; font-family: 'Segoe UI', system-ui, sans-serif; }
-        .top-nav { background: var(--primary); padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; }
+        .top-nav { background: var(--primary); padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; position: relative; }
         .top-nav a { color: rgba(255,255,255,0.8); text-decoration: none; font-size: 14px; padding: 6px 14px; border-radius: 6px; transition: all 0.2s; }
         .top-nav a:hover, .top-nav a.active { background: rgba(255,255,255,0.1); color: #fff; }
         .top-nav .brand { color: var(--accent); font-weight: 700; font-size: 15px; }
+        .top-nav .nav-links { display: flex; gap: 4px; flex-wrap: wrap; }
+        .top-nav .menu-toggle { display: none; background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; }
         .invoice-box { max-width: 900px; margin: 20px auto; padding: 20px; background: #fff; border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.1); }
         .item-row { background: #f9f9f9; padding: 10px; border-radius: 5px; margin-bottom: 8px; }
         .totals-section { background: #e9ecef; padding: 15px; border-radius: 5px; margin-top: 15px; }
         .totals-section p { margin-bottom: 5px; font-size: 16px; }
         .totals-section .total-final { font-size: 20px; font-weight: bold; }
+
+        @media (max-width: 768px) {
+            .top-nav { flex-wrap: wrap; padding: 10px 16px; }
+            .top-nav .menu-toggle { display: block; }
+            .top-nav .nav-links { display: none; width: 100%; flex-direction: column; padding-top: 10px; }
+            .top-nav .nav-links.show { display: flex; }
+            .top-nav .nav-links a { padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+            .invoice-box { margin: 10px; padding: 14px; }
+            .invoice-box h2 { font-size: 18px; }
+            .invoice-box h4 { font-size: 16px; }
+            .item-row { padding: 12px; }
+            .item-row .col-md-3, .item-row .col-md-2, .item-row .col-md-1 { margin-bottom: 8px; }
+            .item-row .col-md-1 { margin-bottom: 0; }
+            .totals-section .total-final { font-size: 18px; }
+            .btn-lg { font-size: 16px; padding: 10px 20px; width: 100%; margin-bottom: 8px; }
+            .select2-container { width: 100% !important; }
+            .form-control, .form-select { font-size: 16px; padding: 10px 12px; }
+        }
     </style>
 </head>
 <body>
 <nav class="top-nav">
     <span class="brand">DELVIN DIAMOND TOOLS</span>
-    <div>
+    <button class="menu-toggle" onclick="this.nextElementSibling.classList.toggle('show')"><i class="bi bi-list"></i></button>
+    <div class="nav-links">
         <a href="index.php"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
         <a href="create_invoice.php" class="active"><i class="bi bi-receipt"></i> Invoice</a>
         <a href="create_purchase.php"><i class="bi bi-cart-plus"></i> Purchase</a>

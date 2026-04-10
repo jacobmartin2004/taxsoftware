@@ -135,6 +135,25 @@ function numToWords($n) {
         .btn-dash { background: #22c55e; color: #fff; }
         .btn-dash:hover { background: #16a34a; color: #fff; }
 
+        @media (max-width: 768px) {
+            .invoice-page { margin: 8px; border-width: 1px; }
+            .inv-header { flex-direction: column; text-align: center; padding: 16px 14px; gap: 10px; }
+            .inv-header .brand h2 { font-size: 16px; }
+            .inv-header .brand p { font-size: 10px; }
+            .inv-header .inv-type { font-size: 12px; padding: 6px 14px; }
+            .gst-bar { flex-wrap: wrap; gap: 6px; padding: 8px 14px; font-size: 11px; }
+            .inv-info { flex-direction: column; gap: 12px; padding: 14px; }
+            .inv-info .block:last-child { text-align: left !important; }
+            .inv-summary { padding: 14px; justify-content: center; }
+            .summary-box { width: 100%; }
+            .inv-words-bank { padding: 10px 14px; font-size: 11px; }
+            .inv-footer { flex-direction: column; gap: 12px; padding: 12px 14px; }
+            .inv-footer .sign { text-align: center; }
+            .inv-footer .sign .line { width: 160px; }
+            .actions-bar { padding: 14px 10px; }
+            .actions-bar .btn { font-size: 13px; padding: 10px 16px; margin: 4px; width: calc(50% - 12px); justify-content: center; }
+        }
+
         @media print {
             body { background: #fff; }
             .actions-bar { display: none !important; }

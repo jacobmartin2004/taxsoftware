@@ -35,16 +35,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <style>
         :root { --primary: #1a2942; --accent: #e8a838; }
         body { background: #f1f5f9; font-family: 'Segoe UI', system-ui, sans-serif; }
-        .top-nav { background: var(--primary); padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; }
+        .top-nav { background: var(--primary); padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; position: relative; }
         .top-nav a { color: rgba(255,255,255,0.8); text-decoration: none; font-size: 14px; padding: 6px 14px; border-radius: 6px; transition: all 0.2s; }
         .top-nav a:hover, .top-nav a.active { background: rgba(255,255,255,0.1); color: #fff; }
         .top-nav .brand { color: var(--accent); font-weight: 700; font-size: 15px; }
+        .top-nav .nav-links { display: flex; gap: 4px; flex-wrap: wrap; }
+        .top-nav .menu-toggle { display: none; background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; }
+        @media (max-width: 768px) {
+            .top-nav { flex-wrap: wrap; padding: 10px 16px; }
+            .top-nav .menu-toggle { display: block; }
+            .top-nav .nav-links { display: none; width: 100%; flex-direction: column; padding-top: 10px; }
+            .top-nav .nav-links.show { display: flex; }
+            .top-nav .nav-links a { padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+            .form-control, .form-select { font-size: 16px; }
+            .btn { font-size: 16px; }
+        }
     </style>
 </head>
 <body>
 <nav class="top-nav">
     <span class="brand">DELVIN DIAMOND TOOLS</span>
-    <div>
+    <button class="menu-toggle" onclick="this.nextElementSibling.classList.toggle('show')"><i class="bi bi-list"></i></button>
+    <div class="nav-links">
         <a href="index.php"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
         <a href="create_invoice.php"><i class="bi bi-receipt"></i> Invoice</a>
         <a href="create_purchase.php"><i class="bi bi-cart-plus"></i> Purchase</a>
