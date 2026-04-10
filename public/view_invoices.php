@@ -1,6 +1,19 @@
 <?php
 require_once '../src/conn.php';
 
+// Handle delete
+if (isset($_GET['delete_bill']) && isset($_GET['delete_type'])) {
+    $del_bill = intval($_GET['delete_bill']);
+    $del_type = $_GET['delete_type'];
+    $del_table = ($del_type === 'purchase') ? 'purchase' : 'delvin';
+    $stmt = $conn->prepare("DELETE FROM `$del_table` WHERE bill = ?");
+    $stmt->bind_param('i', $del_bill);
+    $stmt->execute();
+    $stmt->close();
+    header("Location: view_invoices.php?type=" . urlencode($del_type) . "&month=" . ($_GET['month'] ?? date('m')) . "&year=" . ($_GET['year'] ?? date('Y')));
+    exit();
+}
+
 // Get selected month/year or default to current
 $sel_month = isset($_GET['month']) ? intval($_GET['month']) : intval(date('m'));
 $sel_year = isset($_GET['year']) ? intval($_GET['year']) : intval(date('Y'));
@@ -11,9 +24,9 @@ $year_str = strval($sel_year);
 
 $records = [];
 if ($sel_type === 'sales') {
-    $res = $conn->query("SELECT sno, GSTNO, cname, bill, taxamt, cgst, sgst, igst, Total, date FROM delvin WHERE SUBSTRING(date,4,2)='$month_str' AND SUBSTRING(date,7,4)='$year_str' ORDER BY sno DESC");
+    $res = $conn->query("SELECT GSTNO, cname, bill, taxamt, cgst, sgst, igst, Total, date FROM delvin WHERE SUBSTRING(date,4,2)='$month_str' AND SUBSTRING(date,7,4)='$year_str' ORDER BY bill DESC");
 } else {
-    $res = $conn->query("SELECT sno, GSTNO, cname, bill, taxamt, cgst, sgst, igst, Total, date FROM purchase WHERE SUBSTRING(date,4,2)='$month_str' AND SUBSTRING(date,7,4)='$year_str' ORDER BY sno DESC");
+    $res = $conn->query("SELECT GSTNO, cname, bill, taxamt, cgst, sgst, igst, Total, date FROM purchase WHERE SUBSTRING(date,4,2)='$month_str' AND SUBSTRING(date,7,4)='$year_str' ORDER BY bill DESC");
 }
 if ($res) { while ($row = $res->fetch_assoc()) $records[] = $row; }
 
@@ -115,6 +128,20 @@ $month_names = ['','January','February','March','April','May','June','July','Aug
             text-decoration: none; transition: all 0.2s;
         }
         .edit-btn:hover { background: #2563eb; color: #fff; }
+        .del-btn {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 6px 14px; background: #ef4444; color: #fff;
+            border: none; border-radius: 5px; font-size: 12px; font-weight: 700;
+            text-decoration: none; transition: all 0.2s; cursor: pointer;
+        }
+        .del-btn:hover { background: #dc2626; color: #fff; }
+        .dl-btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 8px 20px; background: #3b82f6; color: #fff;
+            border: none; border-radius: 6px; font-size: 14px; font-weight: 600;
+            cursor: pointer; text-decoration: none; transition: all 0.2s;
+        }
+        .dl-btn:hover { background: #2563eb; color: #fff; }
 
         .top-nav { background: var(--primary); padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; }
         .top-nav a { color: rgba(255,255,255,0.8); text-decoration: none; font-size: 14px; padding: 6px 14px; border-radius: 6px; transition: all 0.2s; }
@@ -237,11 +264,14 @@ $month_names = ['','January','February','March','April','May','June','July','Aug
                     <td><strong>₹ <?php echo number_format($r['Total'], 2); ?></strong></td>
                     <td><?php echo htmlspecialchars($r['date']); ?></td>
                     <td>
-                        <a href="view_invoice_detail.php?type=<?php echo $sel_type; ?>&sno=<?php echo $r['sno']; ?>" class="view-btn">
+                        <a href="view_invoice_detail.php?type=<?php echo $sel_type; ?>&bill=<?php echo $r['bill']; ?>" class="view-btn">
                             <i class="bi bi-eye"></i> View
                         </a>
-                        <a href="edit_invoice.php?type=<?php echo $sel_type; ?>&sno=<?php echo $r['sno']; ?>" class="edit-btn">
+                        <a href="edit_invoice.php?type=<?php echo $sel_type; ?>&bill=<?php echo $r['bill']; ?>" class="edit-btn">
                             <i class="bi bi-pencil"></i> Edit
+                        </a>
+                        <a href="#" class="del-btn" onclick="confirmDelete(<?php echo $r['bill']; ?>); return false;">
+                            <i class="bi bi-trash"></i> Delete
                         </a>
                     </td>
                 </tr>
@@ -259,6 +289,33 @@ $month_names = ['','January','February','March','April','May','June','July','Aug
         </div>
         <?php endif; ?>
     </div>
+
+    <!-- Download Monthly PDF -->
+    <?php if (count($records) > 0): ?>
+    <div style="text-align:center; margin-top: 20px;">
+        <button class="dl-btn" onclick="downloadMonthlyPDF()"><i class="bi bi-file-earmark-pdf"></i> Download <?php echo $month_names[$sel_month] . ' ' . $sel_year; ?> as PDF</button>
+    </div>
+    <?php endif; ?>
 </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script>
+function confirmDelete(bill) {
+    if (confirm('Are you sure you want to delete invoice #' + bill + '? This cannot be undone.')) {
+        window.location.href = 'view_invoices.php?delete_bill=' + bill + '&delete_type=<?php echo urlencode($sel_type); ?>&month=<?php echo $sel_month; ?>&year=<?php echo $sel_year; ?>';
+    }
+}
+function downloadMonthlyPDF() {
+    var el = document.querySelector('.inv-table-wrap');
+    var opt = {
+        margin: [10, 10, 10, 10],
+        filename: '<?php echo ucfirst($sel_type); ?>_<?php echo $month_names[$sel_month]; ?>_<?php echo $sel_year; ?>.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+    };
+    html2pdf().set(opt).from(el).save();
+}
+</script>
 </body>
 </html>

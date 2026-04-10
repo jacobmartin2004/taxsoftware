@@ -2,15 +2,15 @@
 require_once '../src/conn.php';
 
 $type = isset($_GET['type']) ? $_GET['type'] : 'sales';
-$sno = isset($_GET['sno']) ? intval($_GET['sno']) : 0;
+$bill = isset($_GET['bill']) ? intval($_GET['bill']) : 0;
 
-if ($sno <= 0) { header('Location: view_invoices.php'); exit(); }
+if ($bill <= 0) { header('Location: view_invoices.php'); exit(); }
 
 $table = ($type === 'purchase') ? 'purchase' : 'delvin';
 $page_title = ($type === 'purchase') ? 'PURCHASE INVOICE' : 'TAX INVOICE';
 
-$stmt = $conn->prepare("SELECT sno, GSTNO, cname, bill, taxamt, cgst, sgst, igst, Total, date FROM `$table` WHERE sno = ?");
-$stmt->bind_param('i', $sno);
+$stmt = $conn->prepare("SELECT GSTNO, cname, bill, taxamt, cgst, sgst, igst, Total, date FROM `$table` WHERE bill = ?");
+$stmt->bind_param('i', $bill);
 $stmt->execute();
 $result = $stmt->get_result();
 $inv = $result->fetch_assoc();

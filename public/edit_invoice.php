@@ -2,15 +2,15 @@
 require_once '../src/conn.php';
 
 $type = isset($_GET['type']) ? $_GET['type'] : 'sales';
-$sno = isset($_GET['sno']) ? intval($_GET['sno']) : 0;
+$bill_param = isset($_GET['bill']) ? intval($_GET['bill']) : 0;
 
-if ($sno <= 0) { header('Location: view_invoices.php'); exit(); }
+if ($bill_param <= 0) { header('Location: view_invoices.php'); exit(); }
 
 $table = ($type === 'purchase') ? 'purchase' : 'delvin';
 
 // Handle update
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $sno = intval($_POST['sno']);
+    $old_bill = intval($_POST['old_bill']);
     $gstno = strtoupper(trim($_POST['gstno']));
     $cname = strtoupper(trim($_POST['cname']));
     $bill = intval($_POST['bill']);
@@ -21,8 +21,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $total = intval($_POST['total']);
     $date = $_POST['date'];
 
-    $stmt = $conn->prepare("UPDATE `$table` SET GSTNO=?, cname=?, bill=?, taxamt=?, cgst=?, sgst=?, igst=?, Total=?, date=? WHERE sno=?");
-    $stmt->bind_param('ssiddddisi', $gstno, $cname, $bill, $taxamt, $cgst, $sgst, $igst, $total, $date, $sno);
+    $stmt = $conn->prepare("UPDATE `$table` SET GSTNO=?, cname=?, bill=?, taxamt=?, cgst=?, sgst=?, igst=?, Total=?, date=? WHERE bill=?");
+    $stmt->bind_param('ssiddddisi', $gstno, $cname, $bill, $taxamt, $cgst, $sgst, $igst, $total, $date, $old_bill);
     if ($stmt->execute()) {
         header("Location: view_invoices.php?type=" . urlencode($type));
         exit();
@@ -32,8 +32,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // Fetch invoice
-$stmt = $conn->prepare("SELECT sno, GSTNO, cname, bill, taxamt, cgst, sgst, igst, Total, date FROM `$table` WHERE sno = ?");
-$stmt->bind_param('i', $sno);
+$stmt = $conn->prepare("SELECT GSTNO, cname, bill, taxamt, cgst, sgst, igst, Total, date FROM `$table` WHERE bill = ?");
+$stmt->bind_param('i', $bill_param);
 $stmt->execute();
 $result = $stmt->get_result();
 $inv = $result->fetch_assoc();
@@ -85,7 +85,7 @@ $is_tngst = ($inv['cgst'] > 0 || $inv['sgst'] > 0);
     <div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div>
     <?php endif; ?>
     <form method="POST">
-        <input type="hidden" name="sno" value="<?php echo $inv['sno']; ?>">
+        <input type="hidden" name="old_bill" value="<?php echo $inv['bill']; ?>">
         <div class="row mb-3">
             <div class="col-md-6">
                 <label class="form-label fw-bold">Company Name:</label>

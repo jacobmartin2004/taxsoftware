@@ -118,9 +118,9 @@ $next_bill = ($inv_row['maxbill'] ?? 0) + 1;
             <div class="row">
                 <div class="col-md-6">
                     <p>Taxable: <strong>₹<span id="show_taxable">0.00</span></strong></p>
-                    <p id="show_cgst_row" style="display:none;">CGST (9%): ₹<span id="show_cgst">0.00</span></p>
-                    <p id="show_sgst_row" style="display:none;">SGST (9%): ₹<span id="show_sgst">0.00</span></p>
-                    <p id="show_igst_row" style="display:none;">IGST (18%): ₹<span id="show_igst">0.00</span></p>
+                    <p id="show_cgst_row" style="display:none;"><span id="cgst_label">CGST (9%)</span>: ₹<span id="show_cgst">0.00</span></p>
+                    <p id="show_sgst_row" style="display:none;"><span id="sgst_label">SGST (9%)</span>: ₹<span id="show_sgst">0.00</span></p>
+                    <p id="show_igst_row" style="display:none;"><span id="igst_label">IGST (18%)</span>: ₹<span id="show_igst">0.00</span></p>
                 </div>
                 <div class="col-md-6 text-end">
                     <p class="total-final">TOTAL: ₹<span id="show_total">0.00</span></p>
@@ -160,12 +160,24 @@ function recalculate() {
     var cgst=0, sgst=0, igst=0;
     if (gstType === 'tngst') {
         cgst = taxable*0.09; sgst = taxable*0.09;
+        $('#cgst_label').text('CGST (9%)'); $('#sgst_label').text('SGST (9%)');
         $('#cgst_col').show(); $('#sgst_col').show(); $('#igst_col').hide();
         $('#show_cgst_row').show(); $('#show_sgst_row').show(); $('#show_igst_row').hide();
     } else if (gstType === 'igst') {
         igst = taxable*0.18;
+        $('#igst_label').text('IGST (18%)');
         $('#cgst_col').hide(); $('#sgst_col').hide(); $('#igst_col').show();
         $('#show_cgst_row').hide(); $('#show_sgst_row').hide(); $('#show_igst_row').show();
+    } else if (gstType === '25p') {
+        cgst = taxable*0.125; sgst = taxable*0.125;
+        $('#cgst_label').text('CGST (12.5%)'); $('#sgst_label').text('SGST (12.5%)');
+        $('#cgst_col').show(); $('#sgst_col').show(); $('#igst_col').hide();
+        $('#show_cgst_row').show(); $('#show_sgst_row').show(); $('#show_igst_row').hide();
+    } else if (gstType === '6p') {
+        cgst = taxable*0.03; sgst = taxable*0.03;
+        $('#cgst_label').text('CGST (3%)'); $('#sgst_label').text('SGST (3%)');
+        $('#cgst_col').show(); $('#sgst_col').show(); $('#igst_col').hide();
+        $('#show_cgst_row').show(); $('#show_sgst_row').show(); $('#show_igst_row').hide();
     } else {
         $('#cgst_col').hide(); $('#sgst_col').hide(); $('#igst_col').hide();
         $('#show_cgst_row').hide(); $('#show_sgst_row').hide(); $('#show_igst_row').hide();
@@ -179,10 +191,10 @@ function recalculate() {
     $('#show_sgst').text(sgst.toFixed(2));
     $('#show_igst').text(igst.toFixed(2));
     $('#show_total').text(Math.round(total).toFixed(2));
-    $('#hid_taxable').val(taxable.toFixed(1));
-    $('#hid_cgst').val(cgst.toFixed(1));
-    $('#hid_sgst').val(sgst.toFixed(1));
-    $('#hid_igst').val(igst.toFixed(1));
+    $('#hid_taxable').val(taxable.toFixed(2));
+    $('#hid_cgst').val(cgst.toFixed(2));
+    $('#hid_sgst').val(sgst.toFixed(2));
+    $('#hid_igst').val(igst.toFixed(2));
     $('#hid_total').val(Math.round(total));
 }
 </script>

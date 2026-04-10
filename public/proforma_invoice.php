@@ -109,9 +109,9 @@ $next_bill = ($inv_row['maxbill'] ?? 0) + 1;
             <div class="row">
                 <div class="col-md-6">
                     <p>Taxable Amount: <strong>&#8377;<span id="disp_taxable">0.00</span></strong></p>
-                    <p id="cgst_row" style="display:none;">CGST (9%): &#8377;<span id="disp_cgst">0.00</span></p>
-                    <p id="sgst_row" style="display:none;">SGST (9%): &#8377;<span id="disp_sgst">0.00</span></p>
-                    <p id="igst_row" style="display:none;">IGST (18%): &#8377;<span id="disp_igst">0.00</span></p>
+                    <p id="cgst_row" style="display:none;"><span id="cgst_label">CGST (9%)</span>: &#8377;<span id="disp_cgst">0.00</span></p>
+                    <p id="sgst_row" style="display:none;"><span id="sgst_label">SGST (9%)</span>: &#8377;<span id="disp_sgst">0.00</span></p>
+                    <p id="igst_row" style="display:none;"><span id="igst_label">IGST (18%)</span>: &#8377;<span id="disp_igst">0.00</span></p>
                 </div>
                 <div class="col-md-6 text-end">
                     <p class="total-final">TOTAL: &#8377;<span id="disp_total">0.00</span></p>
@@ -158,7 +158,7 @@ function addItem() {
         '<div class="col-md-3"><label class="form-label">Tool</label><select class="form-control tool-select" name="items['+itemCount+'][tool_id]" onchange="toolSelected(this)" required>'+toolOptions+'</select></div>' +
         '<div class="col-md-2"><label class="form-label">Qty</label><input type="number" class="form-control item-qty" name="items['+itemCount+'][qty]" value="1" min="1" onchange="recalculate()" required></div>' +
         '<div class="col-md-2"><label class="form-label">Rate</label><input type="number" class="form-control item-rate" name="items['+itemCount+'][rate]" step="0.01" onchange="recalculate()" required></div>' +
-        '<div class="col-md-2"><label class="form-label">Discount</label><select class="form-select item-disc-yn" onchange="toggleDiscount(this, '+itemCount+')"><option value="no">No</option><option value="yes">Yes (30%)</option></select><input type="number" class="form-control item-disc mt-1" id="disc-'+itemCount+'" name="items['+itemCount+'][discount_pct]" value="30" step="0.01" style="display:none" onchange="recalculate()"></div>' +
+        '<div class="col-md-2"><label class="form-label">Discount</label><select class="form-select item-disc-yn" onchange="toggleDiscount(this, '+itemCount+')"><option value="no">No</option><option value="yes">Yes (30%)</option></select><input type="number" class="form-control item-disc mt-1" id="disc-'+itemCount+'" name="items['+itemCount+'][discount_pct]" value="0" step="0.01" style="display:none" onchange="recalculate()"></div>' +
         '<div class="col-md-2"><label class="form-label">Amount</label><input type="text" class="form-control item-amount" readonly></div>' +
         '<div class="col-md-1"><button type="button" class="btn btn-danger btn-sm mt-4" onclick="removeItem('+itemCount+')">X</button></div>' +
         '</div>';
@@ -170,7 +170,7 @@ function toolSelected(sel) {
     recalculate();
 }
 function toggleDiscount(sel, idx) {
-    if ($(sel).val() === 'yes') { $('#disc-'+idx).show(); } else { $('#disc-'+idx).hide(); }
+    if ($(sel).val() === 'yes') { $('#disc-'+idx).val(30).show(); } else { $('#disc-'+idx).val(0).hide(); }
     recalculate();
 }
 function removeItem(idx) { $('#item-'+idx).remove(); recalculate(); }
@@ -188,8 +188,10 @@ function recalculate() {
     });
     var gstType = $('#gst_type').val();
     var cgst=0, sgst=0, igst=0;
-    if (gstType === 'tngst') { cgst = taxable*0.09; sgst = taxable*0.09; $('#cgst_row').show(); $('#sgst_row').show(); $('#igst_row').hide(); }
-    else if (gstType === 'igst') { igst = taxable*0.18; $('#cgst_row').hide(); $('#sgst_row').hide(); $('#igst_row').show(); }
+    if (gstType === 'tngst') { cgst = taxable*0.09; sgst = taxable*0.09; $('#cgst_label').text('CGST (9%)'); $('#sgst_label').text('SGST (9%)'); $('#cgst_row').show(); $('#sgst_row').show(); $('#igst_row').hide(); }
+    else if (gstType === 'igst') { igst = taxable*0.18; $('#igst_label').text('IGST (18%)'); $('#cgst_row').hide(); $('#sgst_row').hide(); $('#igst_row').show(); }
+    else if (gstType === '25p') { cgst = taxable*0.125; sgst = taxable*0.125; $('#cgst_label').text('CGST (12.5%)'); $('#sgst_label').text('SGST (12.5%)'); $('#cgst_row').show(); $('#sgst_row').show(); $('#igst_row').hide(); }
+    else if (gstType === '6p') { cgst = taxable*0.03; sgst = taxable*0.03; $('#cgst_label').text('CGST (3%)'); $('#sgst_label').text('SGST (3%)'); $('#cgst_row').show(); $('#sgst_row').show(); $('#igst_row').hide(); }
     else { $('#cgst_row').hide(); $('#sgst_row').hide(); $('#igst_row').hide(); }
     var total = taxable + cgst + sgst + igst;
     $('#disp_taxable').text(taxable.toFixed(2));
@@ -197,10 +199,10 @@ function recalculate() {
     $('#disp_sgst').text(sgst.toFixed(2));
     $('#disp_igst').text(igst.toFixed(2));
     $('#disp_total').text(Math.round(total).toFixed(2));
-    $('#hid_taxable').val(taxable.toFixed(1));
-    $('#hid_cgst').val(cgst.toFixed(1));
-    $('#hid_sgst').val(sgst.toFixed(1));
-    $('#hid_igst').val(igst.toFixed(1));
+    $('#hid_taxable').val(taxable.toFixed(2));
+    $('#hid_cgst').val(cgst.toFixed(2));
+    $('#hid_sgst').val(sgst.toFixed(2));
+    $('#hid_igst').val(igst.toFixed(2));
     $('#hid_total').val(Math.round(total));
     $('#hid_cname').val($('#companyname').find(':selected').data('name') || '');
 }
