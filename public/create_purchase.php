@@ -3,14 +3,16 @@ require_once '../src/conn.php';
 
 $companies = [];
 $res = $conn->query("SELECT id, companyname, gstno, gsttype, address, state, district FROM companydata ORDER BY companyname");
-while ($row = $res->fetch_assoc()) $companies[] = $row;
+if ($res) { while ($row = $res->fetch_assoc()) $companies[] = $row; }
+else { die("<b>DB Error:</b> companydata table may be missing columns (address, state, district). Please import sql/delvin.sql. MySQL said: " . $conn->error); }
 
 $tools = [];
 $res = $conn->query("SELECT id, toolname, rate FROM tools ORDER BY toolname");
-while ($row = $res->fetch_assoc()) $tools[] = $row;
+if ($res) { while ($row = $res->fetch_assoc()) $tools[] = $row; }
+else { die("<b>DB Error:</b> 'tools' table not found. Please import sql/delvin.sql. MySQL said: " . $conn->error); }
 
 $inv_res = $conn->query("SELECT MAX(bill) as maxbill FROM purchase");
-$inv_row = $inv_res->fetch_assoc();
+$inv_row = $inv_res ? $inv_res->fetch_assoc() : null;
 $next_bill = ($inv_row['maxbill'] ?? 0) + 1;
 ?>
 <!DOCTYPE html>
