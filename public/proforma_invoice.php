@@ -177,7 +177,7 @@ function addItem() {
         toolOptions += '<option value="'+t.id+'" data-rate="'+t.rate+'">'+t.toolname+' (Rs.'+parseFloat(t.rate).toFixed(2)+')</option>';
     });
     var html = '<div class="item-row row align-items-end" id="item-'+itemCount+'">' +
-        '<div class="col-md-3"><label class="form-label">Tool</label><select class="form-control tool-select" name="items['+itemCount+'][tool_id]" onchange="toolSelected(this)" required>'+toolOptions+'</select></div>' +
+        '<div class="col-md-3"><label class="form-label">Tool</label><select class="form-control tool-select" name="items['+itemCount+'][tool_id]" onchange="toolSelected(this)" required>'+toolOptions+'</select><input type="hidden" class="item-tool-name" name="items['+itemCount+'][tool_name]" value=""></div>' +
         '<div class="col-md-2"><label class="form-label">Qty</label><input type="number" class="form-control item-qty" name="items['+itemCount+'][qty]" value="1" min="1" onchange="recalculate()" required></div>' +
         '<div class="col-md-2"><label class="form-label">Rate</label><input type="number" class="form-control item-rate" name="items['+itemCount+'][rate]" step="0.01" onchange="recalculate()" required></div>' +
         '<div class="col-md-2"><label class="form-label">Discount</label><select class="form-select item-disc-yn" onchange="toggleDiscount(this, '+itemCount+')"><option value="no">No</option><option value="yes">Yes (30%)</option></select><input type="number" class="form-control item-disc mt-1" id="disc-'+itemCount+'" name="items['+itemCount+'][discount_pct]" value="0" step="0.01" style="display:none" onchange="recalculate()"></div>' +
@@ -188,7 +188,9 @@ function addItem() {
 }
 function toolSelected(sel) {
     var rate = $(sel).find(':selected').data('rate') || 0;
+    var toolName = $(sel).find(':selected').text().split(' (Rs.')[0].trim();
     $(sel).closest('.item-row').find('.item-rate').val(parseFloat(rate).toFixed(2));
+    $(sel).closest('.item-row').find('.item-tool-name').val(toolName);
     recalculate();
 }
 function toggleDiscount(sel, idx) {

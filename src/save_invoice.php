@@ -31,20 +31,24 @@ $date_short = $date_obj ? $date_obj->format('d.n.y') : $date_raw;
 $items = [];
 if (isset($_POST['items'])) {
     foreach ($_POST['items'] as $item) {
-        $tool_name = $item['tool_id'];
-        $tid = intval($item['tool_id']);
-        if ($tid > 0) {
-            $stmt = $conn->prepare("SELECT toolname FROM tools WHERE id = ?");
-            $stmt->bind_param('i', $tid);
-            $stmt->execute();
-            $tres = $stmt->get_result();
-            if ($trow = $tres->fetch_assoc()) $tool_name = $trow['toolname'];
-            $stmt->close();
+        // Prefer tool_name sent from form; fallback to DB lookup by tool_id
+        $tool_name = isset($item['tool_name']) && trim($item['tool_name']) !== '' ? trim($item['tool_name']) : '';
+        if ($tool_name === '') {
+            $tid = intval($item['tool_id'] ?? 0);
+            if ($tid > 0) {
+                $tstmt = $conn->prepare("SELECT toolname FROM tools WHERE id = ?");
+                $tstmt->bind_param('i', $tid);
+                $tstmt->execute();
+                $tres = $tstmt->get_result();
+                if ($trow = $tres->fetch_assoc()) $tool_name = $trow['toolname'];
+                $tstmt->close();
+            }
         }
+        if ($tool_name === '') $tool_name = 'Unknown Tool';
         $items[] = [
             'tool_name' => $tool_name,
-            'qty' => intval($item['qty']),
-            'rate' => floatval($item['rate']),
+            'qty' => intval($item['qty'] ?? 1),
+            'rate' => floatval($item['rate'] ?? 0),
             'discount_pct' => floatval($item['discount_pct'] ?? 0),
         ];
     }
@@ -96,8 +100,10 @@ if ($invoice_type === 'invoice') {
 }
 
 // Save invoice items to invoice_items table
+$items_saved = false;
+$item_save_errors = [];
 if ($saved && count($items) > 0 && ($invoice_type === 'invoice' || $invoice_type === 'purchase')) {
-    $conn->query("CREATE TABLE IF NOT EXISTS `invoice_items` (
+    $tbl_result = $conn->query("CREATE TABLE IF NOT EXISTS `invoice_items` (
         `id` int(11) NOT NULL AUTO_INCREMENT,
         `bill` int(11) NOT NULL,
         `invoice_type` varchar(20) NOT NULL DEFAULT 'invoice',
@@ -107,13 +113,24 @@ if ($saved && count($items) > 0 && ($invoice_type === 'invoice' || $invoice_type
         `discount_pct` decimal(5,2) NOT NULL DEFAULT 0.00,
         PRIMARY KEY (`id`),
         KEY `bill_type` (`bill`, `invoice_type`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
-    foreach ($items as $it) {
-        $istmt = $conn->prepare("INSERT INTO invoice_items (bill, invoice_type, tool_name, qty, rate, discount_pct) VALUES (?, ?, ?, ?, ?, ?)");
-        if ($istmt) {
-            $istmt->bind_param('issidd', $bill, $invoice_type, $it['tool_name'], $it['qty'], $it['rate'], $it['discount_pct']);
-            $istmt->execute();
-            $istmt->close();
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci");
+    if (!$tbl_result) {
+        $item_save_errors[] = 'Could not create invoice_items table: ' . $conn->error;
+    } else {
+        $items_saved = true;
+        foreach ($items as $it) {
+            $istmt = $conn->prepare("INSERT INTO invoice_items (bill, invoice_type, tool_name, qty, rate, discount_pct) VALUES (?, ?, ?, ?, ?, ?)");
+            if ($istmt) {
+                $istmt->bind_param('issidd', $bill, $invoice_type, $it['tool_name'], $it['qty'], $it['rate'], $it['discount_pct']);
+                if (!$istmt->execute()) {
+                    $items_saved = false;
+                    $item_save_errors[] = $istmt->error;
+                }
+                $istmt->close();
+            } else {
+                $items_saved = false;
+                $item_save_errors[] = $conn->error;
+            }
         }
     }
 }
@@ -121,6 +138,12 @@ if ($saved && count($items) > 0 && ($invoice_type === 'invoice' || $invoice_type
 if ($db_error) {
     echo "<div style='padding:40px;font-family:sans-serif;'><h3 style='color:red;'>Error saving record</h3><p>" . htmlspecialchars($db_error) . "</p><a href='javascript:history.back()'>Go Back</a></div>";
     exit();
+}
+
+if (count($item_save_errors) > 0) {
+    $items_warning = 'Warning: Invoice saved but some tool items could not be stored: ' . htmlspecialchars(implode('; ', $item_save_errors));
+} else {
+    $items_warning = '';
 }
 
 $titles = [
@@ -275,6 +298,12 @@ function numToWords($n) {
     </style>
 </head>
 <body>
+
+<?php if ($items_warning): ?>
+<div style="background:#fef3c7;border:1px solid #f59e0b;color:#92400e;padding:12px 20px;margin:10px auto;max-width:780px;border-radius:8px;font-family:sans-serif;font-size:14px;">
+    <strong>&#9888;</strong> <?php echo $items_warning; ?>
+</div>
+<?php endif; ?>
 
 <div class="invoice-page" id="invoicePage">
     <!-- Header -->
