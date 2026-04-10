@@ -91,70 +91,71 @@ function numToWords($n) {
     <style>
         @page { size: A4; margin: 10mm; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: #e9ecef; color: #1e293b; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #e9ecef; color: #000; }
         .invoice-page {
             max-width: 800px; margin: 20px auto; background: #fff;
-            border: 2px solid #1a2942; position: relative;
+            border: 2px solid #000; position: relative;
         }
 
         /* Header */
         .inv-header {
-            background: #1a2942; color: #fff; padding: 20px 30px;
+            padding: 20px 30px; border-bottom: 2px solid #000;
             display: flex; justify-content: space-between; align-items: center;
         }
-        .inv-header .brand h2 { font-size: 22px; font-weight: 900; letter-spacing: 1px; margin-bottom: 2px; color: #ffffff; }
-        .inv-header .brand p { font-size: 11px; opacity: 0.8; }
+        .inv-header .brand h2 { font-size: 22px; font-weight: 900; letter-spacing: 1px; margin-bottom: 2px; color: #000; }
+        .inv-header .brand p { font-size: 11px; color: #000; }
         .inv-header .inv-type {
-            background: #e8a838; color: #1a2942; font-weight: 800;
-            padding: 8px 20px; border-radius: 4px; font-size: 14px; letter-spacing: 1px;
+            border: 2px solid #000; color: #000; font-weight: 800;
+            padding: 8px 20px; font-size: 14px; letter-spacing: 1px;
         }
 
         /* GST Bar */
         .gst-bar {
-            background: #f8fafc; padding: 10px 30px; border-bottom: 1px solid #e2e8f0;
+            padding: 10px 30px; border-bottom: 1px solid #000;
             display: flex; justify-content: space-between; font-size: 12px;
         }
-        .gst-bar span { color: #64748b; }
-        .gst-bar strong { color: #1a2942; }
+        .gst-bar span { color: #000; }
+        .gst-bar strong { color: #000; }
 
         /* Info Section */
-        .inv-info { padding: 20px 30px; display: flex; justify-content: space-between; border-bottom: 1px solid #e2e8f0; }
-        .inv-info .block h6 { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #64748b; margin-bottom: 6px; }
-        .inv-info .block p { font-size: 13px; margin-bottom: 2px; }
-        .inv-info .block p strong { color: #1a2942; }
+        .inv-info { padding: 20px 30px; display: flex; justify-content: space-between; border-bottom: 1px solid #000; }
+        .inv-info .block h6 { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #000; margin-bottom: 6px; }
+        .inv-info .block p { font-size: 13px; margin-bottom: 2px; color: #000; }
+        .inv-info .block p strong { color: #000; }
 
         /* Summary */
         .inv-summary { padding: 0 30px 20px; display: flex; justify-content: flex-end; }
-        .summary-box { width: 300px; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden; }
-        .summary-row { display: flex; justify-content: space-between; padding: 8px 16px; font-size: 13px; border-bottom: 1px solid #f1f5f9; }
-        .summary-row.total { background: #1a2942; color: #fff; font-weight: 800; font-size: 16px; border: none; padding: 12px 16px; }
+        .summary-box { width: 300px; border: 1px solid #000; overflow: hidden; }
+        .summary-row { display: flex; justify-content: space-between; padding: 8px 16px; font-size: 13px; border-bottom: 1px solid #000; color: #000; }
+        .summary-row.total { border-top: 2px solid #000; background: #fff; color: #000; font-weight: 800; font-size: 16px; border-bottom: none; padding: 12px 16px; }
 
         /* Items Table */
         .inv-table { padding: 0 30px 20px; margin-top: 10px; }
-        .inv-table table { width: 100%; border-collapse: collapse; }
+        .inv-table table { width: 100%; border-collapse: collapse; border: 1px solid #000; }
         .inv-table thead th {
-            background: #1a2942; color: #fff; padding: 10px 12px;
+            background: #fff; color: #000; padding: 10px 12px;
             font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; text-align: left;
+            border-bottom: 2px solid #000; border-right: 1px solid #000;
         }
-        .inv-table thead th:last-child { text-align: right; }
+        .inv-table thead th:last-child { text-align: right; border-right: none; }
         .inv-table thead th.text-center { text-align: center; }
-        .inv-table tbody td { padding: 10px 12px; font-size: 13px; border-bottom: 1px solid #f1f5f9; }
-        .inv-table tbody td:last-child { text-align: right; }
+        .inv-table tbody td { padding: 10px 12px; font-size: 13px; border-bottom: 1px solid #000; border-right: 1px solid #000; color: #000; }
+        .inv-table tbody td:last-child { text-align: right; border-right: none; }
         .inv-table tbody td.text-center { text-align: center; }
-        .inv-table tbody tr:nth-child(even) { background: #f8fafc; }
-        .inv-table .discount-sub { color: #888; font-size: 12px; font-style: italic; }
+        .inv-table .discount-sub { color: #000; font-size: 12px; font-style: italic; }
 
         /* Footer Section */
-        .inv-words-bank { padding: 10px 30px; border-top: 1px solid #e2e8f0; font-size: 12px; }
+        .inv-words-bank { padding: 10px 30px; border-top: 1px solid #000; font-size: 12px; color: #000; }
         .inv-words-bank .words { font-weight: 700; margin-bottom: 8px; }
-        .inv-words-bank .bank { color: #64748b; }
+        .inv-words-bank .bank { color: #000; }
         .inv-footer {
-            padding: 15px 30px; border-top: 2px solid #1a2942;
+            padding: 15px 30px; border-top: 2px solid #000;
             display: flex; justify-content: space-between; align-items: flex-end;
-            font-size: 11px; color: #64748b;
+            font-size: 11px; color: #000;
         }
         .inv-footer .sign { text-align: right; }
-        .inv-footer .sign .line { border-top: 1px solid #1a2942; padding-top: 4px; margin-top: 30px; width: 200px; display: inline-block; }
+        .inv-footer .sign .line { border-top: 1px solid #000; padding-top: 4px; margin-top: 30px; width: 200px; display: inline-block; }
+        .inv-footer .for-company { font-weight: 700; color: #000; }
 
         /* Actions */
         .actions-bar { text-align: center; padding: 20px; background: #e9ecef; }
@@ -199,18 +200,7 @@ function numToWords($n) {
         @media print {
             body { background: #fff; }
             .actions-bar { display: none !important; }
-            .invoice-page { border: none; margin: 0; box-shadow: none; }
-            * { color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .inv-header { background: #1a2942 !important; }
-            .inv-header, .inv-header .brand h2, .inv-header .brand p { color: #fff !important; }
-            .inv-table thead th { background: #1a2942 !important; color: #fff !important; }
-            .summary-row.total { background: #1a2942 !important; color: #fff !important; }
-            .inv-info .block h6 { color: #000 !important; }
-            .inv-info .block p, .inv-info .block p strong { color: #000 !important; }
-            .gst-bar span, .gst-bar strong { color: #000 !important; }
-            .inv-words-bank .bank { color: #000 !important; }
-            .inv-footer { color: #000 !important; }
-            .inv-footer .sign .line { border-top-color: #000 !important; }
+            .invoice-page { border: 2px solid #000; margin: 0; box-shadow: none; }
         }
     </style>
 </head>
@@ -252,8 +242,7 @@ function numToWords($n) {
         </div>
     </div>
 
-    <!-- Items Table (Sales only) -->
-    <?php if ($type !== 'purchase'): ?>
+    <!-- Items Table -->
     <div class="inv-table">
         <table>
             <thead>
@@ -316,7 +305,7 @@ function numToWords($n) {
             <?php else: ?>
                 <tr>
                     <td>1</td>
-                    <td>DIAMOND TOOLS (As per Invoice)</td>
+                    <td>AS PER INVOICE</td>
                     <td class="text-center">-</td>
                     <td class="text-center">-</td>
                     <td class="text-center"><?php echo number_format($inv['taxamt'], 2); ?></td>
@@ -333,7 +322,6 @@ function numToWords($n) {
             </tbody>
         </table>
     </div>
-    <?php endif; ?>
 
     <!-- Summary -->
     <div class="inv-summary">
@@ -377,7 +365,7 @@ function numToWords($n) {
             <p>E. & O. E.</p>
         </div>
         <div class="sign">
-            <p style="font-weight:700; color:#1a2942;">for DELVIN DIAMOND TOOL INDUSTRIES</p>
+            <p class="for-company">for DELVIN DIAMOND TOOL INDUSTRIES</p>
             <div class="line">Proprietor / Manager</div>
         </div>
     </div>
@@ -394,14 +382,24 @@ function numToWords($n) {
 <script>
 function downloadPDF() {
     var element = document.getElementById('invoicePage');
+    var clone = element.cloneNode(true);
+    clone.style.position = 'absolute';
+    clone.style.left = '-9999px';
+    clone.style.top = '0';
+    clone.style.width = '780px';
+    clone.style.border = '2px solid #000';
+    document.body.appendChild(clone);
+
     var opt = {
         margin: 10,
         filename: '<?php echo $page_title; ?>_<?php echo $inv['bill']; ?>_<?php echo preg_replace('/[^A-Za-z0-9]/', '_', $inv['cname']); ?>.pdf',
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
+        html2canvas: { scale: 2, useCORS: true, scrollX: 0, scrollY: 0, windowWidth: 820 },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
-    html2pdf().set(opt).from(element).save();
+    html2pdf().set(opt).from(clone).save().then(function() {
+        document.body.removeChild(clone);
+    });
 }
 </script>
 
