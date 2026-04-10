@@ -108,6 +108,18 @@ $month_names = ['','January','February','March','April','May','June','July','Aug
             text-decoration: none; transition: all 0.2s;
         }
         .view-btn:hover { background: #d4952e; color: #fff; }
+        .edit-btn {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 6px 14px; background: #3b82f6; color: #fff;
+            border: none; border-radius: 5px; font-size: 12px; font-weight: 700;
+            text-decoration: none; transition: all 0.2s;
+        }
+        .edit-btn:hover { background: #2563eb; color: #fff; }
+
+        .top-nav { background: var(--primary); padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; }
+        .top-nav a { color: rgba(255,255,255,0.8); text-decoration: none; font-size: 14px; padding: 6px 14px; border-radius: 6px; transition: all 0.2s; }
+        .top-nav a:hover, .top-nav a.active { background: rgba(255,255,255,0.1); color: #fff; }
+        .top-nav .brand { color: var(--accent); font-weight: 700; font-size: 15px; }
 
         .empty-state {
             text-align: center; padding: 60px 20px; color: var(--text-muted);
@@ -128,6 +140,17 @@ $month_names = ['','January','February','March','April','May','June','July','Aug
     </style>
 </head>
 <body>
+<nav class="top-nav">
+    <span class="brand">DELVIN DIAMOND TOOLS</span>
+    <div>
+        <a href="index.php"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
+        <a href="create_invoice.php"><i class="bi bi-receipt"></i> Invoice</a>
+        <a href="create_purchase.php"><i class="bi bi-cart-plus"></i> Purchase</a>
+        <a href="view_invoices.php" class="active"><i class="bi bi-journal-bookmark-fill"></i> Invoices</a>
+        <a href="../src/companydata.php"><i class="bi bi-building"></i> Companies</a>
+        <a href="add_tool.php"><i class="bi bi-tools"></i> Tools</a>
+    </div>
+</nav>
 <div class="page-wrap">
     <!-- Header -->
     <div class="page-header">
@@ -216,6 +239,9 @@ $month_names = ['','January','February','March','April','May','June','July','Aug
                     <td>
                         <a href="view_invoice_detail.php?type=<?php echo $sel_type; ?>&sno=<?php echo $r['sno']; ?>" class="view-btn">
                             <i class="bi bi-eye"></i> View
+                        </a>
+                        <a href="edit_invoice.php?type=<?php echo $sel_type; ?>&sno=<?php echo $r['sno']; ?>" class="edit-btn">
+                            <i class="bi bi-pencil"></i> Edit
                         </a>
                     </td>
                 </tr>

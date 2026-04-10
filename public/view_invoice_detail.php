@@ -42,6 +42,7 @@ $cstmt->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $page_title; ?> #<?php echo $inv['bill']; ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         @page { size: A4; margin: 10mm; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -105,10 +106,17 @@ $cstmt->close();
         }
         .btn-print { background: #1a2942; color: #fff; }
         .btn-print:hover { background: #2c3e5a; color: #fff; }
+        .btn-download { background: #3b82f6; color: #fff; }
+        .btn-download:hover { background: #2563eb; color: #fff; }
         .btn-back { background: #fff; color: #1a2942; border: 1px solid #d1d5db; }
         .btn-back:hover { background: #f1f5f9; color: #1a2942; }
         .btn-dash { background: #22c55e; color: #fff; }
         .btn-dash:hover { background: #16a34a; color: #fff; }
+
+        .top-nav { background: #1a2942; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; }
+        .top-nav a { color: rgba(255,255,255,0.8); text-decoration: none; font-size: 14px; padding: 6px 14px; border-radius: 6px; transition: all 0.2s; }
+        .top-nav a:hover, .top-nav a.active { background: rgba(255,255,255,0.1); color: #fff; }
+        .top-nav .brand { color: #e8a838; font-weight: 700; font-size: 15px; }
 
         @media print {
             body { background: #fff; }
@@ -118,6 +126,17 @@ $cstmt->close();
     </style>
 </head>
 <body>
+<nav class="top-nav">
+    <span class="brand">DELVIN DIAMOND TOOLS</span>
+    <div>
+        <a href="index.php"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
+        <a href="create_invoice.php"><i class="bi bi-receipt"></i> Invoice</a>
+        <a href="create_purchase.php"><i class="bi bi-cart-plus"></i> Purchase</a>
+        <a href="view_invoices.php" class="active"><i class="bi bi-journal-bookmark-fill"></i> Invoices</a>
+        <a href="../src/companydata.php"><i class="bi bi-building"></i> Companies</a>
+        <a href="add_tool.php"><i class="bi bi-tools"></i> Tools</a>
+    </div>
+</nav>
 
 <div class="invoice-page">
     <div class="inv-header">
@@ -216,9 +235,24 @@ $cstmt->close();
 
 <div class="actions-bar">
     <button class="btn btn-print" onclick="window.print()"><i class="bi bi-printer"></i> Print Invoice</button>
+    <button class="btn btn-download" onclick="downloadPDF()"><i class="bi bi-download"></i> Download PDF</button>
     <a href="view_invoices.php?type=<?php echo htmlspecialchars($type); ?>" class="btn btn-back"><i class="bi bi-arrow-left"></i> Back to List</a>
     <a href="index.php" class="btn btn-dash"><i class="bi bi-grid-1x2"></i> Dashboard</a>
 </div>
+
+<script>
+function downloadPDF() {
+    var element = document.querySelector('.invoice-page');
+    var opt = {
+        margin: 10,
+        filename: '<?php echo $page_title; ?>_<?php echo $inv['bill']; ?>_<?php echo htmlspecialchars($inv['cname']); ?>.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+    html2pdf().set(opt).from(element).save();
+}
+</script>
 
 </body>
 </html>

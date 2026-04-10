@@ -112,6 +112,7 @@ $page_title = $titles[$invoice_type] ?? 'INVOICE';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $page_title; ?> - #<?php echo $bill; ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         @page { size: A4; margin: 10mm; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -208,6 +209,8 @@ $page_title = $titles[$invoice_type] ?? 'INVOICE';
         }
         .btn-print { background: #1a2942; color: #fff; }
         .btn-print:hover { background: #2c3e5a; color: #fff; }
+        .btn-download { background: #3b82f6; color: #fff; }
+        .btn-download:hover { background: #2563eb; color: #fff; }
         .btn-dash { background: #fff; color: #1a2942; border: 1px solid #d1d5db; }
         .btn-dash:hover { background: #f1f5f9; color: #1a2942; }
         .btn-new { background: #22c55e; color: #fff; }
@@ -240,11 +243,7 @@ $page_title = $titles[$invoice_type] ?? 'INVOICE';
         <div><span>Date:</span> <strong><?php echo htmlspecialchars($date); ?></strong></div>
     </div>
 
-    <?php if ($invoice_type === 'proforma'): ?>
-    <div class="note-bar"><i class="bi bi-info-circle"></i> This is a Proforma Invoice — NOT added to the tax report.</div>
-    <?php elseif ($invoice_type === 'quotation'): ?>
-    <div class="note-bar"><i class="bi bi-info-circle"></i> This is a Quotation only — NOT added to the tax report.</div>
-    <?php endif; ?>
+
 
     <!-- Bill To / Ship To -->
     <div class="inv-info">
@@ -262,6 +261,7 @@ $page_title = $titles[$invoice_type] ?? 'INVOICE';
     </div>
 
     <!-- Items Table -->
+    <?php if (count($items) > 0): ?>
     <div class="inv-table">
         <table>
             <thead>
@@ -293,6 +293,7 @@ $page_title = $titles[$invoice_type] ?? 'INVOICE';
             </tbody>
         </table>
     </div>
+    <?php endif; ?>
 
     <!-- Summary -->
     <div class="inv-summary">
@@ -323,6 +324,29 @@ $page_title = $titles[$invoice_type] ?? 'INVOICE';
         </div>
     </div>
 
+    <!-- Amount in Words & Bank Details -->
+    <div style="padding: 10px 30px; border-top: 1px solid #e2e8f0; font-size: 12px;">
+        <p style="margin-bottom: 8px;"><strong>Amount in words:</strong> RUPEES <?php
+            $ones = ['', 'ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN', 'EIGHT', 'NINE', 'TEN',
+                'ELEVEN', 'TWELVE', 'THIRTEEN', 'FOURTEEN', 'FIFTEEN', 'SIXTEEN', 'SEVENTEEN', 'EIGHTEEN', 'NINETEEN'];
+            $tens = ['', '', 'TWENTY', 'THIRTY', 'FORTY', 'FIFTY', 'SIXTY', 'SEVENTY', 'EIGHTY', 'NINETY'];
+            function numToWords($n) {
+                global $ones, $tens;
+                if ($n < 0) return 'MINUS ' . numToWords(-$n);
+                if ($n == 0) return 'ZERO';
+                $w = '';
+                if (intval($n / 10000000) > 0) { $w .= numToWords(intval($n/10000000)) . ' CRORE '; $n %= 10000000; }
+                if (intval($n / 100000) > 0) { $w .= numToWords(intval($n/100000)) . ' LAKH '; $n %= 100000; }
+                if (intval($n / 1000) > 0) { $w .= numToWords(intval($n/1000)) . ' THOUSAND '; $n %= 1000; }
+                if (intval($n / 100) > 0) { $w .= $ones[intval($n/100)] . ' HUNDRED '; $n %= 100; }
+                if ($n > 0) { if ($w != '') $w .= 'AND '; if ($n < 20) { $w .= $ones[$n]; } else { $w .= $tens[intval($n/10)]; if ($n%10) $w .= ' ' . $ones[$n%10]; } }
+                return trim($w);
+            }
+            echo numToWords($total) . ' ONLY.';
+        ?></p>
+        <p style="color: #64748b;">BANK: UCO BANK, SOMARASAMPETTAI | A/C: 07640500000016 | IFSC: UCBA0000764</p>
+    </div>
+
     <!-- Footer -->
     <div class="inv-footer">
         <div>
@@ -338,6 +362,7 @@ $page_title = $titles[$invoice_type] ?? 'INVOICE';
 <!-- Action Buttons -->
 <div class="actions-bar">
     <button class="btn btn-print" onclick="window.print()"><i class="bi bi-printer"></i> Print Invoice</button>
+    <button class="btn btn-download" onclick="downloadPDF()"><i class="bi bi-download"></i> Download PDF</button>
     <a href="../public/index.php" class="btn btn-dash"><i class="bi bi-grid-1x2"></i> Dashboard</a>
     <?php if ($invoice_type === 'invoice'): ?>
     <a href="../public/create_invoice.php" class="btn btn-new"><i class="bi bi-plus-circle"></i> New Invoice</a>
@@ -350,5 +375,18 @@ $page_title = $titles[$invoice_type] ?? 'INVOICE';
     <?php endif; ?>
 </div>
 
+<script>
+function downloadPDF() {
+    var element = document.querySelector('.invoice-page');
+    var opt = {
+        margin: 10,
+        filename: '<?php echo $page_title; ?>_<?php echo $bill; ?>_<?php echo htmlspecialchars($company_name); ?>.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+    html2pdf().set(opt).from(element).save();
+}
+</script>
 </body>
 </html>

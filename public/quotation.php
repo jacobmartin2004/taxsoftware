@@ -22,9 +22,15 @@ $next_bill = ($inv_row['maxbill'] ?? 0) + 1;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quotation - Delvin Diamond Tools</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
     <style>
-        body { background-color: #f8f9fa; }
+        :root { --primary: #1a2942; --accent: #e8a838; }
+        body { background-color: #f1f5f9; font-family: 'Segoe UI', system-ui, sans-serif; }
+        .top-nav { background: var(--primary); padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; }
+        .top-nav a { color: rgba(255,255,255,0.8); text-decoration: none; font-size: 14px; padding: 6px 14px; border-radius: 6px; transition: all 0.2s; }
+        .top-nav a:hover, .top-nav a.active { background: rgba(255,255,255,0.1); color: #fff; }
+        .top-nav .brand { color: var(--accent); font-weight: 700; font-size: 15px; }
         .invoice-box { max-width: 900px; margin: 20px auto; padding: 20px; background: #fff; border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.1); }
         .item-row { background: #f9f9f9; padding: 10px; border-radius: 5px; margin-bottom: 8px; }
         .totals-section { background: #e9ecef; padding: 15px; border-radius: 5px; margin-top: 15px; }
@@ -33,6 +39,18 @@ $next_bill = ($inv_row['maxbill'] ?? 0) + 1;
     </style>
 </head>
 <body>
+<nav class="top-nav">
+    <span class="brand">DELVIN DIAMOND TOOLS</span>
+    <div>
+        <a href="index.php"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
+        <a href="create_invoice.php"><i class="bi bi-receipt"></i> Invoice</a>
+        <a href="create_purchase.php"><i class="bi bi-cart-plus"></i> Purchase</a>
+        <a href="quotation.php" class="active"><i class="bi bi-file-earmark-ruled"></i> Quotation</a>
+        <a href="view_invoices.php"><i class="bi bi-journal-bookmark-fill"></i> Invoices</a>
+        <a href="../src/companydata.php"><i class="bi bi-building"></i> Companies</a>
+        <a href="add_tool.php"><i class="bi bi-tools"></i> Tools</a>
+    </div>
+</nav>
 <div class="invoice-box">
     <h2 class="text-center mb-1">DELVIN DIAMOND TOOL INDUSTRIES</h2>
     <p class="text-center mb-0">1/56, Easu Street, Somarasampettai (PO), Trichy - 620 102</p>

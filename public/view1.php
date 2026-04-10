@@ -5,11 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Balance GST - Delvin Diamond Tools</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f0f0f0;
-    }
+    :root { --primary: #1a2942; --accent: #e8a838; }
+    body { background: #f1f5f9; font-family: 'Segoe UI', system-ui, sans-serif; }
+    .top-nav { background: var(--primary); padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; }
+    .top-nav a { color: rgba(255,255,255,0.8); text-decoration: none; font-size: 14px; padding: 6px 14px; border-radius: 6px; transition: all 0.2s; }
+    .top-nav a:hover, .top-nav a.active { background: rgba(255,255,255,0.1); color: #fff; }
+    .top-nav .brand { color: var(--accent); font-weight: 700; font-size: 15px; }
     .container {
       margin-top: 20px;
     }
@@ -53,6 +56,17 @@
   </style>
 </head>
 <body>
+<nav class="top-nav">
+    <span class="brand">DELVIN DIAMOND TOOLS</span>
+    <div>
+        <a href="index.php"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
+        <a href="create_invoice.php"><i class="bi bi-receipt"></i> Invoice</a>
+        <a href="create_purchase.php"><i class="bi bi-cart-plus"></i> Purchase</a>
+        <a href="view_invoices.php"><i class="bi bi-journal-bookmark-fill"></i> Invoices</a>
+        <a href="../src/companydata.php"><i class="bi bi-building"></i> Companies</a>
+        <a href="add_tool.php"><i class="bi bi-tools"></i> Tools</a>
+    </div>
+</nav>
   <div class="container">
     <div class="row">
       <div class="col-xs-12">
