@@ -67,7 +67,8 @@ $next_bill = ($inv_row['maxbill'] ?? 0) + 1;
         <a href="create_invoice.php"><i class="bi bi-receipt"></i> Invoice</a>
         <a href="create_purchase.php"><i class="bi bi-cart-plus"></i> Purchase</a>
         <a href="proforma_invoice.php" class="active"><i class="bi bi-file-earmark-text"></i> Proforma</a>
-        <a href="view_invoices.php"><i class="bi bi-journal-bookmark-fill"></i> Invoices</a>
+        <a href="view_invoices.php"><i class="bi bi-graph-up-arrow"></i> Sales Invoices</a>
+        <a href="view_purchases.php"><i class="bi bi-cart-check"></i> Purchase Invoices</a>
         <a href="../src/companydata.php"><i class="bi bi-building"></i> Companies</a>
         <a href="add_tool.php"><i class="bi bi-tools"></i> Tools</a>
     </div>

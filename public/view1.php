@@ -102,7 +102,8 @@ $months = ['01'=>'January','02'=>'February','03'=>'March','04'=>'April','05'=>'M
         <a href="index.php"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
         <a href="create_invoice.php"><i class="bi bi-receipt"></i> Invoice</a>
         <a href="create_purchase.php"><i class="bi bi-cart-plus"></i> Purchase</a>
-        <a href="view_invoices.php"><i class="bi bi-journal-bookmark-fill"></i> Invoices</a>
+        <a href="view_invoices.php"><i class="bi bi-graph-up-arrow"></i> Sales Invoices</a>
+        <a href="view_purchases.php"><i class="bi bi-cart-check"></i> Purchase Invoices</a>
         <a href="../src/companydata.php"><i class="bi bi-building"></i> Companies</a>
         <a href="add_tool.php"><i class="bi bi-tools"></i> Tools</a>
     </div>

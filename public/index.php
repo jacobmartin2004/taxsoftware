@@ -318,7 +318,8 @@ if ($res) { while ($row = $res->fetch_assoc()) $recent_purchases[] = $row; }
         <li><a href="quotation.php"><i class="bi bi-file-earmark-ruled"></i> Quotation</a></li>
 
         <li class="nav-header">Records</li>
-        <li><a href="view_invoices.php"><i class="bi bi-journal-bookmark-fill"></i> View Invoices</a></li>
+        <li><a href="view_invoices.php"><i class="bi bi-graph-up-arrow"></i> Sales Invoices</a></li>
+        <li><a href="view_purchases.php"><i class="bi bi-cart-check"></i> Purchase Invoices</a></li>
         <li><a href="../src/view.php"><i class="bi bi-journal-text"></i> Sales Records</a></li>
         <li><a href="view1.php"><i class="bi bi-journal-arrow-down"></i> Purchase Records</a></li>
         <li><a href="../src/printsales.php"><i class="bi bi-printer"></i> Print Sales Report</a></li>
@@ -415,9 +416,14 @@ if ($res) { while ($row = $res->fetch_assoc()) $recent_purchases[] = $row; }
                 <p>New product to catalog</p>
             </a>
             <a href="view_invoices.php" class="action-card">
-                <div class="action-icon icon-blue"><i class="bi bi-journal-bookmark-fill"></i></div>
-                <h6>View Invoices</h6>
-                <p>Month-wise invoice list</p>
+                <div class="action-icon icon-blue"><i class="bi bi-graph-up-arrow"></i></div>
+                <h6>Sales Invoices</h6>
+                <p>View sales invoice list</p>
+            </a>
+            <a href="view_purchases.php" class="action-card">
+                <div class="action-icon icon-red"><i class="bi bi-cart-check"></i></div>
+                <h6>Purchase Invoices</h6>
+                <p>View purchase invoice list</p>
             </a>
         </div>
 

@@ -4,13 +4,12 @@ require_once '../src/conn.php';
 // Handle delete
 if (isset($_GET['delete_bill'])) {
     $del_bill = intval($_GET['delete_bill']);
-    $stmt = $conn->prepare("DELETE FROM delvin WHERE bill = ?");
+    $stmt = $conn->prepare("DELETE FROM purchase WHERE bill = ?");
     $stmt->bind_param('i', $del_bill);
     $stmt->execute();
     $stmt->close();
-    // Also delete items
-    $conn->query("DELETE FROM invoice_items WHERE bill = $del_bill AND invoice_type = 'invoice'");
-    header("Location: view_invoices.php?month=" . ($_GET['month'] ?? date('m')) . "&year=" . ($_GET['year'] ?? date('Y')));
+    $conn->query("DELETE FROM invoice_items WHERE bill = $del_bill AND invoice_type = 'purchase'");
+    header("Location: view_purchases.php?month=" . ($_GET['month'] ?? date('m')) . "&year=" . ($_GET['year'] ?? date('Y')));
     exit();
 }
 
@@ -21,7 +20,7 @@ $month_str = str_pad($sel_month, 2, '0', STR_PAD_LEFT);
 $year_str = strval($sel_year);
 
 $records = [];
-$res = $conn->query("SELECT GSTNO, cname, bill, taxamt, cgst, sgst, igst, Total, date FROM delvin WHERE SUBSTRING(date,4,2)='$month_str' AND SUBSTRING(date,7,4)='$year_str' ORDER BY bill DESC");
+$res = $conn->query("SELECT GSTNO, cname, bill, taxamt, cgst, sgst, igst, Total, date FROM purchase WHERE SUBSTRING(date,4,2)='$month_str' AND SUBSTRING(date,7,4)='$year_str' ORDER BY bill DESC");
 if ($res) { while ($row = $res->fetch_assoc()) $records[] = $row; }
 
 // Fetch items for all bills in this month
@@ -31,7 +30,7 @@ $has_items_table = ($check_table && $check_table->num_rows > 0);
 if ($has_items_table && count($records) > 0) {
     $bill_nums = array_map(function($r) { return intval($r['bill']); }, $records);
     $bill_list = implode(',', $bill_nums);
-    $ires = $conn->query("SELECT bill, tool_name, qty, rate, discount_pct FROM invoice_items WHERE bill IN ($bill_list) AND invoice_type = 'invoice' ORDER BY id ASC");
+    $ires = $conn->query("SELECT bill, tool_name, qty, rate, discount_pct FROM invoice_items WHERE bill IN ($bill_list) AND invoice_type = 'purchase' ORDER BY id ASC");
     if ($ires) {
         while ($irow = $ires->fetch_assoc()) {
             $all_items[intval($irow['bill'])][] = $irow;
@@ -46,7 +45,7 @@ $month_names = ['','January','February','March','April','May','June','July','Aug
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sales Invoices - <?php echo $month_names[$sel_month] . ' ' . $sel_year; ?></title>
+    <title>Purchase Invoices - <?php echo $month_names[$sel_month] . ' ' . $sel_year; ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -55,7 +54,7 @@ $month_names = ['','January','February','March','April','May','June','July','Aug
         body { background: var(--bg); font-family: 'Segoe UI', system-ui, sans-serif; color: var(--text); }
         .page-wrap { max-width: 1100px; margin: 0 auto; padding: 20px; }
         .page-header {
-            background: var(--primary); color: #fff; border-radius: 12px;
+            background: #7c3aed; color: #fff; border-radius: 12px;
             padding: 20px 28px; margin-bottom: 24px;
             display: flex; justify-content: space-between; align-items: center;
         }
@@ -74,14 +73,14 @@ $month_names = ['','January','February','March','April','May','June','July','Aug
         .filter-bar label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); }
         .filter-bar select { padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: #f8fafc; }
         .filter-bar .btn-filter {
-            padding: 8px 20px; background: var(--primary); color: #fff;
+            padding: 8px 20px; background: #7c3aed; color: #fff;
             border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 14px;
         }
-        .filter-bar .btn-filter:hover { background: #2c3e5a; }
+        .filter-bar .btn-filter:hover { background: #6d28d9; }
         .inv-table-wrap { background: #fff; border-radius: 10px; border: 1px solid #e2e8f0; overflow: hidden; }
         .inv-table-wrap table { width: 100%; border-collapse: collapse; }
         .inv-table-wrap thead th {
-            background: var(--primary); color: #fff; padding: 12px 16px;
+            background: #7c3aed; color: #fff; padding: 12px 16px;
             font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; text-align: left;
         }
         .inv-table-wrap tbody td {
@@ -121,7 +120,7 @@ $month_names = ['','January','February','March','April','May','June','July','Aug
         .total-bar {
             background: #f8fafc; padding: 14px 16px;
             display: flex; justify-content: space-between; font-weight: 700;
-            border-top: 2px solid var(--primary);
+            border-top: 2px solid #7c3aed;
         }
         .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
         .empty-state i { font-size: 48px; display: block; margin-bottom: 12px; opacity: 0.4; }
@@ -134,11 +133,11 @@ $month_names = ['','January','February','March','April','May','June','July','Aug
         .top-nav .menu-toggle { display: none; background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; }
 
         /* Item detail row */
-        .item-detail-row td { padding: 0 !important; border-bottom: 2px solid var(--primary) !important; }
+        .item-detail-row td { padding: 0 !important; border-bottom: 2px solid #7c3aed !important; }
         .item-detail-box {
             background: #f8fafc; padding: 16px 24px; border-top: 1px dashed #d1d5db;
         }
-        .item-detail-box h6 { font-size: 13px; font-weight: 700; color: var(--primary); margin-bottom: 10px; }
+        .item-detail-box h6 { font-size: 13px; font-weight: 700; color: #7c3aed; margin-bottom: 10px; }
         .items-tbl { width: 100%; border-collapse: collapse; border: 1px solid #d1d5db; background: #fff; }
         .items-tbl th {
             background: #e2e8f0; color: var(--text); padding: 8px 12px;
@@ -182,16 +181,16 @@ $month_names = ['','January','February','March','April','May','June','July','Aug
     <button class="menu-toggle" onclick="this.nextElementSibling.classList.toggle('show')"><i class="bi bi-list"></i></button>
     <div class="nav-links">
         <a href="index.php"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
-        <a href="create_invoice.php"><i class="bi bi-receipt"></i> New Invoice</a>
-        <a href="view_invoices.php" class="active"><i class="bi bi-graph-up-arrow"></i> Sales Invoices</a>
-        <a href="view_purchases.php"><i class="bi bi-cart-check"></i> Purchase Invoices</a>
+        <a href="create_purchase.php"><i class="bi bi-cart-plus"></i> New Purchase</a>
+        <a href="view_invoices.php"><i class="bi bi-graph-up-arrow"></i> Sales Invoices</a>
+        <a href="view_purchases.php" class="active"><i class="bi bi-cart-check"></i> Purchase Invoices</a>
         <a href="../src/companydata.php"><i class="bi bi-building"></i> Companies</a>
         <a href="add_tool.php"><i class="bi bi-tools"></i> Tools</a>
     </div>
 </nav>
 <div class="page-wrap">
     <div class="page-header">
-        <h3><i class="bi bi-graph-up-arrow me-2"></i>Sales Invoices</h3>
+        <h3><i class="bi bi-cart-check me-2"></i>Purchase Invoices</h3>
         <a href="index.php" class="back-btn"><i class="bi bi-arrow-left"></i> Dashboard</a>
     </div>
 
@@ -216,7 +215,7 @@ $month_names = ['','January','February','March','April','May','June','July','Aug
     </form>
 
     <h5 style="margin-bottom: 16px; color: var(--text-muted); font-size: 14px;">
-        Showing <strong style="color: var(--text);">Sales</strong> invoices for
+        Showing <strong style="color: var(--text);">Purchase</strong> invoices for
         <strong style="color: var(--text);"><?php echo $month_names[$sel_month] . ' ' . $sel_year; ?></strong>
         — <?php echo count($records); ?> record(s)
     </h5>
@@ -265,7 +264,7 @@ $month_names = ['','January','February','March','April','May','June','July','Aug
                         <button class="view-btn" onclick="toggleItems(<?php echo $bill_id; ?>)">
                             <i class="bi bi-eye"></i> View
                         </button>
-                        <a href="view_invoice_detail.php?type=sales&bill=<?php echo $bill_id; ?>" class="inv-btn">
+                        <a href="view_invoice_detail.php?type=purchase&bill=<?php echo $bill_id; ?>" class="inv-btn">
                             <i class="bi bi-file-earmark-text"></i> Invoice
                         </a>
                         <a href="#" class="del-btn" onclick="confirmDelete(<?php echo $bill_id; ?>); return false;">
@@ -340,7 +339,7 @@ $month_names = ['','January','February','March','April','May','June','July','Aug
         <?php else: ?>
         <div class="empty-state">
             <i class="bi bi-inbox"></i>
-            <p>No sales invoices found for <?php echo $month_names[$sel_month] . ' ' . $sel_year; ?></p>
+            <p>No purchase invoices found for <?php echo $month_names[$sel_month] . ' ' . $sel_year; ?></p>
         </div>
         <?php endif; ?>
     </div>
@@ -392,16 +391,12 @@ var invoiceData = <?php echo json_encode($pdf_records, JSON_HEX_TAG | JSON_HEX_A
 
 function toggleItems(billId) {
     var row = document.getElementById('items-' + billId);
-    if (row.style.display === 'none') {
-        row.style.display = '';
-    } else {
-        row.style.display = 'none';
-    }
+    row.style.display = (row.style.display === 'none') ? '' : 'none';
 }
 
 function confirmDelete(bill) {
-    if (confirm('Are you sure you want to delete invoice #' + bill + '? This cannot be undone.')) {
-        window.location.href = 'view_invoices.php?delete_bill=' + bill + '&month=<?php echo $sel_month; ?>&year=<?php echo $sel_year; ?>';
+    if (confirm('Are you sure you want to delete purchase invoice #' + bill + '? This cannot be undone.')) {
+        window.location.href = 'view_purchases.php?delete_bill=' + bill + '&month=<?php echo $sel_month; ?>&year=<?php echo $sel_year; ?>';
     }
 }
 
@@ -436,7 +431,6 @@ function buildInvoiceHTML(r) {
         taxRows = '<div class="sr"><span>IGST (18%)</span><span>₹ ' + fmt(r.igst) + '</span></div>';
     }
 
-    // Build items table
     var itemsHTML = '';
     if (r.items && r.items.length > 0) {
         itemsHTML = '<table class="itbl"><thead><tr><th>#</th><th>Tool Name</th><th style="text-align:center">Qty</th><th style="text-align:center">Rate</th><th style="text-align:center">Discount</th><th style="text-align:right">Taxable Amt</th></tr></thead><tbody>';
@@ -457,7 +451,7 @@ function buildInvoiceHTML(r) {
             '<p>1/56, Easu Street, Somarasampettai (PO), Trichy - 620 102</p>' +
             '<p>Ph: 0431-2607224 | 0431-2607524 | 9842407224</p>' +
             '<p>Email: delvinvincent@yahoo.com</p>' +
-        '</div><div class="inv-tp">TAX INVOICE</div></div>' +
+        '</div><div class="inv-tp">PURCHASE INVOICE</div></div>' +
         '<div class="gbar">' +
             '<div><span>GSTIN:</span> <b>33AAAPY1027F1Z3</b></div>' +
             '<div><span>HSN Code:</span> <b>68042110</b></div>' +
@@ -533,7 +527,7 @@ function downloadMonthlyPDF() {
 
     var opt = {
         margin: 10,
-        filename: 'Sales_<?php echo $month_names[$sel_month]; ?>_<?php echo $sel_year; ?>.pdf',
+        filename: 'Purchase_<?php echo $month_names[$sel_month]; ?>_<?php echo $sel_year; ?>.pdf',
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2, useCORS: true, scrollX: 0, scrollY: 0, windowWidth: 820 },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },

@@ -4,7 +4,7 @@ require_once '../src/conn.php';
 $type = isset($_GET['type']) ? $_GET['type'] : 'sales';
 $bill_param = isset($_GET['bill']) ? intval($_GET['bill']) : 0;
 
-if ($bill_param <= 0) { header('Location: view_invoices.php'); exit(); }
+if ($bill_param <= 0) { header('Location: ' . ($type === 'purchase' ? 'view_purchases.php' : 'view_invoices.php')); exit(); }
 
 $table = ($type === 'purchase') ? 'purchase' : 'delvin';
 
@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt = $conn->prepare("UPDATE `$table` SET GSTNO=?, cname=?, bill=?, taxamt=?, cgst=?, sgst=?, igst=?, Total=?, date=? WHERE bill=?");
     $stmt->bind_param('ssiddddisi', $gstno, $cname, $bill, $taxamt, $cgst, $sgst, $igst, $total, $date, $old_bill);
     if ($stmt->execute()) {
-        header("Location: view_invoices.php?type=" . urlencode($type));
+        header("Location: " . ($type === 'purchase' ? 'view_purchases.php' : 'view_invoices.php'));
         exit();
     } else {
         $error = $conn->error;
@@ -87,7 +87,8 @@ $is_tngst = ($inv['cgst'] > 0 || $inv['sgst'] > 0);
         <a href="index.php"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
         <a href="create_invoice.php"><i class="bi bi-receipt"></i> Invoice</a>
         <a href="create_purchase.php"><i class="bi bi-cart-plus"></i> Purchase</a>
-        <a href="view_invoices.php" class="active"><i class="bi bi-journal-bookmark-fill"></i> Invoices</a>
+        <a href="view_invoices.php"><i class="bi bi-graph-up-arrow"></i> Sales Invoices</a>
+        <a href="view_purchases.php"><i class="bi bi-cart-check"></i> Purchase Invoices</a>
         <a href="../src/companydata.php"><i class="bi bi-building"></i> Companies</a>
         <a href="add_tool.php"><i class="bi bi-tools"></i> Tools</a>
     </div>
