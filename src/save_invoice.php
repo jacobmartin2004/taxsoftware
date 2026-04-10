@@ -2,7 +2,7 @@
 require_once 'conn.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: ../public/dashboard.php');
+    header('Location: ../public/index.php');
     exit();
 }
 
@@ -110,7 +110,7 @@ if ($invoice_type === 'invoice') {
         <p><em>Note: This is a Proforma Invoice and is NOT added to the tax report.</em></p>
         <div class="no-print mt-3">
             <button onclick="window.print()" class="btn btn-primary">Print</button>
-            <a href="../public/dashboard.php" class="btn btn-secondary">Dashboard</a>
+            <a href="../public/index.php" class="btn btn-secondary">Dashboard</a>
         </div>
     </div>
     </body>
@@ -169,7 +169,7 @@ if ($invoice_type === 'invoice') {
         <p><em>This is a Quotation only, NOT added to the tax report.</em></p>
         <div class="no-print mt-3">
             <button onclick="window.print()" class="btn btn-primary">Print</button>
-            <a href="../public/dashboard.php" class="btn btn-secondary">Dashboard</a>
+            <a href="../public/index.php" class="btn btn-secondary">Dashboard</a>
         </div>
     </div>
     </body>

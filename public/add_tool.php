@@ -74,7 +74,7 @@ $tools = $conn->query("SELECT * FROM tools ORDER BY toolname");
         ?>
         </tbody>
     </table>
-    <a href="dashboard.php" class="btn btn-outline-primary">Dashboard</a>
+    <a href="index.php" class="btn btn-outline-primary">Dashboard</a>
     <a href="index.php" class="btn btn-outline-secondary">Home</a>
 </div>
 </body>

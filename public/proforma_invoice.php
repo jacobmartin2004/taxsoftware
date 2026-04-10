@@ -108,7 +108,7 @@ $next_bill = ($inv_row['maxbill'] ?? 0) + 1;
         <input type="hidden" name="company_name" id="hid_cname" value="">
         <div class="mt-3 text-center">
             <button type="submit" class="btn btn-primary btn-lg">Create Proforma</button>
-            <a href="dashboard.php" class="btn btn-secondary btn-lg">Cancel</a>
+            <a href="index.php" class="btn btn-secondary btn-lg">Cancel</a>
         </div>
     </form>
 </div>

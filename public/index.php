@@ -1,515 +1,490 @@
 <?php
-include('../src/conn.php');
-$companynames = [];
-$sql = "SELECT companyname FROM companydata";
-$result = $conn->query($sql);
+require_once '../src/conn.php';
 
-if ($result->num_rows > 0) {
-  while ($row = $result->fetch_assoc()) {
-    $companynames[] = $row['companyname'];
-  }
-}
+// Company count
+$company_count = 0;
+$res = $conn->query("SELECT COUNT(*) as cnt FROM companydata");
+if ($res) { $row = $res->fetch_assoc(); $company_count = $row['cnt']; }
 
+// Tool count
+$tool_count = 0;
+$res = $conn->query("SELECT COUNT(*) as cnt FROM tools");
+if ($res) { $row = $res->fetch_assoc(); $tool_count = $row['cnt']; }
+
+// Sales this month
+$month = date('m');
+$year = date('Y');
+$sales_count = 0;
+$sales_total = 0;
+$res = $conn->query("SELECT COUNT(*) as cnt, IFNULL(SUM(Total),0) as total FROM delvin WHERE SUBSTRING(date,4,2)='$month' AND SUBSTRING(date,7,4)='$year'");
+if ($res) { $row = $res->fetch_assoc(); $sales_count = $row['cnt']; $sales_total = $row['total']; }
+
+// Purchase this month
+$purchase_count = 0;
+$purchase_total = 0;
+$res = $conn->query("SELECT COUNT(*) as cnt, IFNULL(SUM(Total),0) as total FROM purchase WHERE SUBSTRING(date,4,2)='$month' AND SUBSTRING(date,7,4)='$year'");
+if ($res) { $row = $res->fetch_assoc(); $purchase_count = $row['cnt']; $purchase_total = $row['total']; }
+
+// Recent 5 sales
+$recent_sales = [];
+$res = $conn->query("SELECT cname, bill, Total, date FROM delvin ORDER BY sno DESC LIMIT 5");
+if ($res) { while ($row = $res->fetch_assoc()) $recent_sales[] = $row; }
+
+// Recent 5 purchases
+$recent_purchases = [];
+$res = $conn->query("SELECT cname, bill, Total, date FROM purchase ORDER BY sno DESC LIMIT 5");
+if ($res) { while ($row = $res->fetch_assoc()) $recent_purchases[] = $row; }
 ?>
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-  <style>
-    .input-group1 {
-      display: flex;
-      align-items: left;
-      justify-content: left;
-      margin-bottom: 15px;
-      /* Aligns the label and select vertically in the center */
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Delvin Diamond Tool Industries</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a2942;
+            --primary-light: #2c3e5a;
+            --accent: #e8a838;
+            --accent-hover: #d4952e;
+            --success: #22c55e;
+            --info: #3b82f6;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --bg: #f1f5f9;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --text-muted: #64748b;
+        }
+        * { box-sizing: border-box; }
+        body {
+            background-color: var(--bg);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            color: var(--text);
+            margin: 0;
+        }
 
-    .custom-label1 {
-      margin-right: 10px;
-      /* Space between the label and the select input */
-      min-width: 150px;
-      /* Adjust this to ensure the label takes up appropriate width */
-    }
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0; left: 0;
+            width: 250px;
+            height: 100vh;
+            background: var(--primary);
+            color: #fff;
+            padding: 0;
+            z-index: 1000;
+            overflow-y: auto;
+            transition: transform 0.3s;
+        }
+        .sidebar-brand {
+            padding: 24px 20px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+        }
+        .sidebar-brand h5 {
+            font-weight: 700;
+            font-size: 15px;
+            margin: 0;
+            letter-spacing: 0.5px;
+            color: var(--accent);
+        }
+        .sidebar-brand small {
+            font-size: 11px;
+            color: rgba(255,255,255,0.5);
+        }
+        .sidebar-nav {
+            list-style: none;
+            padding: 12px 0;
+            margin: 0;
+        }
+        .sidebar-nav .nav-header {
+            padding: 12px 20px 6px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: rgba(255,255,255,0.35);
+        }
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 20px;
+            color: rgba(255,255,255,0.75);
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+            border-left-color: var(--accent);
+        }
+        .sidebar-nav a i { font-size: 18px; width: 22px; text-align: center; }
 
-    .radio-group1 {
-      align-items: center;
-      justify-content: center;
-      display: flex;
-      gap: 20px;
-      /* Space between radio buttons */
-      align-items: center;
-      /* Vertically aligns the radio inputs and labels */
-    }
+        /* Main Content */
+        .main-content {
+            margin-left: 250px;
+            padding: 0;
+            min-height: 100vh;
+        }
 
-    .custom-radio1 {
-      display: flex;
-      align-items: center;
-      cursor: pointer;
-      /* Pointer on hover for better user experience */
-    }
+        /* Top Bar */
+        .topbar {
+            background: var(--card-bg);
+            border-bottom: 1px solid #e2e8f0;
+            padding: 14px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .topbar h4 { margin: 0; font-weight: 700; font-size: 20px; }
+        .topbar .breadcrumb { margin: 0; font-size: 13px; }
 
-    .custom-radio1 input[type="radio"] {
-      margin-right: 8px;
-      /* Space between the radio button and the label text */
-    }
+        /* Content Area */
+        .content-area { padding: 24px 30px; }
 
-    .custom-radio1 input[type="radio"]:hover {
-      cursor: pointer;
-      /* Changes the cursor to pointer on hover */
-    }
+        /* Stat Cards */
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid #e2e8f0;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+        }
+        .stat-card .stat-icon {
+            width: 48px; height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            margin-bottom: 16px;
+        }
+        .stat-card .stat-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        .stat-card .stat-value {
+            font-size: 28px;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+        .stat-card .stat-sub {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+        .icon-blue { background: rgba(59,130,246,0.1); color: var(--info); }
+        .icon-green { background: rgba(34,197,94,0.1); color: var(--success); }
+        .icon-amber { background: rgba(245,158,11,0.1); color: var(--warning); }
+        .icon-red { background: rgba(239,68,68,0.1); color: var(--danger); }
 
-    .custom-radio1 input[type="radio"]:checked {
-      accent-color: #007BFF;
-      /* Change radio button color when checked (for modern browsers) */
-    }
+        /* Quick Action Cards */
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+        }
+        .action-card {
+            background: var(--card-bg);
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            text-decoration: none;
+            color: var(--text);
+            text-align: center;
+            transition: all 0.2s;
+        }
+        .action-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            color: var(--text);
+            border-color: var(--accent);
+        }
+        .action-card .action-icon {
+            width: 56px; height: 56px;
+            border-radius: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+        .action-card h6 { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+        .action-card p { font-size: 12px; color: var(--text-muted); margin: 0; }
 
-    .custom-input1 {
-      flex-grow: 1;
-      /* Makes the select box grow to fill the remaining space */
-      padding: 8px;
-      
-    }
+        /* Section Headers */
+        .section-header {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--accent);
+            display: inline-block;
+        }
 
-    /* Flexbox layout for input group */
-    .input-group {
-      display: flex;
-      align-items: center;
-      margin-bottom: 15px;
-    }
+        /* Table Styling */
+        .table-card {
+            background: var(--card-bg);
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .table-card .table { margin: 0; }
+        .table-card .table thead th {
+            background: var(--primary);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 12px 16px;
+            border: none;
+        }
+        .table-card .table tbody td {
+            padding: 12px 16px;
+            font-size: 14px;
+            vertical-align: middle;
+            border-color: #f1f5f9;
+        }
+        .table-card .table tbody tr:hover { background: #f8fafc; }
+        .empty-msg {
+            padding: 30px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
 
-    /* Custom label styles */
-    .custom-label {
-      margin-right: 10px;
-      width: 150px;
-      /* Adjust as per your requirement */
-      font-weight: bold;
-      font-family: Arial, sans-serif;
-      color: #333;
-      text-align: right;
-    }
-
-    /* Custom input and select styles */
-    .custom-input,
-    .custom-select {
-      padding: 8px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-family: Arial, sans-serif;
-      font-size: 14px;
-      flex-grow: 1;
-      width: auto;
-    }
-
-    .custom-label1 {
-      margin-right: 10px;
-      width: 150px;
-      /* Adjust as per your requirement */
-      font-weight: bold;
-      font-family: Arial, sans-serif;
-      color: #333;
-      text-align: right;
-    }
-
-    /* Custom input and select styles */
-    .custom-input1,
-    .custom-select {
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-family: Arial, sans-serif;
-      font-size: 14px;
-      flex-grow: 1;
-      width: auto;
-      justify-content: left;
-      align-items: self-start;
-    }
-
-    /* Input focus styles */
-    .custom-input:focus,
-    .custom-select:focus {
-      border-color: #66afe9;
-      outline: none;
-    }
-
-    /* Custom button styles */
-    .custom-button {
-      background-color: #4CAF50;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-family: Arial, sans-serif;
-      font-size: 14px;
-    }
-
-    .custom-button:hover {
-      background-color: #45a049;
-    }
-
-    /* Radio button group */
-    .radio-group {
-      display: flex;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .custom-radio {
-      font-family: Arial, sans-serif;
-      font-size: 14px;
-    }
-
-    .space-pad {
-      margin-top: 10px;
-    }
-
-
-    .custom-button:hover {
-      background-color: #45a049;
-    }
-
-    /* Radio button group */
-    .radio-group {
-      display: flex;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .custom-radio {
-      font-family: Arial, sans-serif;
-      font-size: 14px;
-    }
-
-    .space-pad {
-      margin-top: 10px;
-    }
-
-    body {
-      background: url('https://www.mechatronicsart.com/wp-content/uploads/2016/06/Vilarpac_website_background.jpg') no-repeat center center fixed;
-      background-size: cover;
-    }
-
-    .jumbotron {
-      background: rgba(255, 255, 255, 0.8);
-      padding: 2rem;
-      border-radius: 15px;
-      margin-top: 20px;
-      box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.3);
-      animation: fadeIn 2s;
-    }
-
-    .navbar {
-      margin-bottom: 20px;
-    }
-
-    .navbar-brand {
-      color: #000 !important;
-      font-weight: bold;
-    }
-
-    .vertical-line {
-      border-left: 3px solid #000;
-      height: 100%;
-      animation: slideInLeft 1s;
-    }
-
-    .space-pad {
-      padding: 10px 15px;
-      /* Top, right, bottom, left */
-    }
-
-    .form-control {
-      border-radius: 0;
-      animation: fadeIn 1.5s;
-    }
-
-    .btn {
-      border-radius: 0;
-      background-color: #000;
-      color: #fff;
-      transition: background-color 0.3s;
-    }
-
-    .btn:hover {
-      background-color: #555;
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-      }
-
-      to {
-        opacity: 1;
-      }
-    }
-
-    @keyframes slideInLeft {
-      from {
-        transform: translateX(-100%);
-      }
-
-      to {
-        transform: translateX(0);
-      }
-    }
-  </style>
-</head>
-
-<body>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-
-
-  <div class="container">
-    <div class="row">
-      <div class="col-md-12">
-        <div class="jumbotron text-center">
-          <h1>Delvin Diamond Tools Industries</h1>
-          <h4>Somarsampettai</h4>
-          <h4>Trichy-102..,</h4>
-          <hr>
-          <nav class="navbar navbar-expand-md navbar-light">
-            <div class="container-fluid">
-              <div class="dropdown">
-                <a class="navbar-brand dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Home
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                  <li><a class="dropdown-item" href="index.php">Sales</a></li>
-                  <li><a class="dropdown-item" href="../src/purchase.php">Purchase</a></li>
-                </ul>
-              </div>
-              <a class="navbar-brand" href="../src/view.php">Sales Record</a>
-              <a class="navbar-brand" href="view1.php">Purchase Record</a>
-              <a class="navbar-brand" href="../src/printsales.php">Print Sales Record</a>
-              <a class="navbar-brand" href="../src/printpurchase.php">Print Purchase Record</a>
-              <a class="navbar-brand" href="../src/companydata.php">Company Data</a>
-            </div>
-          </nav>
-
-
-          <hr>
-        </div>
-        <div class="space-pad"></div>
-        <div class="space-pad"></div>
-        <div class="container-fluid">
-          <div class="row">
-            <div class="col-sm-12">
-              <center>
-                <h2>Sales</h2>
-                <form method="post">
-                  <div class="input-group1">
-                    <label for="companyname" class="custom-label1">Company Name</label>
-                    <select class="custom-input1" id="companyname" name="companyname" required>
-                      <option value="" disabled selected>Select or search company name</option>
-                      <?php
-                      foreach ($companynames as $name) {
-                        echo "<option value='$name'>$name</option>";
-                      }
-                      ?>
-                    </select>
-                  </div>
-
-                  <div class="input-group">
-                    <label for="gst" class="custom-label">GST Number</label>
-                    <input type="text" class="custom-input" id="gst" name="gst" placeholder="GST Number will be filled" readonly required>
-                  </div>
-
-                  <div class="input-group">
-                    <label for="bill" class="custom-label">Bill No</label>
-                    <input type="number" class="custom-input" name="bill" placeholder="Enter your Bill No" required>
-                  </div>
-
-                  <div class="input-group">
-                    <label for="sales-date" class="custom-label">Date</label>
-                    <input type="text" class="custom-input" name="date" id="sales-date" placeholder="DD-MM-YYYY" required>
-                  </div>
-
-                  <div class="input-group">
-                    <label for="amt" class="custom-label">Taxable Amount</label>
-                    <input type="text" class="custom-input" name="amt" placeholder="Enter your taxable amount" required>
-                  </div>
-
-                  <!-- GST Type radio buttons -->
-                  <div class="radio-group1">
-                    <label class="custom-radio1">
-                      <input type="radio" name="type" id="tngst" value="tngst"> TNGST
-                    </label>
-                    <label class="custom-radio1">
-                      <input type="radio" name="type" id="igst" value="igst"> IGST
-                    </label>
-                  </div>
-
-
-                  <div class="space-pad"></div>
-
-                  <div>
-                    <button class="custom-button" formaction="../src/save.php">Save</button>
-                  </div><br>
-                </form>
-
-
-              </center>
-            </div>
-            <!-- <div class="col-sm-6 vertical-line">
-              <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-              <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
-              <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-              <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
-              <center>
-                <h3>Purchase</h3>
-                <form method="post">
-                  <div class="input-group mb-3">
-                    <div class="input-group">
-                      <div class="input-group-prepend">
-                        <span class="input-group-text" id="basic-addon1">Company Name</span>
-                      </div>
-                      <select class="form-control" id="companyname" name="companyname" aria-describedby="basic-addon1" required>
-                        <option value="" disabled selected>Select or search company name</option>
-                  
-                      </select>
-                    </div>
-                    <div class="input-group mb-3">
-                      <div class="input-group-prepend">
-                        <span class="input-group-text" id="basic-addon2">GST Number</span>
-                      </div>
-                      <input type="text" class="form-control" id="gst" name="gst" placeholder="GST Number will be filled" aria-describedby="basic-addon2" readonly required>
-                    </div>
-
-                    <div class="input-group mb-3">
-                      <div class="input-group-prepend">
-                        <span class="input-group-text" id="basic-addon1">Bill No</span>
-                      </div>
-                      <input type="number" class="form-control" name="bill" placeholder="Enter your Bill No" aria-describedby="basic-addon1" required>
-                    </div>
-                    <div class="input-group mb-3">
-                      <div class="input-group-prepend">
-                        <span class="input-group-text" id="basic-addon1">Date</span>
-                      </div>
-                      <input type="text" class="form-control" name="date" id="purchase-date" placeholder="DD-MM-YYYY" aria-describedby="basic-addon1" required>
-                    </div>
-                    <div class="input-group mb-3">
-                      <div class="input-group-prepend">
-                        <span class="input-group-text" id="basic-addon1">Taxable amount</span>
-                      </div>
-                      <input type="text" class="form-control" name="amt" placeholder="Enter your taxable amount" aria-describedby="basic-addon1" required>
-                    </div>
-                    <div class="form-check form-check-inline">
-                      <label class="form-check-label">
-                        <input type="radio" class="form-check-input" name="type" value="tngst">TNGST
-                      </label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                      <label class="form-check-label">
-                        <input type="radio" class="form-check-input" name="type" value="igst">IGST
-                      </label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                      <label class="form-check-label">
-                        <input type="radio" class="form-check-input" name="type" value="25p">0.25%
-                      </label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                      <label class="form-check-label">
-                        <input type="radio" class="form-check-input" name="type" value="6p">0.6%
-                      </label>
-                    </div>
-                    <div class="space-pad"></div>
-                    <div>
-                      <button class="btn btn-secondary" formaction="../src/save1.php">Save</button>
-                    </div><br>
-                </form>
-              </center>
-            </div> -->
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    $(document).ready(function() {
-      $('#companyname').on('change', function() {
-        var companyname = $(this).val();
-        console.log("Selected company: " + companyname); // Logs selected company name
-      });
-      // Initialize Select2
-      $('#companyname').select2({
-        placeholder: "Select or search company name",
-        allowClear: true
-      });
-
-      // AJAX to fetch GST number and GST type when a company is selected
-      $('#companyname').on('change', function() {
-        var companyname = $(this).val();
-
-        // Send AJAX request to fetch the GST number and GST type
-        $.ajax({
-          type: 'POST',
-          url: '../src/get_gst_number.php', // Path to the PHP file that fetches GST number and type
-          data: {
-            companyname: companyname
-          },
-          success: function(response) {
-            // Parse the JSON response
-            var data = JSON.parse(response);
-
-            // Populate the GST number input field
-            $('#gst').val(data.gstno);
-
-            // Select the correct GST type radio button
-            if (data.gsttype === 'tngst') {
-              $('#tngst').prop('checked', true);
-            } else if (data.gsttype === 'igst') {
-              $('#igst').prop('checked', true);
+        /* Mobile */
+        .sidebar-toggle { display: none; }
+        @media (max-width: 991px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.show { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+            .sidebar-toggle {
+                display: inline-flex;
+                background: none; border: none;
+                font-size: 22px; cursor: pointer;
+                color: var(--text); margin-right: 12px;
             }
-          }
-        });
-      });
-    });
-
-    function formatDateInput(inputId) {
-      document.getElementById(inputId).addEventListener('blur', function(event) {
-        let input = event.target;
-        let value = input.value;
-
-        // Match the entered value with DD-MM-YYYY format
-        let datePattern = /^(\d{2})-(\d{2})-(\d{4})$/;
-        if (!datePattern.test(value)) {
-          alert("Please enter the date in DD-MM-YYYY format.");
-          input.value = '';
-          input.focus();
-          return;
+            .sidebar-overlay {
+                display: none;
+                position: fixed; inset: 0;
+                background: rgba(0,0,0,0.4);
+                z-index: 999;
+            }
+            .sidebar-overlay.show { display: block; }
         }
+    </style>
+</head>
+<body>
 
-        let parts = value.split('-');
-        let day = parts[0];
-        let month = parts[1];
-        let year = parts[2];
+<!-- Sidebar Overlay (mobile) -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
-        // Check for valid day, month, and year
-        if (day < 1 || day > 31 || month < 1 || month > 12 || year.length !== 4) {
-          alert("Invalid date. Please enter a valid date in DD-MM-YYYY format.");
-          input.value = '';
-          input.focus();
-        }
-      });
-    }
+<!-- Sidebar -->
+<nav class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+        <h5>DELVIN DIAMOND<br>TOOL INDUSTRIES</h5>
+        <small>GST: 33AAAPY1027F1Z3</small>
+    </div>
+    <ul class="sidebar-nav">
+        <li class="nav-header">Main</li>
+        <li><a href="index.php" class="active"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a></li>
 
-    document.addEventListener('DOMContentLoaded', function() {
-      formatDateInput('sales-date');
-      formatDateInput('purchase-date');
-    });
-  </script>
+        <li class="nav-header">Create</li>
+        <li><a href="create_invoice.php"><i class="bi bi-receipt"></i> Sales Invoice</a></li>
+        <li><a href="create_purchase.php"><i class="bi bi-cart-plus"></i> Purchase Entry</a></li>
+        <li><a href="proforma_invoice.php"><i class="bi bi-file-earmark-text"></i> Proforma Invoice</a></li>
+        <li><a href="quotation.php"><i class="bi bi-file-earmark-ruled"></i> Quotation</a></li>
 
+        <li class="nav-header">Records</li>
+        <li><a href="../src/view.php"><i class="bi bi-journal-text"></i> Sales Records</a></li>
+        <li><a href="view1.php"><i class="bi bi-journal-arrow-down"></i> Purchase Records</a></li>
+        <li><a href="../src/printsales.php"><i class="bi bi-printer"></i> Print Sales Report</a></li>
+        <li><a href="../src/printpurchase.php"><i class="bi bi-printer"></i> Print Purchase Report</a></li>
+
+        <li class="nav-header">Manage</li>
+        <li><a href="../src/companydata.php"><i class="bi bi-building"></i> Companies</a></li>
+        <li><a href="add_tool.php"><i class="bi bi-tools"></i> Tools</a></li>
+    </ul>
+</nav>
+
+<!-- Main Content -->
+<div class="main-content">
+    <!-- Top Bar -->
+    <div class="topbar">
+        <div class="d-flex align-items-center">
+            <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
+            <h4>Dashboard</h4>
+        </div>
+        <span class="text-muted" style="font-size:13px;">
+            <i class="bi bi-calendar3 me-1"></i><?php echo date('d M Y'); ?>
+        </span>
+    </div>
+
+    <div class="content-area">
+
+        <!-- Stat Cards Row -->
+        <div class="row g-3 mb-4">
+            <div class="col-sm-6 col-xl-3">
+                <div class="stat-card">
+                    <div class="stat-icon icon-blue"><i class="bi bi-building"></i></div>
+                    <div class="stat-label">Companies</div>
+                    <div class="stat-value"><?php echo $company_count; ?></div>
+                    <div class="stat-sub">Registered clients</div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="stat-card">
+                    <div class="stat-icon icon-amber"><i class="bi bi-tools"></i></div>
+                    <div class="stat-label">Tools</div>
+                    <div class="stat-value"><?php echo $tool_count; ?></div>
+                    <div class="stat-sub">Products in catalog</div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="stat-card">
+                    <div class="stat-icon icon-green"><i class="bi bi-graph-up-arrow"></i></div>
+                    <div class="stat-label">Sales (<?php echo date('M Y'); ?>)</div>
+                    <div class="stat-value"><?php echo $sales_count; ?></div>
+                    <div class="stat-sub">&#8377; <?php echo number_format($sales_total, 2); ?></div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="stat-card">
+                    <div class="stat-icon icon-red"><i class="bi bi-graph-down-arrow"></i></div>
+                    <div class="stat-label">Purchases (<?php echo date('M Y'); ?>)</div>
+                    <div class="stat-value"><?php echo $purchase_count; ?></div>
+                    <div class="stat-sub">&#8377; <?php echo number_format($purchase_total, 2); ?></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <h5 class="section-header">Quick Actions</h5>
+        <div class="action-grid mb-4">
+            <a href="create_invoice.php" class="action-card">
+                <div class="action-icon icon-green"><i class="bi bi-receipt"></i></div>
+                <h6>Sales Invoice</h6>
+                <p>Create new sales bill</p>
+            </a>
+            <a href="create_purchase.php" class="action-card">
+                <div class="action-icon icon-blue"><i class="bi bi-cart-plus"></i></div>
+                <h6>Purchase Entry</h6>
+                <p>Record new purchase</p>
+            </a>
+            <a href="proforma_invoice.php" class="action-card">
+                <div class="action-icon icon-amber"><i class="bi bi-file-earmark-text"></i></div>
+                <h6>Proforma Invoice</h6>
+                <p>Preview before billing</p>
+            </a>
+            <a href="quotation.php" class="action-card">
+                <div class="action-icon icon-red"><i class="bi bi-file-earmark-ruled"></i></div>
+                <h6>Quotation</h6>
+                <p>Price estimation</p>
+            </a>
+            <a href="../src/companydata.php" class="action-card">
+                <div class="action-icon icon-blue"><i class="bi bi-building-add"></i></div>
+                <h6>Add Company</h6>
+                <p>Register new client</p>
+            </a>
+            <a href="add_tool.php" class="action-card">
+                <div class="action-icon icon-amber"><i class="bi bi-plus-circle"></i></div>
+                <h6>Add Tool</h6>
+                <p>New product to catalog</p>
+            </a>
+        </div>
+
+        <!-- Recent Tables -->
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <h5 class="section-header">Recent Sales</h5>
+                <div class="table-card">
+                    <?php if (count($recent_sales) > 0): ?>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Company</th>
+                                <th>Bill #</th>
+                                <th>Total</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($recent_sales as $s): ?>
+                            <tr>
+                                <td><?php echo htmlspecialchars($s['cname']); ?></td>
+                                <td><?php echo htmlspecialchars($s['bill']); ?></td>
+                                <td>&#8377; <?php echo number_format($s['Total'], 2); ?></td>
+                                <td><?php echo htmlspecialchars($s['date']); ?></td>
+                            </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                    <?php else: ?>
+                    <div class="empty-msg"><i class="bi bi-inbox" style="font-size:28px;display:block;margin-bottom:8px;"></i>No sales records yet</div>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <h5 class="section-header">Recent Purchases</h5>
+                <div class="table-card">
+                    <?php if (count($recent_purchases) > 0): ?>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Company</th>
+                                <th>Bill #</th>
+                                <th>Total</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($recent_purchases as $p): ?>
+                            <tr>
+                                <td><?php echo htmlspecialchars($p['cname']); ?></td>
+                                <td><?php echo htmlspecialchars($p['bill']); ?></td>
+                                <td>&#8377; <?php echo number_format($p['Total'], 2); ?></td>
+                                <td><?php echo htmlspecialchars($p['date']); ?></td>
+                            </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                    <?php else: ?>
+                    <div class="empty-msg"><i class="bi bi-inbox" style="font-size:28px;display:block;margin-bottom:8px;"></i>No purchase records yet</div>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /content-area -->
+</div><!-- /main-content -->
+
+<script>
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('show');
+    document.getElementById('sidebarOverlay').classList.toggle('show');
+}
+</script>
 </body>
-
 </html>
