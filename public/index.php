@@ -1,5 +1,5 @@
 <?php
-include('conn.php');
+include('../src/conn.php');
 $companynames = [];
 $sql = "SELECT companyname FROM companydata";
 $result = $conn->query($sql);
@@ -284,14 +284,14 @@ if ($result->num_rows > 0) {
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                   <li><a class="dropdown-item" href="index.php">Sales</a></li>
-                  <li><a class="dropdown-item" href="purchase.php">Purchase</a></li>
+                  <li><a class="dropdown-item" href="../src/purchase.php">Purchase</a></li>
                 </ul>
               </div>
-              <a class="navbar-brand" href="view.php">Sales Record</a>
+              <a class="navbar-brand" href="../src/view.php">Sales Record</a>
               <a class="navbar-brand" href="view1.php">Purchase Record</a>
-              <a class="navbar-brand" href="printsales.php">Print Sales Record</a>
-              <a class="navbar-brand" href="printpurchase.php">Print Purchase Record</a>
-              <a class="navbar-brand" href="companydata.php">Company Data</a>
+              <a class="navbar-brand" href="../src/printsales.php">Print Sales Record</a>
+              <a class="navbar-brand" href="../src/printpurchase.php">Print Purchase Record</a>
+              <a class="navbar-brand" href="../src/companydata.php">Company Data</a>
             </div>
           </nav>
 
@@ -352,7 +352,7 @@ if ($result->num_rows > 0) {
                   <div class="space-pad"></div>
 
                   <div>
-                    <button class="custom-button" formaction="save.php">Save</button>
+                    <button class="custom-button" formaction="../src/save.php">Save</button>
                   </div><br>
                 </form>
 
@@ -424,7 +424,7 @@ if ($result->num_rows > 0) {
                     </div>
                     <div class="space-pad"></div>
                     <div>
-                      <button class="btn btn-secondary" formaction="save1.php">Save</button>
+                      <button class="btn btn-secondary" formaction="../src/save1.php">Save</button>
                     </div><br>
                 </form>
               </center>
@@ -454,7 +454,7 @@ if ($result->num_rows > 0) {
         // Send AJAX request to fetch the GST number and GST type
         $.ajax({
           type: 'POST',
-          url: 'get_gst_number.php', // Path to the PHP file that fetches GST number and type
+          url: '../src/get_gst_number.php', // Path to the PHP file that fetches GST number and type
           data: {
             companyname: companyname
           },

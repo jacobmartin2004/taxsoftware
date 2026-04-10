@@ -66,7 +66,7 @@
        <hr>
         <?php
         // Include connection file
-        include("conn.php");
+        include("../src/conn.php");
 
         // Fetch records from database
         $sql = "SELECT * FROM `purchase` ORDER BY `purchase`.`date` ASC";
@@ -80,7 +80,7 @@
           $s = 1;
           while($row = $result->fetch_assoc()) {
             $bill = $row["bill"];
-            echo "<center><tr><td>".$s."</td><td>".$row["GSTNO"]."</td><td>".$row["cname"]."</td><td>".$row["bill"]."</td><td>".$row["date"]."</td><td>".$row["taxamt"]."</td><td>".$row["cgst"]."</td><td>".$row["sgst"]."</td><td>".$row["igst"]."</td><td>".$row["Total"]."</td><td> <a href='delete1.php?bill=".$bill."'>Delete</a>"."</td></tr></center>";
+            echo "<center><tr><td>".$s."</td><td>".$row["GSTNO"]."</td><td>".$row["cname"]."</td><td>".$row["bill"]."</td><td>".$row["date"]."</td><td>".$row["taxamt"]."</td><td>".$row["cgst"]."</td><td>".$row["sgst"]."</td><td>".$row["igst"]."</td><td>".$row["Total"]."</td><td> <a href='../src/delete1.php?bill=".$bill."'>Delete</a>"."</td></tr></center>";
             $s++;
           }
           echo "</table>";
@@ -151,8 +151,8 @@
   <br>
   <center>
     <a href="index.php" class="btn btn-outline-primary">Home Page</a><br><br>
-    <a href="printpurchase.php" class="btn btn-outline-primary">Print Purchase of the Month</a><br><br>
-    <form action="empty_table.php" method="post">
+    <a href="../src/printpurchase.php" class="btn btn-outline-primary">Print Purchase of the Month</a><br><br>
+    <form action="../src/empty_table.php" method="post">
         <button type="submit" class="btn btn-danger">Empty</button>
     </form>
   </center>

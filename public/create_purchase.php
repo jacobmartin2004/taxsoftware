@@ -9,7 +9,7 @@ $tools = [];
 $res = $conn->query("SELECT id, toolname, rate FROM tools ORDER BY toolname");
 while ($row = $res->fetch_assoc()) $tools[] = $row;
 
-$inv_res = $conn->query("SELECT MAX(bill) as maxbill FROM delvin");
+$inv_res = $conn->query("SELECT MAX(bill) as maxbill FROM purchase");
 $inv_row = $inv_res->fetch_assoc();
 $next_bill = ($inv_row['maxbill'] ?? 0) + 1;
 ?>
@@ -18,7 +18,7 @@ $next_bill = ($inv_row['maxbill'] ?? 0) + 1;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Proforma Invoice - Delvin Diamond Tools</title>
+    <title>Create Purchase - Delvin Diamond Tools</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
     <style>
@@ -36,9 +36,9 @@ $next_bill = ($inv_row['maxbill'] ?? 0) + 1;
     <p class="text-center mb-0">1/56, Easu Street, Somarasampettai (PO), Trichy - 620 102</p>
     <p class="text-center mb-0">GST NO: 33AAAPY1027F1Z3 | HSN CODE: 68042110</p>
     <hr>
-    <h4 class="text-center">PROFORMA INVOICE</h4>
+    <h4 class="text-center">PURCHASE</h4>
     <form method="POST" action="../src/save_invoice.php">
-        <input type="hidden" name="invoice_type" value="proforma">
+        <input type="hidden" name="invoice_type" value="purchase">
         <div class="row mb-3">
             <div class="col-md-6">
                 <label class="form-label fw-bold">Company Name:</label>
@@ -105,7 +105,7 @@ $next_bill = ($inv_row['maxbill'] ?? 0) + 1;
         <input type="hidden" name="total" id="hid_total" value="0">
         <input type="hidden" name="company_name" id="hid_cname" value="">
         <div class="mt-3 text-center">
-            <button type="submit" class="btn btn-primary btn-lg">Create Proforma</button>
+            <button type="submit" class="btn btn-primary btn-lg">Create Purchase</button>
             <a href="dashboard.php" class="btn btn-secondary btn-lg">Cancel</a>
         </div>
     </form>

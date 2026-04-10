@@ -77,7 +77,7 @@
     }
     ?>
     <br>
-    <a href="index.php" class="btn btn-primary">Home Page</a>
+    <a href="../public/index.php" class="btn btn-primary">Home Page</a>
     <a href="view.php" class="btn btn-secondary">Records Saved</a>
   </div>
 

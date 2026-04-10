@@ -279,12 +279,12 @@ if ($result->num_rows > 0) {
                                     Home
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <li><a class="dropdown-item" href="index.php">Sales</a></li>
+                                    <li><a class="dropdown-item" href="../public/index.php">Sales</a></li>
                                     <li><a class="dropdown-item" href="purchase.php">Purchase</a></li>
                                 </ul>
                             </div>
                             <a class="navbar-brand" href="view.php">Sales Record</a>
-                            <a class="navbar-brand" href="view1.php">Purchase Record</a>
+                            <a class="navbar-brand" href="../public/view1.php">Purchase Record</a>
                             <a class="navbar-brand" href="printsales.php">Print Sales Record</a>
                             <a class="navbar-brand" href="printpurchase.php">Print Purchase Record</a>
                             <a class="navbar-brand" href="companydata.php">Company Data</a>

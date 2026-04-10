@@ -1,33 +1,48 @@
 <?php
 require_once '../src/conn.php';
-$id = $_GET['id'] ?? null;
+$id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+$tool = null;
 if ($id) {
-    $res = $conn->query("SELECT * FROM tools WHERE id=$id");
-    $tool = $res->fetch_assoc();
-}
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name = $_POST['tool_name'];
-    $rate = $_POST['rate'];
-    $is_retailer = isset($_POST['is_retailer']) ? 1 : 0;
-    $id = $_POST['id'];
-    $stmt = $conn->prepare("UPDATE tools SET name=?, rate=?, is_retailer=? WHERE id=?");
-    $stmt->bind_param('sdii', $name, $rate, $is_retailer, $id);
+    $stmt = $conn->prepare("SELECT * FROM tools WHERE id=?");
+    $stmt->bind_param('i', $id);
     $stmt->execute();
-    header('Location: dashboard.php');
+    $tool = $stmt->get_result()->fetch_assoc();
+}
+if (!$tool) { echo "Tool not found."; exit(); }
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $toolname = $_POST['toolname'];
+    $rate = $_POST['rate'];
+    $id = intval($_POST['id']);
+    $stmt = $conn->prepare("UPDATE tools SET toolname=?, rate=? WHERE id=?");
+    $stmt->bind_param('sdi', $toolname, $rate, $id);
+    $stmt->execute();
+    header('Location: add_tool.php');
     exit();
 }
 ?>
 <!DOCTYPE html>
-<html>
-<head><title>Edit Tool</title></head>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Tool - Delvin Diamond Tools</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
 <body>
-<h1>Edit Tool</h1>
+<div class="container mt-4">
+<h2>Edit Tool</h2>
 <form method="post">
     <input type="hidden" name="id" value="<?php echo $tool['id']; ?>">
-    <label>Tool Name: <input type="text" name="tool_name" value="<?php echo htmlspecialchars($tool['name']); ?>" required></label><br>
-    <label>Rate: <input type="number" name="rate" step="0.01" value="<?php echo $tool['rate']; ?>" required></label><br>
-    <label>Retailer: <input type="checkbox" name="is_retailer" value="1" <?php if($tool['is_retailer']) echo 'checked'; ?>></label><br>
-    <button type="submit">Update Tool</button>
+    <div class="mb-3">
+        <label class="form-label">Tool Name:</label>
+        <input type="text" class="form-control" name="toolname" value="<?php echo htmlspecialchars($tool['toolname']); ?>" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Rate (₹):</label>
+        <input type="number" class="form-control" name="rate" step="0.01" value="<?php echo $tool['rate']; ?>" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Update Tool</button>
+    <a href="add_tool.php" class="btn btn-secondary">Cancel</a>
 </form>
 </body>
 </html>

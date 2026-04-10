@@ -1,35 +1,33 @@
 <?php
-// Database connection (replace with your actual database credentials)
 include("conn.php");
 
 // Handle form submission for adding a new record
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_record'])) {
-    // Get form data
     $companyname = $_POST['companyname'];
     $gstno = $_POST['GSTno'];
     $gsttype = $_POST['gsttype'];
+    $address = $_POST['address'];
+    $state = $_POST['state'];
+    $district = $_POST['district'];
 
-    // Insert data into the companydata table
-    $sql = "INSERT INTO companydata (companyname, gstno, gsttype) VALUES ('$companyname', '$gstno', '$gsttype')";
-
-    if ($conn->query($sql) === TRUE) {
+    $stmt = $conn->prepare("INSERT INTO companydata (companyname, gstno, gsttype, address, state, district) VALUES (?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param('ssssss', $companyname, $gstno, $gsttype, $address, $state, $district);
+    if ($stmt->execute()) {
         echo '<div class="alert alert-success" role="alert">New record created successfully!</div>';
     } else {
-        echo '<div class="alert alert-danger" role="alert">Error: ' . $sql . '<br>' . $conn->error . '</div>';
+        echo '<div class="alert alert-danger" role="alert">Error: ' . $conn->error . '</div>';
     }
 }
 
 // Handle delete request
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_record'])) {
-    $id = $_POST['id'];
-
-    // Delete record from the companydata table
-    $sql = "DELETE FROM companydata WHERE id='$id'";
-
-    if ($conn->query($sql) === TRUE) {
+    $id = intval($_POST['id']);
+    $stmt = $conn->prepare("DELETE FROM companydata WHERE id=?");
+    $stmt->bind_param('i', $id);
+    if ($stmt->execute()) {
         echo '<div class="alert alert-success" role="alert">Record deleted successfully!</div>';
     } else {
-        echo '<div class="alert alert-danger" role="alert">Error: ' . $sql . '<br>' . $conn->error . '</div>';
+        echo '<div class="alert alert-danger" role="alert">Error: ' . $conn->error . '</div>';
     }
 }
 
@@ -68,11 +66,26 @@ $result = $conn->query($sql);
             <div class="form-group">
                 <label for="gsttype">GST Type:</label>
                 <select class="form-control" id="gsttype" name="gsttype" required>
-                    <option value="tngst">TNGST</option>
-                    <option value="igst">IGST</option>
+                    <option value="tngst">TNGST (Tamil Nadu)</option>
+                    <option value="igst">IGST (Other State)</option>
                     <option value="25p">25p</option>
                     <option value="6p">6p</option>
                 </select>
+            </div>
+
+            <div class="form-group">
+                <label for="address">Address:</label>
+                <textarea class="form-control" id="address" name="address" rows="2" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="state">State:</label>
+                <input type="text" class="form-control" id="state" name="state" required>
+            </div>
+
+            <div class="form-group">
+                <label for="district">District:</label>
+                <input type="text" class="form-control" id="district" name="district" required>
             </div>
 
             <button type="submit" class="btn btn-primary" name="add_record">Submit</button>
@@ -84,9 +97,13 @@ $result = $conn->query($sql);
         <table class="table table-striped">
             <thead>
                 <tr>
+                    <th>S.No</th>
                     <th>Company Name</th>
                     <th>GST No</th>
                     <th>GST Type</th>
+                    <th>Address</th>
+                    <th>State</th>
+                    <th>District</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -97,21 +114,25 @@ $result = $conn->query($sql);
                     // Output data of each row
                     while ($row = $result->fetch_assoc()) {
                         echo "<tr>";
-                        echo "<td>" . $si_no . "</td>"; // Display the serial number
-                        echo "<td>" . $row['companyname'] . "</td>";
-                        echo "<td>" . $row['gstno'] . "</td>";
-                        echo "<td>" . $row['gsttype'] . "</td>";
+                        echo "<td>" . $si_no . "</td>";
+                        echo "<td>" . htmlspecialchars($row['companyname']) . "</td>";
+                        echo "<td>" . htmlspecialchars($row['gstno']) . "</td>";
+                        echo "<td>" . htmlspecialchars($row['gsttype']) . "</td>";
+                        echo "<td>" . htmlspecialchars($row['address'] ?? '') . "</td>";
+                        echo "<td>" . htmlspecialchars($row['state'] ?? '') . "</td>";
+                        echo "<td>" . htmlspecialchars($row['district'] ?? '') . "</td>";
                         echo "<td>";
                         echo "<form method='POST' action='' style='display:inline-block;'>";
                         echo "<input type='hidden' name='id' value='" . $row['id'] . "'>";
-                        echo "<button type='submit' class='btn btn-danger' name='delete_record'>Delete</button>";
+                        echo "<button type='submit' class='btn btn-danger btn-sm' name='delete_record'>Delete</button>";
+                        echo " <a href='../public/edit_company.php?id=" . $row['id'] . "' class='btn btn-warning btn-sm'>Edit</a>";
                         echo "</form>";
                         echo "</td>";
                         echo "</tr>";
-                        $si_no++; // Increment the serial number for the next row
+                        $si_no++;
                     }
                 } else {
-                    echo "<tr><td colspan='5'>No data found</td></tr>"; // Adjust colspan to account for the extra SI No. column
+                    echo "<tr><td colspan='8'>No data found</td></tr>";
                 }
                 ?>
 
@@ -119,7 +140,7 @@ $result = $conn->query($sql);
         </table>
     </div>
     <center>
-    <a href="index.php" class="btn btn-outline-primary">Home</a><br><br>
+    <a href="../public/index.php" class="btn btn-outline-primary">Home</a><br><br>
     </center>
     <!-- Include Bootstrap JS (optional, for advanced functionality) -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

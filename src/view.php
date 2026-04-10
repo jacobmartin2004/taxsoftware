@@ -121,7 +121,7 @@
     </div>
   </div>
   <center>
-    <a href="index.php" class="btn btn-outline-primary">Home Page</a><br><br>
+    <a href="../public/index.php" class="btn btn-outline-primary">Home Page</a><br><br>
     <a href="printsales.php" class="btn btn-outline-primary">Print sales of the Month</a><br><br>
     <form action="empty_table1.php" method="post">
         <button type="submit" class="btn btn-danger">Empty</button>
