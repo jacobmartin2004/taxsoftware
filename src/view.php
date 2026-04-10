@@ -47,6 +47,13 @@ $months = ['01'=>'January','02'=>'February','03'=>'March','04'=>'April','05'=>'M
     .sales-table tr:hover { background: #eef2ff; }
     .totals-bar { padding: 16px 28px; background: #f0fdf4; border-top: 2px solid var(--primary); display: flex; gap: 32px; flex-wrap: wrap; justify-content: center; font-size: 14px; font-weight: 600; }
     .totals-bar span { color: var(--primary); }
+    .btn-mail { background: #6d28d9; color: #fff; }
+    .btn-mail:hover { background: #5b21b6; color: #fff; }
+    .mail-section { padding: 16px 28px; border-top: 1px solid #e2e8f0; background: #faf5ff; }
+    .mail-section h6 { font-weight: 700; color: var(--primary); margin-bottom: 10px; font-size: 14px; }
+    .mail-section .mail-row { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; flex-wrap: wrap; }
+    .mail-section .mail-row label { font-size: 13px; font-weight: 600; min-width: 30px; }
+    .mail-section .mail-row input { flex: 1; padding: 6px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; min-width: 200px; }
     .actions-bottom { text-align: center; padding: 16px 28px; border-top: 1px solid #e2e8f0; display: flex; gap: 12px; justify-content: center; }
     .actions-bottom .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 20px; border-radius: 6px; font-size: 14px; font-weight: 600; text-decoration: none; border: none; cursor: pointer; }
     .btn-pr { background: var(--primary); color: #fff; }
@@ -150,7 +157,23 @@ $months = ['01'=>'January','02'=>'February','03'=>'March','04'=>'April','05'=>'M
 
     <div class="actions-bottom">
         <a href="printsales.php?month=<?php echo $sel_month; ?>&year=<?php echo $sel_year; ?>" class="btn btn-pr"><i class="bi bi-printer"></i> Print Sales</a>
+        <button class="btn btn-mail" onclick="document.getElementById('mailSection').style.display = document.getElementById('mailSection').style.display === 'none' ? 'block' : 'none'"><i class="bi bi-envelope"></i> Send Mail</button>
         <a href="../public/index.php" class="btn btn-outline"><i class="bi bi-house"></i> Dashboard</a>
+    </div>
+
+    <div class="mail-section" id="mailSection" style="display:none;">
+        <h6><i class="bi bi-envelope-fill me-1"></i> Send Sales Record via Yahoo Mail</h6>
+        <div class="mail-row">
+            <label>To:</label>
+            <input type="email" id="mailTo" value="sendhilvisaka@gmail.com">
+        </div>
+        <div class="mail-row">
+            <label>CC:</label>
+            <input type="email" id="mailCc" value="sjacobmartin@gmail.com">
+        </div>
+        <div style="text-align:center; margin-top:10px;">
+            <button class="btn btn-mail" onclick="sendYahooMail('sales')"><i class="bi bi-send"></i> Open Yahoo Mail</button>
+        </div>
     </div>
 </div>
 
@@ -161,6 +184,19 @@ function applyFilter() {
     var m = document.getElementById('filterMonth').value;
     var y = document.getElementById('filterYear').value;
     window.location.href = 'view.php?month=' + m + '&year=' + y;
+}
+
+function sendYahooMail(type) {
+    var to = document.getElementById('mailTo').value;
+    var cc = document.getElementById('mailCc').value;
+    var month = document.getElementById('filterMonth');
+    var year = document.getElementById('filterYear');
+    var monthName = month.options[month.selectedIndex].text;
+    var yearVal = year.value;
+    var subject = 'Sales Record - ' + monthName + ' ' + yearVal + ' - DELVIN DIAMOND TOOL INDUSTRIES';
+    var body = 'Dear Sir/Madam,%0A%0APlease find attached the Sales Record for ' + monthName + ' ' + yearVal + '.%0A%0ARegards,%0ADELVIN DIAMOND TOOL INDUSTRIES%0ATrichy - 620 102%0APh: 0431-2607224';
+    var url = 'https://compose.mail.yahoo.com/?to=' + encodeURIComponent(to) + '&cc=' + encodeURIComponent(cc) + '&subject=' + encodeURIComponent(subject) + '&body=' + body;
+    window.open(url, '_blank');
 }
 </script>
 </body>

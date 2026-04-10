@@ -453,13 +453,17 @@ function downloadMonthlyPDF() {
 
     var container = document.createElement('div');
     container.innerHTML = html;
+    container.style.position = 'absolute';
+    container.style.left = '-9999px';
+    container.style.top = '0';
+    container.style.width = '800px';
     document.body.appendChild(container);
 
     var opt = {
         margin: 10,
         filename: '<?php echo ucfirst($sel_type); ?>_<?php echo $month_names[$sel_month]; ?>_<?php echo $sel_year; ?>.pdf',
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
+        html2canvas: { scale: 2, useCORS: true, scrollX: 0, scrollY: 0, windowWidth: 820 },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
         pagebreak: { mode: ['css'], avoid: '.inv-pg' }
     };

@@ -35,6 +35,27 @@ if ($crow = $cres->fetch_assoc()) {
 }
 $cstmt->close();
 
+// Extract state code from GST number
+$state_code = '';
+if (strlen($inv['GSTNO']) >= 2) {
+    $state_code = substr($inv['GSTNO'], 0, 2);
+}
+
+// Fetch invoice items
+$items = [];
+$inv_type_key = ($type === 'purchase') ? 'purchase' : 'invoice';
+$check_table = $conn->query("SHOW TABLES LIKE 'invoice_items'");
+if ($check_table && $check_table->num_rows > 0) {
+    $istmt = $conn->prepare("SELECT tool_name, qty, rate, discount_pct FROM invoice_items WHERE bill = ? AND invoice_type = ?");
+    $istmt->bind_param('is', $bill, $inv_type_key);
+    $istmt->execute();
+    $ires = $istmt->get_result();
+    while ($irow = $ires->fetch_assoc()) {
+        $items[] = $irow;
+    }
+    $istmt->close();
+}
+
 // Determine GST labels based on gst_type
 $gst_type_lc = strtolower($gst_type_display);
 $cgst_label = 'CGST (9%)'; $sgst_label = 'SGST (9%)';
@@ -79,7 +100,7 @@ function numToWords($n) {
             background: #1a2942; color: #fff; padding: 20px 30px;
             display: flex; justify-content: space-between; align-items: center;
         }
-        .inv-header .brand h2 { font-size: 22px; font-weight: 900; letter-spacing: 1px; margin-bottom: 2px; color: #000; }
+        .inv-header .brand h2 { font-size: 22px; font-weight: 900; letter-spacing: 1px; margin-bottom: 2px; color: #ffffff; }
         .inv-header .brand p { font-size: 11px; opacity: 0.8; }
         .inv-header .inv-type {
             background: #e8a838; color: #1a2942; font-weight: 800;
@@ -101,10 +122,25 @@ function numToWords($n) {
         .inv-info .block p strong { color: #1a2942; }
 
         /* Summary */
-        .inv-summary { padding: 20px 30px; display: flex; justify-content: flex-end; }
+        .inv-summary { padding: 0 30px 20px; display: flex; justify-content: flex-end; }
         .summary-box { width: 300px; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden; }
         .summary-row { display: flex; justify-content: space-between; padding: 8px 16px; font-size: 13px; border-bottom: 1px solid #f1f5f9; }
         .summary-row.total { background: #1a2942; color: #fff; font-weight: 800; font-size: 16px; border: none; padding: 12px 16px; }
+
+        /* Items Table */
+        .inv-table { padding: 0 30px 20px; margin-top: 10px; }
+        .inv-table table { width: 100%; border-collapse: collapse; }
+        .inv-table thead th {
+            background: #1a2942; color: #fff; padding: 10px 12px;
+            font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; text-align: left;
+        }
+        .inv-table thead th:last-child { text-align: right; }
+        .inv-table thead th.text-center { text-align: center; }
+        .inv-table tbody td { padding: 10px 12px; font-size: 13px; border-bottom: 1px solid #f1f5f9; }
+        .inv-table tbody td:last-child { text-align: right; }
+        .inv-table tbody td.text-center { text-align: center; }
+        .inv-table tbody tr:nth-child(even) { background: #f8fafc; }
+        .inv-table .discount-sub { color: #888; font-size: 12px; font-style: italic; }
 
         /* Footer Section */
         .inv-words-bank { padding: 10px 30px; border-top: 1px solid #e2e8f0; font-size: 12px; }
@@ -144,7 +180,11 @@ function numToWords($n) {
             .gst-bar { flex-wrap: wrap; gap: 6px; padding: 8px 14px; font-size: 11px; }
             .inv-info { flex-direction: column; gap: 12px; padding: 14px; }
             .inv-info .block:last-child { text-align: left !important; }
-            .inv-summary { padding: 14px; justify-content: center; }
+            .inv-table { padding: 0 10px 14px; }
+            .inv-table table { font-size: 12px; }
+            .inv-table thead th { padding: 8px 6px; font-size: 10px; }
+            .inv-table tbody td { padding: 8px 6px; font-size: 12px; }
+            .inv-summary { padding: 0 14px 14px; justify-content: center; }
             .summary-box { width: 100%; }
             .inv-words-bank { padding: 10px 14px; font-size: 11px; }
             .inv-footer { flex-direction: column; gap: 12px; padding: 12px 14px; }
@@ -158,6 +198,17 @@ function numToWords($n) {
             body { background: #fff; }
             .actions-bar { display: none !important; }
             .invoice-page { border: none; margin: 0; box-shadow: none; }
+            * { color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .inv-header { background: #1a2942 !important; }
+            .inv-header, .inv-header .brand h2, .inv-header .brand p { color: #fff !important; }
+            .inv-table thead th { background: #1a2942 !important; color: #fff !important; }
+            .summary-row.total { background: #1a2942 !important; color: #fff !important; }
+            .inv-info .block h6 { color: #000 !important; }
+            .inv-info .block p, .inv-info .block p strong { color: #000 !important; }
+            .gst-bar span, .gst-bar strong { color: #000 !important; }
+            .inv-words-bank .bank { color: #000 !important; }
+            .inv-footer { color: #000 !important; }
+            .inv-footer .sign .line { border-top-color: #000 !important; }
         }
     </style>
 </head>
@@ -183,7 +234,7 @@ function numToWords($n) {
         <div><span>Date:</span> <strong><?php echo htmlspecialchars($inv['date']); ?></strong></div>
     </div>
 
-    <!-- Bill To -->
+    <!-- Bill To / Ship To -->
     <div class="inv-info">
         <div class="block">
             <h6>Bill To</h6>
@@ -195,8 +246,52 @@ function numToWords($n) {
             <h6>Customer GST</h6>
             <p><strong><?php echo htmlspecialchars($inv['GSTNO']); ?></strong></p>
             <p>Type: <?php echo $gst_type_display; ?></p>
+            <?php if ($state_code): ?><p>State Code: <?php echo htmlspecialchars($state_code); ?></p><?php endif; ?>
         </div>
     </div>
+
+    <!-- Items Table -->
+    <?php if (count($items) > 0): ?>
+    <div class="inv-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Description</th>
+                    <th class="text-center">Qty</th>
+                    <th class="text-center">Rate (&#8377;)</th>
+                    <th>Amount (&#8377;)</th>
+                </tr>
+            </thead>
+            <tbody>
+            <?php
+            $sno = 1;
+            foreach ($items as $it):
+                $gross = $it['qty'] * $it['rate'];
+                $disc_amt = 0;
+                $net = $gross;
+                if ($it['discount_pct'] > 0) {
+                    $disc_amt = $gross * $it['discount_pct'] / 100;
+                    $net = $gross - $disc_amt;
+                }
+            ?>
+                <tr>
+                    <td><?php echo $sno++; ?></td>
+                    <td>
+                        <?php echo htmlspecialchars(strtoupper($it['tool_name'])); ?>
+                        <?php if ($it['discount_pct'] > 0): ?>
+                        <br><span class="discount-sub">&nbsp;&nbsp;Less: Discount <?php echo $it['discount_pct']; ?>% = &#8377;<?php echo number_format($disc_amt, 2); ?></span>
+                        <?php endif; ?>
+                    </td>
+                    <td class="text-center"><?php echo $it['qty']; ?></td>
+                    <td class="text-center"><?php echo number_format($it['rate'], 2); ?></td>
+                    <td><?php echo number_format($net, 2); ?></td>
+                </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+    <?php endif; ?>
 
     <!-- Summary -->
     <div class="inv-summary">

@@ -118,6 +118,22 @@ CREATE TABLE IF NOT EXISTS `tools` (
 ALTER TABLE `tools` ADD COLUMN IF NOT EXISTS `toolname` varchar(255) NOT NULL;
 ALTER TABLE `tools` ADD COLUMN IF NOT EXISTS `rate` decimal(10,2) NOT NULL DEFAULT 0.00;
 
+-- =========================================================
+-- TABLE: invoice_items (line items per invoice)
+-- =========================================================
+
+CREATE TABLE IF NOT EXISTS `invoice_items` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `bill` int(11) NOT NULL,
+  `invoice_type` varchar(20) NOT NULL DEFAULT 'invoice',
+  `tool_name` varchar(255) NOT NULL,
+  `qty` int(11) NOT NULL DEFAULT 1,
+  `rate` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `discount_pct` decimal(5,2) NOT NULL DEFAULT 0.00,
+  PRIMARY KEY (`id`),
+  KEY `bill_type` (`bill`, `invoice_type`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 COMMIT;
 
  /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -95,6 +95,27 @@ if ($invoice_type === 'invoice') {
     if (!$stmt->execute()) { $db_error = $conn->error; } else { $saved = true; }
 }
 
+// Save invoice items to invoice_items table
+if ($saved && count($items) > 0 && ($invoice_type === 'invoice' || $invoice_type === 'purchase')) {
+    $conn->query("CREATE TABLE IF NOT EXISTS `invoice_items` (
+        `id` int(11) NOT NULL AUTO_INCREMENT,
+        `bill` int(11) NOT NULL,
+        `invoice_type` varchar(20) NOT NULL DEFAULT 'invoice',
+        `tool_name` varchar(255) NOT NULL,
+        `qty` int(11) NOT NULL DEFAULT 1,
+        `rate` decimal(10,2) NOT NULL DEFAULT 0.00,
+        `discount_pct` decimal(5,2) NOT NULL DEFAULT 0.00,
+        PRIMARY KEY (`id`),
+        KEY `bill_type` (`bill`, `invoice_type`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci");
+    foreach ($items as $it) {
+        $istmt = $conn->prepare("INSERT INTO invoice_items (bill, invoice_type, tool_name, qty, rate, discount_pct) VALUES (?, ?, ?, ?, ?, ?)");
+        $istmt->bind_param('issidd', $bill, $invoice_type, $it['tool_name'], $it['qty'], $it['rate'], $it['discount_pct']);
+        $istmt->execute();
+        $istmt->close();
+    }
+}
+
 if ($db_error) {
     echo "<div style='padding:40px;font-family:sans-serif;'><h3 style='color:red;'>Error saving record</h3><p>" . htmlspecialchars($db_error) . "</p><a href='javascript:history.back()'>Go Back</a></div>";
     exit();
@@ -244,6 +265,17 @@ function numToWords($n) {
             body { background: #fff; }
             .actions-bar { display: none !important; }
             .invoice-page { border: none; margin: 0; box-shadow: none; }
+            * { color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .inv-header { background: #1a2942 !important; }
+            .inv-header, .inv-header .brand h2, .inv-header .brand p { color: #fff !important; }
+            .inv-table thead th { background: #1a2942 !important; color: #fff !important; }
+            .summary-row.total { background: #1a2942 !important; color: #fff !important; }
+            .inv-info .block h6 { color: #000 !important; }
+            .inv-info .block p, .inv-info .block p strong { color: #000 !important; }
+            .gst-bar span, .gst-bar strong { color: #000 !important; }
+            .inv-words-bank .bank { color: #000 !important; }
+            .inv-footer { color: #000 !important; }
+            .inv-footer .sign .line { border-top-color: #000 !important; }
         }
     </style>
 </head>
