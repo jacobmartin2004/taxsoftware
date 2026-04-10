@@ -47,13 +47,15 @@ $inv_type_key = ($type === 'purchase') ? 'purchase' : 'invoice';
 $check_table = $conn->query("SHOW TABLES LIKE 'invoice_items'");
 if ($check_table && $check_table->num_rows > 0) {
     $istmt = $conn->prepare("SELECT tool_name, qty, rate, discount_pct FROM invoice_items WHERE bill = ? AND invoice_type = ?");
-    $istmt->bind_param('is', $bill, $inv_type_key);
-    $istmt->execute();
-    $ires = $istmt->get_result();
-    while ($irow = $ires->fetch_assoc()) {
-        $items[] = $irow;
+    if ($istmt) {
+        $istmt->bind_param('is', $bill, $inv_type_key);
+        $istmt->execute();
+        $ires = $istmt->get_result();
+        while ($irow = $ires->fetch_assoc()) {
+            $items[] = $irow;
+        }
+        $istmt->close();
     }
-    $istmt->close();
 }
 
 // Determine GST labels based on gst_type

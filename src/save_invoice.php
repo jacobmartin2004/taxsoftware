@@ -107,12 +107,14 @@ if ($saved && count($items) > 0 && ($invoice_type === 'invoice' || $invoice_type
         `discount_pct` decimal(5,2) NOT NULL DEFAULT 0.00,
         PRIMARY KEY (`id`),
         KEY `bill_type` (`bill`, `invoice_type`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci");
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
     foreach ($items as $it) {
         $istmt = $conn->prepare("INSERT INTO invoice_items (bill, invoice_type, tool_name, qty, rate, discount_pct) VALUES (?, ?, ?, ?, ?, ?)");
-        $istmt->bind_param('issidd', $bill, $invoice_type, $it['tool_name'], $it['qty'], $it['rate'], $it['discount_pct']);
-        $istmt->execute();
-        $istmt->close();
+        if ($istmt) {
+            $istmt->bind_param('issidd', $bill, $invoice_type, $it['tool_name'], $it['qty'], $it['rate'], $it['discount_pct']);
+            $istmt->execute();
+            $istmt->close();
+        }
     }
 }
 
