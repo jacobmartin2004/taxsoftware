@@ -375,23 +375,53 @@ function numToWords($n) {
 function downloadPDF() {
     window.scrollTo(0, 0);
     var element = document.getElementById('invoicePage');
-    var origMaxWidth = element.style.maxWidth;
-    var origWidth = element.style.width;
-    var origMargin = element.style.margin;
-    element.style.maxWidth = '780px';
-    element.style.width = '780px';
-    element.style.margin = '0 auto';
+
+    // Clone into a controlled-width container so media queries don't break layout
+    var wrapper = document.createElement('div');
+    wrapper.style.position = 'fixed';
+    wrapper.style.left = '0';
+    wrapper.style.top = '0';
+    wrapper.style.width = '800px';
+    wrapper.style.height = '1px';
+    wrapper.style.overflow = 'hidden';
+    wrapper.style.zIndex = '-9999';
+    wrapper.style.opacity = '0.01';
+
+    var clone = element.cloneNode(true);
+    clone.style.width = '780px';
+    clone.style.maxWidth = '780px';
+    clone.style.margin = '0';
+    clone.style.border = '2px solid #000';
+    clone.style.background = '#fff';
+    // Force desktop flex layout on cloned header/sections
+    var flexSections = clone.querySelectorAll('.inv-header, .gst-bar, .inv-info, .inv-footer');
+    for (var i = 0; i < flexSections.length; i++) {
+        flexSections[i].style.display = 'flex';
+        flexSections[i].style.flexDirection = 'row';
+        flexSections[i].style.justifyContent = 'space-between';
+    }
+    var infoBlocks = clone.querySelectorAll('.inv-info .block:last-child');
+    for (var j = 0; j < infoBlocks.length; j++) {
+        infoBlocks[j].style.textAlign = 'right';
+    }
+    var summaryWrap = clone.querySelectorAll('.inv-summary');
+    for (var k = 0; k < summaryWrap.length; k++) {
+        summaryWrap[k].style.display = 'flex';
+        summaryWrap[k].style.justifyContent = 'flex-end';
+    }
+
+    wrapper.appendChild(clone);
+    document.body.appendChild(wrapper);
+
     var opt = {
         margin: [10, 10, 10, 10],
         filename: '<?php echo $page_title; ?>_<?php echo $inv['bill']; ?>_<?php echo preg_replace('/[^A-Za-z0-9]/', '_', $inv['cname']); ?>.pdf',
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, scrollX: 0, scrollY: 0, windowWidth: 800 },
+        html2canvas: { scale: 2, useCORS: true, scrollX: 0, scrollY: 0, windowWidth: 800, height: clone.scrollHeight },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
-    html2pdf().set(opt).from(element).save().then(function() {
-        element.style.maxWidth = origMaxWidth;
-        element.style.width = origWidth;
-        element.style.margin = origMargin;
+    html2pdf().set(opt).from(clone).save().then(function() {
+        document.body.removeChild(wrapper);
     });
 }
 </script>

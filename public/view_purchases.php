@@ -522,27 +522,33 @@ function downloadMonthlyPDF() {
         html += buildInvoiceHTML(invoiceData[i]);
     }
 
+    var wrapper = document.createElement('div');
+    wrapper.style.position = 'fixed';
+    wrapper.style.left = '0';
+    wrapper.style.top = '0';
+    wrapper.style.width = '800px';
+    wrapper.style.height = '1px';
+    wrapper.style.overflow = 'hidden';
+    wrapper.style.zIndex = '-9999';
+    wrapper.style.opacity = '0.01';
+
     var container = document.createElement('div');
     container.innerHTML = html;
-    container.style.position = 'fixed';
-    container.style.left = '0';
-    container.style.top = '0';
     container.style.width = '800px';
-    container.style.visibility = 'hidden';
-    container.style.zIndex = '-9999';
-    document.body.appendChild(container);
+    wrapper.appendChild(container);
+    document.body.appendChild(wrapper);
 
     var opt = {
         margin: [10, 10, 10, 10],
         filename: 'Purchase_<?php echo $month_names[$sel_month]; ?>_<?php echo $sel_year; ?>.pdf',
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, scrollX: 0, scrollY: 0, windowWidth: 800 },
+        html2canvas: { scale: 2, useCORS: true, scrollX: 0, scrollY: 0, windowWidth: 800, height: container.scrollHeight },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
         pagebreak: { mode: ['css'], avoid: '.inv-pg' }
     };
 
     html2pdf().set(opt).from(container).save().then(function() {
-        document.body.removeChild(container);
+        document.body.removeChild(wrapper);
     });
 }
 </script>
