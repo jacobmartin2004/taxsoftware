@@ -424,20 +424,25 @@ function buildInvoiceHTML(r, pageTitle) {
 function downloadMonthlyPDF() {
     var pageTitle = '<?php echo ($sel_type === "purchase") ? "PURCHASE INVOICE" : "TAX INVOICE"; ?>';
     var css = '<style>' +
-        '.inv-pg { width:750px; background:#fff; border:2px solid #1a2942; margin:0 auto; page-break-after:always; font-family:Segoe UI,Arial,sans-serif; color:#1e293b; font-size:13px; }' +
+        '* { box-sizing:border-box; margin:0; padding:0; }' +
+        '.inv-pg { width:780px; background:#fff; border:2px solid #1a2942; margin:0 auto; page-break-after:always; font-family:Segoe UI,Arial,sans-serif; color:#1e293b; font-size:13px; }' +
         '.inv-pg:last-child { page-break-after: auto; }' +
         '.hdr { background:#1a2942; color:#fff; padding:20px 30px; display:flex; justify-content:space-between; align-items:center; }' +
+        '.hdr .br { flex:1; }' +
         '.hdr .br p { font-size:11px; opacity:0.8; margin:0; }' +
-        '.hdr .br h2 { margin:0; }' +
-        '.inv-tp { background:#e8a838; color:#1a2942; font-weight:800; padding:8px 20px; border-radius:4px; font-size:14px; letter-spacing:1px; white-space:nowrap; }' +
-        '.gbar { background:#f8fafc; padding:10px 30px; border-bottom:1px solid #e2e8f0; display:flex; justify-content:space-between; font-size:12px; }' +
+        '.hdr .br h2 { margin:0; font-size:20px; }' +
+        '.inv-tp { background:#e8a838; color:#1a2942; font-weight:800; padding:8px 20px; border-radius:4px; font-size:14px; letter-spacing:1px; white-space:nowrap; flex-shrink:0; }' +
+        '.gbar { background:#f8fafc; padding:10px 30px; border-bottom:1px solid #e2e8f0; display:flex; justify-content:space-between; font-size:12px; flex-wrap:wrap; }' +
+        '.gbar div { white-space:nowrap; }' +
         '.gbar span { color:#64748b; } .gbar b { color:#1a2942; }' +
         '.iinfo { padding:20px 30px; display:flex; justify-content:space-between; border-bottom:1px solid #e2e8f0; }' +
+        '.iinfo .blk { max-width:50%; }' +
         '.iinfo .blk h6 { font-size:10px; text-transform:uppercase; letter-spacing:1px; color:#64748b; margin:0 0 6px; }' +
-        '.iinfo .blk p { font-size:13px; margin:0 0 2px; } .iinfo .blk b { color:#1a2942; }' +
+        '.iinfo .blk p { font-size:13px; margin:0 0 2px; word-wrap:break-word; } .iinfo .blk b { color:#1a2942; }' +
         '.sbox-wrap { padding:20px 30px; display:flex; justify-content:flex-end; }' +
         '.sbox { width:300px; border:1px solid #e2e8f0; border-radius:6px; overflow:hidden; }' +
         '.sr { display:flex; justify-content:space-between; padding:8px 16px; font-size:13px; border-bottom:1px solid #f1f5f9; }' +
+        '.sr span { white-space:nowrap; }' +
         '.sr.stotal { background:#1a2942; color:#fff; font-weight:800; font-size:16px; border:none; padding:12px 16px; }' +
         '.wbank { padding:10px 30px; border-top:1px solid #e2e8f0; font-size:12px; }' +
         '.wds { font-weight:700; margin:0 0 8px; } .bnk { color:#64748b; margin:0; }' +
@@ -453,17 +458,19 @@ function downloadMonthlyPDF() {
 
     var container = document.createElement('div');
     container.innerHTML = html;
-    container.style.position = 'absolute';
-    container.style.left = '-9999px';
+    container.style.position = 'fixed';
+    container.style.left = '0';
     container.style.top = '0';
     container.style.width = '800px';
+    container.style.visibility = 'hidden';
+    container.style.zIndex = '-9999';
     document.body.appendChild(container);
 
     var opt = {
-        margin: 10,
+        margin: [10, 10, 10, 10],
         filename: '<?php echo ucfirst($sel_type); ?>_<?php echo $month_names[$sel_month]; ?>_<?php echo $sel_year; ?>.pdf',
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, scrollX: 0, scrollY: 0, windowWidth: 820 },
+        html2canvas: { scale: 2, useCORS: true, scrollX: 0, scrollY: 0, windowWidth: 800 },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
         pagebreak: { mode: ['css'], avoid: '.inv-pg' }
     };

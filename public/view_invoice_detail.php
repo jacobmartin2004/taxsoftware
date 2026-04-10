@@ -375,14 +375,24 @@ function numToWords($n) {
 function downloadPDF() {
     window.scrollTo(0, 0);
     var element = document.getElementById('invoicePage');
+    var origMaxWidth = element.style.maxWidth;
+    var origWidth = element.style.width;
+    var origMargin = element.style.margin;
+    element.style.maxWidth = '780px';
+    element.style.width = '780px';
+    element.style.margin = '0 auto';
     var opt = {
         margin: [10, 10, 10, 10],
         filename: '<?php echo $page_title; ?>_<?php echo $inv['bill']; ?>_<?php echo preg_replace('/[^A-Za-z0-9]/', '_', $inv['cname']); ?>.pdf',
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, scrollX: 0, scrollY: 0, windowWidth: element.scrollWidth },
+        html2canvas: { scale: 2, useCORS: true, scrollX: 0, scrollY: 0, windowWidth: 800 },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
-    html2pdf().set(opt).from(element).save();
+    html2pdf().set(opt).from(element).save().then(function() {
+        element.style.maxWidth = origMaxWidth;
+        element.style.width = origWidth;
+        element.style.margin = origMargin;
+    });
 }
 </script>
 

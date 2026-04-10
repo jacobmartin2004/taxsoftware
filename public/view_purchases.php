@@ -483,26 +483,31 @@ function buildInvoiceHTML(r) {
 
 function downloadMonthlyPDF() {
     var css = '<style>' +
-        '.inv-pg { width:750px; background:#fff; border:2px solid #000; margin:0 auto; page-break-after:always; font-family:Segoe UI,Arial,sans-serif; color:#000; font-size:13px; }' +
+        '* { box-sizing:border-box; margin:0; padding:0; }' +
+        '.inv-pg { width:780px; background:#fff; border:2px solid #000; margin:0 auto; page-break-after:always; font-family:Segoe UI,Arial,sans-serif; color:#000; font-size:13px; }' +
         '.inv-pg:last-child { page-break-after: auto; }' +
         '.hdr { padding:20px 30px; border-bottom:2px solid #000; display:flex; justify-content:space-between; align-items:center; }' +
+        '.hdr .br { flex:1; }' +
         '.hdr .br p { font-size:11px; margin:0; color:#000; }' +
-        '.hdr .br h2 { margin:0; font-size:22px; font-weight:900; color:#000; }' +
-        '.inv-tp { border:2px solid #000; color:#000; font-weight:800; padding:8px 20px; font-size:14px; letter-spacing:1px; white-space:nowrap; }' +
-        '.gbar { padding:10px 30px; border-bottom:1px solid #000; display:flex; justify-content:space-between; font-size:12px; color:#000; }' +
+        '.hdr .br h2 { margin:0; font-size:20px; font-weight:900; color:#000; }' +
+        '.inv-tp { border:2px solid #000; color:#000; font-weight:800; padding:8px 20px; font-size:14px; letter-spacing:1px; white-space:nowrap; flex-shrink:0; }' +
+        '.gbar { padding:10px 30px; border-bottom:1px solid #000; display:flex; justify-content:space-between; font-size:12px; color:#000; flex-wrap:wrap; }' +
+        '.gbar div { white-space:nowrap; }' +
         '.gbar span { color:#000; } .gbar b { color:#000; }' +
         '.iinfo { padding:20px 30px; display:flex; justify-content:space-between; border-bottom:1px solid #000; }' +
+        '.iinfo .blk { max-width:50%; }' +
         '.iinfo .blk h6 { font-size:10px; text-transform:uppercase; letter-spacing:1px; color:#000; font-weight:700; margin:0 0 6px; }' +
-        '.iinfo .blk p { font-size:13px; margin:0 0 2px; color:#000; } .iinfo .blk b { color:#000; }' +
-        '.items-sec { padding:0 30px; }' +
-        '.itbl { width:100%; border-collapse:collapse; border:1px solid #000; margin-top:10px; }' +
+        '.iinfo .blk p { font-size:13px; margin:0 0 2px; color:#000; word-wrap:break-word; } .iinfo .blk b { color:#000; }' +
+        '.items-sec { padding:10px 30px 0; }' +
+        '.itbl { width:100%; border-collapse:collapse; border:1px solid #000; }' +
         '.itbl th { background:#fff; color:#000; padding:8px 10px; font-size:11px; text-transform:uppercase; border-bottom:2px solid #000; border-right:1px solid #000; text-align:left; }' +
-        '.itbl th:last-child { border-right:none; }' +
+        '.itbl th:last-child { border-right:none; text-align:right; }' +
         '.itbl td { padding:8px 10px; font-size:13px; border-bottom:1px solid #ccc; border-right:1px solid #000; color:#000; }' +
-        '.itbl td:last-child { border-right:none; }' +
+        '.itbl td:last-child { border-right:none; text-align:right; }' +
         '.sbox-wrap { padding:10px 30px 16px; display:flex; justify-content:flex-end; }' +
         '.sbox { width:300px; border:1px solid #000; }' +
         '.sr { display:flex; justify-content:space-between; padding:6px 14px; font-size:13px; border-bottom:1px solid #ccc; color:#000; }' +
+        '.sr span { white-space:nowrap; }' +
         '.sr.stotal { font-weight:800; font-size:15px; border-top:2px solid #000; border-bottom:none; padding:10px 14px; color:#000; }' +
         '.wbank { padding:10px 30px; border-top:1px solid #000; font-size:12px; color:#000; }' +
         '.wds { font-weight:700; margin:0 0 8px; } .bnk { color:#000; margin:0; }' +
@@ -519,17 +524,19 @@ function downloadMonthlyPDF() {
 
     var container = document.createElement('div');
     container.innerHTML = html;
-    container.style.position = 'absolute';
-    container.style.left = '-9999px';
+    container.style.position = 'fixed';
+    container.style.left = '0';
     container.style.top = '0';
     container.style.width = '800px';
+    container.style.visibility = 'hidden';
+    container.style.zIndex = '-9999';
     document.body.appendChild(container);
 
     var opt = {
-        margin: 10,
+        margin: [10, 10, 10, 10],
         filename: 'Purchase_<?php echo $month_names[$sel_month]; ?>_<?php echo $sel_year; ?>.pdf',
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, scrollX: 0, scrollY: 0, windowWidth: 820 },
+        html2canvas: { scale: 2, useCORS: true, scrollX: 0, scrollY: 0, windowWidth: 800 },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
         pagebreak: { mode: ['css'], avoid: '.inv-pg' }
     };
