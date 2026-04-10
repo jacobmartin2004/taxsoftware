@@ -253,7 +253,6 @@ function numToWords($n) {
     </div>
 
     <!-- Items Table -->
-    <?php if (count($items) > 0): ?>
     <div class="inv-table">
         <table>
             <thead>
@@ -266,6 +265,7 @@ function numToWords($n) {
                 </tr>
             </thead>
             <tbody>
+            <?php if (count($items) > 0): ?>
             <?php
             $sno = 1;
             foreach ($items as $it):
@@ -290,10 +290,18 @@ function numToWords($n) {
                     <td><?php echo number_format($net, 2); ?></td>
                 </tr>
             <?php endforeach; ?>
+            <?php else: ?>
+                <tr>
+                    <td>1</td>
+                    <td>DIAMOND TOOLS (As per Invoice)</td>
+                    <td class="text-center">-</td>
+                    <td class="text-center">-</td>
+                    <td><?php echo number_format($inv['taxamt'], 2); ?></td>
+                </tr>
+            <?php endif; ?>
             </tbody>
         </table>
     </div>
-    <?php endif; ?>
 
     <!-- Summary -->
     <div class="inv-summary">
