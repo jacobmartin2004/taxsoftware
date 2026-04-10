@@ -266,7 +266,11 @@ function numToWords($n) {
         @media print {
             body { background: #fff; }
             .actions-bar { display: none !important; }
-            .invoice-page { border: 2px solid #000; margin: 0; box-shadow: none; }
+            .invoice-page { border: 2px solid #000; margin: 0; box-shadow: none; max-width: 100%; }
+            .inv-header { display: flex !important; flex-direction: row !important; justify-content: space-between !important; }
+            .inv-info { display: flex !important; flex-direction: row !important; justify-content: space-between !important; }
+            .inv-info .block:last-child { text-align: right !important; }
+            .gst-bar { display: flex !important; flex-direction: row !important; }
         }
     </style>
 </head>
@@ -434,25 +438,16 @@ function numToWords($n) {
 
 <script>
 function downloadPDF() {
+    window.scrollTo(0, 0);
     var element = document.getElementById('invoicePage');
-    var clone = element.cloneNode(true);
-    clone.style.position = 'absolute';
-    clone.style.left = '-9999px';
-    clone.style.top = '0';
-    clone.style.width = '780px';
-    clone.style.border = '2px solid #000';
-    document.body.appendChild(clone);
-
     var opt = {
-        margin: 10,
+        margin: [10, 10, 10, 10],
         filename: '<?php echo $page_title; ?>_<?php echo $bill; ?>_<?php echo preg_replace('/[^A-Za-z0-9]/', '_', $company_name); ?>.pdf',
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, scrollX: 0, scrollY: 0, windowWidth: 820 },
+        html2canvas: { scale: 2, useCORS: true, scrollX: 0, scrollY: 0, windowWidth: element.scrollWidth },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
-    html2pdf().set(opt).from(clone).save().then(function() {
-        document.body.removeChild(clone);
-    });
+    html2pdf().set(opt).from(element).save();
 }
 </script>
 </body>
