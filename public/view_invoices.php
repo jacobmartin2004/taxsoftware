@@ -347,12 +347,9 @@ $month_names = ['','January','February','March','April','May','June','July','Aug
 
     <?php if (count($records) > 0): ?>
     <div style="text-align:center; margin-top: 20px;">
-        <button class="dl-btn" onclick="downloadMonthlyPDF()"><i class="bi bi-file-earmark-pdf"></i> Download <?php echo $month_names[$sel_month] . ' ' . $sel_year; ?> as PDF</button>
+        <!-- <button class="dl-btn" onclick="downloadMonthlyPDF()"><i class="bi bi-file-earmark-pdf"></i> Download <?php echo $month_names[$sel_month] . ' ' . $sel_year; ?> as PDF</button> -->
     </div>
     <?php endif; ?>
-</div>
-
-<?php
 $pdf_records = [];
 foreach ($records as $r) {
     $addr = ''; $st = ''; $dist = ''; $gtype = '';

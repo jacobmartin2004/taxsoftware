@@ -362,7 +362,7 @@ function numToWords($n) {
 <!-- Action Buttons -->
 <div class="actions-bar">
     <button class="btn btn-print" onclick="window.print()"><i class="bi bi-printer"></i> Print Invoice</button>
-    <button class="btn btn-download" onclick="downloadPDF()"><i class="bi bi-download"></i> Download PDF</button>
+    <!-- <button class="btn btn-download" onclick="downloadPDF()"><i class="bi bi-download"></i> Download PDF</button> -->
     <?php if ($type === 'purchase'): ?>
     <a href="view_purchases.php" class="btn btn-back"><i class="bi bi-arrow-left"></i> Back to List</a>
     <?php else: ?>
