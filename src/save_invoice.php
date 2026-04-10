@@ -103,7 +103,13 @@ if ($invoice_type === 'invoice') {
 $items_saved = false;
 $item_save_errors = [];
 if ($saved && count($items) > 0 && ($invoice_type === 'invoice' || $invoice_type === 'purchase')) {
-    $tbl_result = $conn->query("CREATE TABLE IF NOT EXISTS `invoice_items` (
+    // Check if table exists and has the correct 'bill' column
+    $col_check = $conn->query("SHOW COLUMNS FROM `invoice_items` LIKE 'bill'");
+    if (!$col_check || $col_check->num_rows === 0) {
+        // Table is missing or has wrong columns — drop and recreate
+        $conn->query("DROP TABLE IF EXISTS `invoice_items`");
+    }
+    $conn->query("CREATE TABLE IF NOT EXISTS `invoice_items` (
         `id` int(11) NOT NULL AUTO_INCREMENT,
         `bill` int(11) NOT NULL,
         `invoice_type` varchar(20) NOT NULL DEFAULT 'invoice',
@@ -114,8 +120,10 @@ if ($saved && count($items) > 0 && ($invoice_type === 'invoice' || $invoice_type
         PRIMARY KEY (`id`),
         KEY `bill_type` (`bill`, `invoice_type`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci");
-    if (!$tbl_result) {
-        $item_save_errors[] = 'Could not create invoice_items table: ' . $conn->error;
+    // Verify the table is usable
+    $verify = $conn->query("SHOW COLUMNS FROM `invoice_items` LIKE 'bill'");
+    if (!$verify || $verify->num_rows === 0) {
+        $item_save_errors[] = 'invoice_items table could not be created properly: ' . $conn->error;
     } else {
         $items_saved = true;
         foreach ($items as $it) {
