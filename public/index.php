@@ -318,6 +318,7 @@ if ($res) { while ($row = $res->fetch_assoc()) $recent_purchases[] = $row; }
         <li><a href="quotation.php"><i class="bi bi-file-earmark-ruled"></i> Quotation</a></li>
 
         <li class="nav-header">Records</li>
+        <li><a href="view_invoices.php"><i class="bi bi-journal-bookmark-fill"></i> View Invoices</a></li>
         <li><a href="../src/view.php"><i class="bi bi-journal-text"></i> Sales Records</a></li>
         <li><a href="view1.php"><i class="bi bi-journal-arrow-down"></i> Purchase Records</a></li>
         <li><a href="../src/printsales.php"><i class="bi bi-printer"></i> Print Sales Report</a></li>
@@ -412,6 +413,11 @@ if ($res) { while ($row = $res->fetch_assoc()) $recent_purchases[] = $row; }
                 <div class="action-icon icon-amber"><i class="bi bi-plus-circle"></i></div>
                 <h6>Add Tool</h6>
                 <p>New product to catalog</p>
+            </a>
+            <a href="view_invoices.php" class="action-card">
+                <div class="action-icon icon-blue"><i class="bi bi-journal-bookmark-fill"></i></div>
+                <h6>View Invoices</h6>
+                <p>Month-wise invoice list</p>
             </a>
         </div>
 

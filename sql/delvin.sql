@@ -1,19 +1,25 @@
--- Delvin Diamond Tool Industries - Database Schema
--- Database: `delvin`
--- Merged schema (original + new tables/columns)
+-- Delvin Diamond Tool Industries
+-- Database: delvin
+-- Full schema with upgrade-safe fixes
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
+ /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+ /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+ /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+ /*!40101 SET NAMES utf8mb4 */;
 
--- --------------------------------------------------------
--- Table: companydata (with address, state, district columns)
--- --------------------------------------------------------
+CREATE DATABASE IF NOT EXISTS `delvin`
+  DEFAULT CHARACTER SET utf8mb4
+  COLLATE utf8mb4_general_ci;
+
+USE `delvin`;
+
+-- =========================================================
+-- TABLE: companydata
+-- =========================================================
 
 CREATE TABLE IF NOT EXISTS `companydata` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -26,37 +32,42 @@ CREATE TABLE IF NOT EXISTS `companydata` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-INSERT IGNORE INTO `companydata` (`id`, `companyname`, `gstno`, `gsttype`) VALUES
-(17, 'SUNRISE ENTERPRISES', '29ACMPK0591Q1ZS', 'igst'),
-(18, 'SUNDARAM FASTENERS LTD', '33AAACS8779D1Z7', 'tngst'),
-(19, 'SAIDEV ENTERPRISES', '33ADZFS2976B1ZN', 'tngst'),
-(20, 'PALS ENTERPRISES', '33AAAFP3636M1Z7', 'tngst'),
-(21, 'I.E.S AGENCIES', '33AAAFI5552K1ZF', 'tngst'),
-(22, 'HONESTY HARDWARE MART', '33AJQPS2641L1ZR', 'tngst'),
-(23, 'LAKSHMI CARD CLOTHING MFG', '33AAACL3521E1Z6', 'tngst'),
-(24, 'SUPER FINE NEEDLES PVT LTD', '29AACCS6550L1ZW', 'igst'),
-(25, 'MOGLI LABS INDIA PVT LTD', '33AAJCM7312H1ZL', 'tngst'),
-(26, 'THE PROFESSIONAL COURIERS', '33AAKPK8983G2Z9', 'tngst'),
-(27, 'NOVELTY DIAMOND TOOLS & PRODUCTS', '33ADWPD0161G1ZT', 'tngst'),
-(28, 'WIN WIN DIAMOND PRODUCTS', '33AJBPR5326E1ZI', 'tngst'),
-(29, 'J.D.DIAMOND INDUSTRIES', '24AXTPG5293K1ZV', '25p'),
-(30, 'A.VADIVEL & CO', '33AADPV9874C1ZE', 'tngst'),
-(31, 'THE PRECISION SCIENTIFIC CO', '33AJIPK3213G1ZO', 'tngst'),
-(32, 'RENOLD CHAIN INDIA PVT LTP', '33AADCR9839E1Z8', 'tngst'),
-(33, 'RANE AUTOMOTIVE INDIA PVT LTD', '05AAACR3147C1ZX', 'igst'),
-(34, 'N.M.BELT CENTRE', '33AADFN1633R1Z3', 'tngst'),
-(35, 'SREE GANESH AGENCIES', '33BJFPK8575D1Z5', 'tngst'),
-(36, 'SRI RANGANATHAR VALVES PVT LTD', '33AALCS5492C1ZA', 'tngst'),
-(37, 'M.S.V.ENTERPRISES', '33ALVPY7788D1Z3', 'tngst'),
-(38, 'UNIVERSAL HARDWARE & TOOLS COR', '33AAAFU6771G1Z5', 'tngst'),
-(40, 'PARAS DIAMOND CO(%25GST)', '24CMXPS4074B1ZP', '25p'),
-(41, 'SARASWATHI AGENCIES 6%', '33AEEPR4761D2ZM', '6p'),
-(42, 'M.P.M. MUTHU GENERAL STORE', '33AAAFM8415D1ZQ', 'igst'),
-(44, 'ALIF TRADER', '33AADFA2185M1ZH', 'tngst');
+-- Safe upgrades for old companydata tables
+ALTER TABLE `companydata` ADD COLUMN IF NOT EXISTS `address` varchar(500) DEFAULT '';
+ALTER TABLE `companydata` ADD COLUMN IF NOT EXISTS `state` varchar(100) DEFAULT '';
+ALTER TABLE `companydata` ADD COLUMN IF NOT EXISTS `district` varchar(100) DEFAULT '';
 
--- --------------------------------------------------------
--- Table: delvin (sales invoices)
--- --------------------------------------------------------
+INSERT IGNORE INTO `companydata` (`id`, `companyname`, `gstno`, `gsttype`, `address`, `state`, `district`) VALUES
+(17, 'SUNRISE ENTERPRISES', '29ACMPK0591Q1ZS', 'igst', '', '', ''),
+(18, 'SUNDARAM FASTENERS LTD', '33AAACS8779D1Z7', 'tngst', '', '', ''),
+(19, 'SAIDEV ENTERPRISES', '33ADZFS2976B1ZN', 'tngst', '', '', ''),
+(20, 'PALS ENTERPRISES', '33AAAFP3636M1Z7', 'tngst', '', '', ''),
+(21, 'I.E.S AGENCIES', '33AAAFI5552K1ZF', 'tngst', '', '', ''),
+(22, 'HONESTY HARDWARE MART', '33AJQPS2641L1ZR', 'tngst', '', '', ''),
+(23, 'LAKSHMI CARD CLOTHING MFG', '33AAACL3521E1Z6', 'tngst', '', '', ''),
+(24, 'SUPER FINE NEEDLES PVT LTD', '29AACCS6550L1ZW', 'igst', '', '', ''),
+(25, 'MOGLI LABS INDIA PVT LTD', '33AAJCM7312H1ZL', 'tngst', '', '', ''),
+(26, 'THE PROFESSIONAL COURIERS', '33AAKPK8983G2Z9', 'tngst', '', '', ''),
+(27, 'NOVELTY DIAMOND TOOLS & PRODUCTS', '33ADWPD0161G1ZT', 'tngst', '', '', ''),
+(28, 'WIN WIN DIAMOND PRODUCTS', '33AJBPR5326E1ZI', 'tngst', '', '', ''),
+(29, 'J.D.DIAMOND INDUSTRIES', '24AXTPG5293K1ZV', '25p', '', '', ''),
+(30, 'A.VADIVEL & CO', '33AADPV9874C1ZE', 'tngst', '', '', ''),
+(31, 'THE PRECISION SCIENTIFIC CO', '33AJIPK3213G1ZO', 'tngst', '', '', ''),
+(32, 'RENOLD CHAIN INDIA PVT LTP', '33AADCR9839E1Z8', 'tngst', '', '', ''),
+(33, 'RANE AUTOMOTIVE INDIA PVT LTD', '05AAACR3147C1ZX', 'igst', '', '', ''),
+(34, 'N.M.BELT CENTRE', '33AADFN1633R1Z3', 'tngst', '', '', ''),
+(35, 'SREE GANESH AGENCIES', '33BJFPK8575D1Z5', 'tngst', '', '', ''),
+(36, 'SRI RANGANATHAR VALVES PVT LTD', '33AALCS5492C1ZA', 'tngst', '', '', ''),
+(37, 'M.S.V.ENTERPRISES', '33ALVPY7788D1Z3', 'tngst', '', '', ''),
+(38, 'UNIVERSAL HARDWARE & TOOLS COR', '33AAAFU6771G1Z5', 'tngst', '', '', ''),
+(40, 'PARAS DIAMOND CO(%25GST)', '24CMXPS4074B1ZP', '25p', '', '', ''),
+(41, 'SARASWATHI AGENCIES 6%', '33AEEPR4761D2ZM', '6p', '', '', ''),
+(42, 'M.P.M. MUTHU GENERAL STORE', '33AAAFM8415D1ZQ', 'igst', '', '', ''),
+(44, 'ALIF TRADER', '33AADFA2185M1ZH', 'tngst', '', '', '');
+
+-- =========================================================
+-- TABLE: delvin (sales invoices)
+-- =========================================================
 
 CREATE TABLE IF NOT EXISTS `delvin` (
   `sno` int(11) NOT NULL AUTO_INCREMENT,
@@ -73,9 +84,9 @@ CREATE TABLE IF NOT EXISTS `delvin` (
   UNIQUE KEY `bill` (`bill`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
--- Table: purchase
--- --------------------------------------------------------
+-- =========================================================
+-- TABLE: purchase
+-- =========================================================
 
 CREATE TABLE IF NOT EXISTS `purchase` (
   `sno` int(11) NOT NULL AUTO_INCREMENT,
@@ -92,19 +103,23 @@ CREATE TABLE IF NOT EXISTS `purchase` (
   UNIQUE KEY `bill` (`bill`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
--- Table: tools
--- --------------------------------------------------------
+-- =========================================================
+-- TABLE: tools
+-- =========================================================
 
 CREATE TABLE IF NOT EXISTS `tools` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `toolname` varchar(255) NOT NULL,
-  `rate` decimal(10,2) NOT NULL,
+  `rate` decimal(10,2) NOT NULL DEFAULT 0.00,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- Safe upgrades for old tools tables
+ALTER TABLE `tools` ADD COLUMN IF NOT EXISTS `toolname` varchar(255) NOT NULL;
+ALTER TABLE `tools` ADD COLUMN IF NOT EXISTS `rate` decimal(10,2) NOT NULL DEFAULT 0.00;
+
 COMMIT;
 
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+ /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+ /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+ /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
