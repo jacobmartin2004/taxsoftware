@@ -1,42 +1,30 @@
--- phpMyAdmin SQL Dump
--- version 5.2.1
--- https://www.phpmyadmin.net/
---
--- Host: 127.0.0.1
--- Generation Time: Oct 02, 2024 at 02:30 PM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Delvin Diamond Tool Industries - Database Schema
+-- Database: `delvin`
+-- Merged schema (original + new tables/columns)
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
-
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
 
---
--- Database: `delvin`
---
-
+-- --------------------------------------------------------
+-- Table: companydata (with address, state, district columns)
 -- --------------------------------------------------------
 
---
--- Table structure for table `companydata`
---
-
-CREATE TABLE `companydata` (
-  `id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `companydata` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `companyname` varchar(255) NOT NULL,
   `gstno` varchar(20) NOT NULL,
-  `gsttype` varchar(50) NOT NULL
+  `gsttype` varchar(50) NOT NULL,
+  `address` varchar(500) DEFAULT '',
+  `state` varchar(100) DEFAULT '',
+  `district` varchar(100) DEFAULT '',
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `companydata`
---
 
 INSERT INTO `companydata` (`id`, `companyname`, `gstno`, `gsttype`) VALUES
 (17, 'SUNRISE ENTERPRISES', '29ACMPK0591Q1ZS', 'igst'),
@@ -67,74 +55,54 @@ INSERT INTO `companydata` (`id`, `companyname`, `gstno`, `gsttype`) VALUES
 (44, 'ALIF TRADER', '33AADFA2185M1ZH', 'tngst');
 
 -- --------------------------------------------------------
+-- Table: delvin (sales invoices)
+-- --------------------------------------------------------
 
---
--- Table structure for table `delvin`
---
-
-CREATE TABLE `delvin` (
-  `sno` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `delvin` (
+  `sno` int(11) NOT NULL AUTO_INCREMENT,
   `GSTNO` varchar(15) NOT NULL,
   `cname` varchar(40) NOT NULL,
   `bill` int(11) NOT NULL,
   `taxamt` decimal(11,1) NOT NULL,
-  `cgst` decimal(11,1) NOT NULL,
-  `sgst` decimal(11,1) NOT NULL,
+  `cgst` decimal(11,1) NOT NULL DEFAULT 0,
+  `sgst` decimal(11,1) NOT NULL DEFAULT 0,
   `Total` int(11) NOT NULL,
   `date` varchar(30) NOT NULL,
-  `igst` decimal(11,1) NOT NULL
+  `igst` decimal(11,1) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`sno`),
+  UNIQUE KEY `bill` (`bill`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
+-- Table: purchase
+-- --------------------------------------------------------
 
---
--- Table structure for table `purchase`
---
-
-CREATE TABLE `purchase` (
-  `sno` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `purchase` (
+  `sno` int(11) NOT NULL AUTO_INCREMENT,
   `GSTNO` varchar(15) NOT NULL,
   `cname` varchar(255) NOT NULL,
   `taxamt` decimal(11,1) NOT NULL,
-  `cgst` decimal(11,1) NOT NULL,
-  `sgst` decimal(11,1) NOT NULL,
-  `igst` decimal(11,1) NOT NULL,
+  `cgst` decimal(11,1) NOT NULL DEFAULT 0,
+  `sgst` decimal(11,1) NOT NULL DEFAULT 0,
+  `igst` decimal(11,1) NOT NULL DEFAULT 0,
   `Total` int(11) NOT NULL,
   `date` varchar(25) NOT NULL,
-  `bill` int(11) DEFAULT NULL
+  `bill` int(11) DEFAULT NULL,
+  PRIMARY KEY (`sno`),
+  UNIQUE KEY `bill` (`bill`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Indexes for dumped tables
---
+-- --------------------------------------------------------
+-- Table: tools
+-- --------------------------------------------------------
 
---
--- Indexes for table `companydata`
---
-ALTER TABLE `companydata`
-  ADD PRIMARY KEY (`id`);
+CREATE TABLE IF NOT EXISTS `tools` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `toolname` varchar(255) NOT NULL,
+  `rate` decimal(10,2) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Indexes for table `delvin`
---
-ALTER TABLE `delvin`
-  ADD UNIQUE KEY `bill` (`bill`);
-
---
--- Indexes for table `purchase`
---
-ALTER TABLE `purchase`
-  ADD UNIQUE KEY `taxamt` (`taxamt`);
-
---
--- AUTO_INCREMENT for dumped tables
---
-
---
--- AUTO_INCREMENT for table `companydata`
---
-ALTER TABLE `companydata`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
