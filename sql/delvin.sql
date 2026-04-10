@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS `companydata` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-INSERT INTO `companydata` (`id`, `companyname`, `gstno`, `gsttype`) VALUES
+INSERT IGNORE INTO `companydata` (`id`, `companyname`, `gstno`, `gsttype`) VALUES
 (17, 'SUNRISE ENTERPRISES', '29ACMPK0591Q1ZS', 'igst'),
 (18, 'SUNDARAM FASTENERS LTD', '33AAACS8779D1Z7', 'tngst'),
 (19, 'SAIDEV ENTERPRISES', '33ADZFS2976B1ZN', 'tngst'),
