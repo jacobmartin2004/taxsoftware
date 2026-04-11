@@ -1,4 +1,5 @@
 <?php
+require_once '../src/auth.php';
 require_once '../src/conn.php';
 
 $type = isset($_GET['type']) ? $_GET['type'] : 'sales';

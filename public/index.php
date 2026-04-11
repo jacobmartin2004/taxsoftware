@@ -1,4 +1,5 @@
 <?php
+require_once '../src/auth.php';
 require_once '../src/conn.php';
 
 // Company count
@@ -328,6 +329,9 @@ if ($res) { while ($row = $res->fetch_assoc()) $recent_purchases[] = $row; }
         <li class="nav-header">Manage</li>
         <li><a href="../src/companydata.php"><i class="bi bi-building"></i> Companies</a></li>
         <li><a href="add_tool.php"><i class="bi bi-tools"></i> Tools</a></li>
+
+        <li class="nav-header">Account</li>
+        <li><a href="../logout.php" style="color:rgba(239,68,68,0.8);"><i class="bi bi-box-arrow-left"></i> Logout</a></li>
     </ul>
 </nav>
 

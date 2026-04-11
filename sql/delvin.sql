@@ -11,11 +11,8 @@ SET time_zone = "+00:00";
  /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
  /*!40101 SET NAMES utf8mb4 */;
 
-CREATE DATABASE IF NOT EXISTS `delvin`
-  DEFAULT CHARACTER SET utf8mb4
-  COLLATE utf8mb4_general_ci;
-
-USE `delvin`;
+-- NOTE: Import this into your InfinityFree database via phpMyAdmin.
+-- The database is pre-assigned by InfinityFree, so no CREATE DATABASE / USE needed.
 
 -- =========================================================
 -- TABLE: companydata
@@ -31,11 +28,6 @@ CREATE TABLE IF NOT EXISTS `companydata` (
   `district` varchar(100) DEFAULT '',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- Safe upgrades for old companydata tables
-ALTER TABLE `companydata` ADD COLUMN IF NOT EXISTS `address` varchar(500) DEFAULT '';
-ALTER TABLE `companydata` ADD COLUMN IF NOT EXISTS `state` varchar(100) DEFAULT '';
-ALTER TABLE `companydata` ADD COLUMN IF NOT EXISTS `district` varchar(100) DEFAULT '';
 
 INSERT IGNORE INTO `companydata` (`id`, `companyname`, `gstno`, `gsttype`, `address`, `state`, `district`) VALUES
 (17, 'SUNRISE ENTERPRISES', '29ACMPK0591Q1ZS', 'igst', '', '', ''),
@@ -114,10 +106,6 @@ CREATE TABLE IF NOT EXISTS `tools` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Safe upgrades for old tools tables
-ALTER TABLE `tools` ADD COLUMN IF NOT EXISTS `toolname` varchar(255) NOT NULL;
-ALTER TABLE `tools` ADD COLUMN IF NOT EXISTS `rate` decimal(10,2) NOT NULL DEFAULT 0.00;
-
 -- =========================================================
 -- TABLE: invoice_items (line items per invoice)
 -- =========================================================
@@ -133,6 +121,21 @@ CREATE TABLE IF NOT EXISTS `invoice_items` (
   PRIMARY KEY (`id`),
   KEY `bill_type` (`bill`, `invoice_type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- =========================================================
+-- TABLE: users (login credentials)
+-- =========================================================
+
+CREATE TABLE IF NOT EXISTS `users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(100) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+INSERT IGNORE INTO `users` (`id`, `username`, `password`) VALUES
+(1, 'delvin', '1987');
 
 COMMIT;
 

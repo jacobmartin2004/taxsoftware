@@ -1,4 +1,5 @@
 <?php
+require_once 'auth.php';
 include("conn.php");
 
 $sel_month = isset($_GET['month']) ? $_GET['month'] : date('m');

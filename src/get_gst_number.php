@@ -1,4 +1,5 @@
 <?php
+require_once 'auth.php';
 include('conn.php');
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);

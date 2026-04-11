@@ -1,5 +1,6 @@
 <?php
-// Include connection file
+// Include auth and connection
+require_once 'auth.php';
 include("conn.php");
 
 // SQL query to truncate the purchase table

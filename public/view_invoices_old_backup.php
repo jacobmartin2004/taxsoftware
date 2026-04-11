@@ -1,4 +1,5 @@
 <?php
+require_once '../src/auth.php';
 require_once '../src/conn.php';
 
 // Handle delete
@@ -197,6 +198,7 @@ $month_names = ['','January','February','March','April','May','June','July','Aug
         <a href="view_invoices.php" class="active"><i class="bi bi-journal-bookmark-fill"></i> Invoices</a>
         <a href="../src/companydata.php"><i class="bi bi-building"></i> Companies</a>
         <a href="add_tool.php"><i class="bi bi-tools"></i> Tools</a>
+        <a href="../logout.php" style="color:#ef4444;"><i class="bi bi-box-arrow-left"></i> Logout</a>
     </div>
 </nav>
 <div class="page-wrap">

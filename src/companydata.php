@@ -1,4 +1,5 @@
 <?php
+require_once 'auth.php';
 include("conn.php");
 
 // Handle form submission for adding a new record

@@ -1,4 +1,5 @@
 <?php
+require_once '../src/auth.php';
 require_once '../src/conn.php';
 
 $companies = [];
@@ -71,6 +72,7 @@ $next_bill = ($inv_row['maxbill'] ?? 0) + 1;
         <a href="view_purchases.php"><i class="bi bi-cart-check"></i> Purchase Invoices</a>
         <a href="../src/companydata.php"><i class="bi bi-building"></i> Companies</a>
         <a href="add_tool.php"><i class="bi bi-tools"></i> Tools</a>
+        <a href="../logout.php" style="color:#ef4444;"><i class="bi bi-box-arrow-left"></i> Logout</a>
     </div>
 </nav>
 <div class="invoice-box">

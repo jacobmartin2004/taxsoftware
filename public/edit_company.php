@@ -1,4 +1,5 @@
 <?php
+require_once '../src/auth.php';
 require_once '../src/conn.php';
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 $company = null;
@@ -64,6 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <a href="view_purchases.php"><i class="bi bi-cart-check"></i> Purchase Invoices</a>
         <a href="../src/companydata.php" class="active"><i class="bi bi-building"></i> Companies</a>
         <a href="add_tool.php"><i class="bi bi-tools"></i> Tools</a>
+        <a href="../logout.php" style="color:#ef4444;"><i class="bi bi-box-arrow-left"></i> Logout</a>
     </div>
 </nav>
 <div class="container mt-4">
