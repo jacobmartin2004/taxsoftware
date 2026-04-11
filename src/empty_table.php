@@ -15,6 +15,6 @@ if ($conn->query($sql_empty) === TRUE) {
 $conn->close();
 
 // Redirect back to the main page after operation
-header("Location: ../public/index.php");
+header("Location: ../index.php");
 exit;
 ?>

@@ -180,7 +180,7 @@ $month_names = ['','January','February','March','April','May','June','July','Aug
     <span class="brand">DELVIN DIAMOND TOOLS</span>
     <button class="menu-toggle" onclick="this.nextElementSibling.classList.toggle('show')"><i class="bi bi-list"></i></button>
     <div class="nav-links">
-        <a href="index.php"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
+        <a href="../index.php"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
         <a href="create_purchase.php"><i class="bi bi-cart-plus"></i> New Purchase</a>
         <a href="view_invoices.php"><i class="bi bi-graph-up-arrow"></i> Sales Invoices</a>
         <a href="view_purchases.php" class="active"><i class="bi bi-cart-check"></i> Purchase Invoices</a>
@@ -191,7 +191,7 @@ $month_names = ['','January','February','March','April','May','June','July','Aug
 <div class="page-wrap">
     <div class="page-header">
         <h3><i class="bi bi-cart-check me-2"></i>Purchase Invoices</h3>
-        <a href="index.php" class="back-btn"><i class="bi bi-arrow-left"></i> Dashboard</a>
+        <a href="../index.php" class="back-btn"><i class="bi bi-arrow-left"></i> Dashboard</a>
     </div>
 
     <form class="filter-bar" method="GET">

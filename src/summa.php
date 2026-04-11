@@ -67,7 +67,7 @@
           <hr>
           <nav class="navbar navbar-expand-md navbar-light">
             <div class="container-fluid">
-              <a class="navbar-brand" href="index.php">Home</a>
+              <a class="navbar-brand" href="../index.php">Home</a>
               <a class="navbar-brand" href="view.php">Sales Record</a>
               <a class="navbar-brand" href="view1.php">Purchase Record</a>
               <a class="navbar-brand" href="printsales.php">Print Sales Record</a>

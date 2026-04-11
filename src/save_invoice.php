@@ -2,7 +2,7 @@
 require_once 'conn.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: ../public/index.php');
+    header('Location: ../index.php');
     exit();
 }
 
@@ -461,7 +461,7 @@ function numToWords($n) {
 <div class="actions-bar">
     <button class="btn btn-print" onclick="window.print()"><i class="bi bi-printer"></i> Print Invoice</button>
     <!-- <button class="btn btn-download" onclick="downloadPDF()"><i class="bi bi-download"></i> Download PDF</button> -->
-    <a href="../public/index.php" class="btn btn-dash"><i class="bi bi-grid-1x2"></i> Dashboard</a>
+    <a href="../index.php" class="btn btn-dash"><i class="bi bi-grid-1x2"></i> Dashboard</a>
     <?php if ($invoice_type === 'invoice'): ?>
     <a href="../public/create_invoice.php" class="btn btn-new"><i class="bi bi-plus-circle"></i> New Invoice</a>
     <?php elseif ($invoice_type === 'purchase'): ?>

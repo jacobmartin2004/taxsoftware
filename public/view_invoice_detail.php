@@ -368,7 +368,7 @@ function numToWords($n) {
     <?php else: ?>
     <a href="view_invoices.php" class="btn btn-back"><i class="bi bi-arrow-left"></i> Back to List</a>
     <?php endif; ?>
-    <a href="index.php" class="btn btn-dash"><i class="bi bi-grid-1x2"></i> Dashboard</a>
+    <a href="../index.php" class="btn btn-dash"><i class="bi bi-grid-1x2"></i> Dashboard</a>
 </div>
 
 <script>

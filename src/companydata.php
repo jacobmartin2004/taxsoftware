@@ -86,7 +86,7 @@ $result = $conn->query($sql);
         <span class="brand">DELVIN DIAMOND TOOLS</span>
         <button class="menu-toggle" onclick="this.nextElementSibling.classList.toggle('show')"><i class="bi bi-list"></i></button>
         <div class="nav-links">
-            <a href="../public/index.php"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
+            <a href="../index.php"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
             <a href="../public/create_invoice.php"><i class="bi bi-receipt"></i> Invoice</a>
             <a href="../public/create_purchase.php"><i class="bi bi-cart-plus"></i> Purchase</a>
             <a href="../public/view_invoices.php"><i class="bi bi-graph-up-arrow"></i> Sales Invoices</a>

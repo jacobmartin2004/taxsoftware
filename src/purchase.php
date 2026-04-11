@@ -279,7 +279,7 @@ if ($result->num_rows > 0) {
                                     Home
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <li><a class="dropdown-item" href="../public/index.php">Sales</a></li>
+                                    <li><a class="dropdown-item" href="../index.php">Sales</a></li>
                                     <li><a class="dropdown-item" href="purchase.php">Purchase</a></li>
                                 </ul>
                             </div>

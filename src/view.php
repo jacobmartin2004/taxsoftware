@@ -85,7 +85,7 @@ $months = ['01'=>'January','02'=>'February','03'=>'March','04'=>'April','05'=>'M
     <span class="brand">DELVIN DIAMOND TOOLS</span>
     <button class="menu-toggle" onclick="this.nextElementSibling.classList.toggle('show')"><i class="bi bi-list"></i></button>
     <div class="nav-links">
-        <a href="../public/index.php"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
+        <a href="../index.php"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
         <a href="../public/create_invoice.php"><i class="bi bi-receipt"></i> Invoice</a>
         <a href="../public/create_purchase.php"><i class="bi bi-cart-plus"></i> Purchase</a>
         <a href="../public/view_invoices.php"><i class="bi bi-graph-up-arrow"></i> Sales Invoices</a>
@@ -159,7 +159,7 @@ $months = ['01'=>'January','02'=>'February','03'=>'March','04'=>'April','05'=>'M
     <div class="actions-bottom">
         <a href="printsales.php?month=<?php echo $sel_month; ?>&year=<?php echo $sel_year; ?>" class="btn btn-pr"><i class="bi bi-printer"></i> Print Sales</a>
         <button class="btn btn-mail" onclick="document.getElementById('mailSection').style.display = document.getElementById('mailSection').style.display === 'none' ? 'block' : 'none'"><i class="bi bi-envelope"></i> Send Mail</button>
-        <a href="../public/index.php" class="btn btn-outline"><i class="bi bi-house"></i> Dashboard</a>
+        <a href="../index.php" class="btn btn-outline"><i class="bi bi-house"></i> Dashboard</a>
     </div>
 
     <div class="mail-section" id="mailSection" style="display:none;">

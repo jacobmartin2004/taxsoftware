@@ -63,7 +63,7 @@ $next_bill = ($inv_row['maxbill'] ?? 0) + 1;
     <span class="brand">DELVIN DIAMOND TOOLS</span>
     <button class="menu-toggle" onclick="this.nextElementSibling.classList.toggle('show')"><i class="bi bi-list"></i></button>
     <div class="nav-links">
-        <a href="index.php"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
+        <a href="../index.php"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
         <a href="create_invoice.php"><i class="bi bi-receipt"></i> Invoice</a>
         <a href="create_purchase.php"><i class="bi bi-cart-plus"></i> Purchase</a>
         <a href="proforma_invoice.php" class="active"><i class="bi bi-file-earmark-text"></i> Proforma</a>
@@ -148,7 +148,7 @@ $next_bill = ($inv_row['maxbill'] ?? 0) + 1;
         <input type="hidden" name="company_name" id="hid_cname" value="">
         <div class="mt-3 text-center">
             <button type="submit" class="btn btn-primary btn-lg">Create Proforma</button>
-            <a href="index.php" class="btn btn-secondary btn-lg">Cancel</a>
+            <a href="../index.php" class="btn btn-secondary btn-lg">Cancel</a>
         </div>
     </form>
 </div>
