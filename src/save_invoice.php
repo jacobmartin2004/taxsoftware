@@ -186,73 +186,82 @@ function numToWords($n) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        @page { size: A4; margin: 10mm; }
+        @page { size: A4; margin: 0; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Segoe UI', Arial, sans-serif; background: #e9ecef; color: #000; }
         .invoice-page {
-            max-width: 780px; margin: 20px auto; background: #fff;
-            border: 2px solid #000; position: relative; color: #000;
+            width: 210mm; min-height: 297mm; margin: 0 auto; background: #fff;
+            border: 2px solid #000; position: relative;
+            display: flex; flex-direction: column;
         }
 
-        /* Header - Clean B&W */
+        /* Header */
         .inv-header {
-            padding: 20px 30px; border-bottom: 2px solid #000;
+            padding: 14px 24px 10px; border-bottom: 2px solid #000;
             display: flex; justify-content: space-between; align-items: center;
         }
         .inv-header .brand h2 { font-size: 20px; font-weight: 900; letter-spacing: 1px; margin-bottom: 2px; color: #000; }
-        .inv-header .brand p { font-size: 11px; color: #000; margin-top: 1px; }
+        .inv-header .brand p { font-size: 10px; color: #000; line-height: 1.5; }
         .inv-header .inv-type {
             border: 2px solid #000; color: #000; font-weight: 800;
-            padding: 8px 20px; font-size: 14px; letter-spacing: 1px; text-align: center;
+            padding: 6px 18px; font-size: 13px; letter-spacing: 1px; white-space: nowrap;
         }
 
-        /* GST Bar */
-        .gst-bar {
-            padding: 8px 30px; border-bottom: 1px solid #000;
-            display: flex; justify-content: space-between; font-size: 12px; color: #000;
+        /* Meta rows with borders */
+        .inv-meta-table { width: 100%; border-collapse: collapse; }
+        .inv-meta-table td {
+            border: 1px solid #000; padding: 6px 12px; font-size: 12px; color: #000;
         }
-        .gst-bar span { color: #000; }
-        .gst-bar strong { color: #000; }
+        .inv-meta-table td span { font-weight: 400; }
+        .inv-meta-table td strong { margin-left: 4px; }
+        .inv-meta-table .right-cell { text-align: right; }
 
-        /* Info Section */
-        .inv-info { padding: 16px 30px; display: flex; justify-content: space-between; border-bottom: 1px solid #000; }
-        .inv-info .block h6 { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #000; font-weight: 700; margin-bottom: 6px; }
-        .inv-info .block p { font-size: 13px; margin-bottom: 2px; color: #000; }
+        /* Info Section (Bill To / Customer GST) */
+        .inv-info { padding: 14px 24px; display: flex; justify-content: space-between; border-bottom: 1px solid #000; }
+        .inv-info .block h6 { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #000; margin-bottom: 4px; }
+        .inv-info .block p { font-size: 12px; margin-bottom: 2px; color: #000; }
         .inv-info .block p strong { color: #000; }
 
+        /* Middle content grows to fill page */
+        .inv-body { flex: 1; display: flex; flex-direction: column; }
+
         /* Items Table */
-        .inv-table { padding: 0; }
-        .inv-table table { width: 100%; border-collapse: collapse; }
+        .inv-table { padding: 0 24px; margin-top: 10px; }
+        .inv-table table { width: 100%; border-collapse: collapse; border: 1px solid #000; }
         .inv-table thead th {
             background: #fff; color: #000; padding: 8px 10px;
-            font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; text-align: left;
-            border-top: 1px solid #000; border-bottom: 2px solid #000; font-weight: 700;
+            font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; text-align: left;
+            border-bottom: 2px solid #000; border-right: 1px solid #000;
         }
-        .inv-table thead th:last-child { text-align: right; }
+        .inv-table thead th:last-child { text-align: right; border-right: none; }
         .inv-table thead th.text-center { text-align: center; }
-        .inv-table tbody td { padding: 8px 10px; font-size: 13px; border-bottom: 1px solid #ccc; color: #000; }
-        .inv-table tbody td:last-child { text-align: right; }
+        .inv-table tbody td { padding: 8px 10px; font-size: 12px; border-bottom: 1px solid #000; border-right: 1px solid #000; color: #000; }
+        .inv-table tbody td:last-child { text-align: right; border-right: none; }
         .inv-table tbody td.text-center { text-align: center; }
         .inv-table .discount-sub { color: #000; font-size: 11px; font-style: italic; }
 
         /* Summary */
-        .inv-summary { padding: 10px 30px 16px; display: flex; justify-content: flex-end; }
-        .summary-box { width: 300px; border: 1px solid #000; }
-        .summary-row { display: flex; justify-content: space-between; padding: 6px 14px; font-size: 13px; border-bottom: 1px solid #ccc; color: #000; }
-        .summary-row.total { font-weight: 800; font-size: 15px; border-top: 2px solid #000; border-bottom: none; padding: 10px 14px; background: #fff; color: #000; }
+        .inv-summary { padding: 10px 24px 10px; display: flex; justify-content: flex-end; }
+        .summary-box { width: 280px; border: 1px solid #000; overflow: hidden; }
+        .summary-row { display: flex; justify-content: space-between; padding: 6px 14px; font-size: 12px; border-bottom: 1px solid #000; color: #000; }
+        .summary-row.total { border-top: 2px solid #000; background: #fff; color: #000; font-weight: 800; font-size: 14px; border-bottom: none; padding: 10px 14px; }
 
-        /* Footer Section */
-        .inv-words-bank { padding: 10px 30px; border-top: 1px solid #000; font-size: 12px; color: #000; }
-        .inv-words-bank .words { font-weight: 700; margin-bottom: 6px; color: #000; }
+        /* Spacer pushes footer down */
+        .inv-spacer { flex: 1; }
+
+        /* Footer Section - bottom of page */
+        .inv-footer-section { margin-top: auto; }
+        .inv-words-bank { padding: 8px 24px; border-top: 1px solid #000; font-size: 11px; color: #000; }
+        .inv-words-bank .words { font-weight: 700; margin-bottom: 6px; }
         .inv-words-bank .bank { color: #000; }
         .inv-footer {
-            padding: 15px 30px; border-top: 2px solid #000;
+            padding: 12px 24px; border-top: 2px solid #000;
             display: flex; justify-content: space-between; align-items: flex-end;
-            font-size: 11px; color: #000;
+            font-size: 11px; color: #000; min-height: 80px;
         }
         .inv-footer .sign { text-align: right; }
-        .inv-footer .sign .for-company { font-weight: 700; color: #000; font-size: 12px; }
-        .inv-footer .sign .line { border-top: 1px solid #000; padding-top: 4px; margin-top: 30px; width: 200px; display: inline-block; color: #000; }
+        .inv-footer .sign .line { border-top: 1px solid #000; padding-top: 4px; margin-top: 30px; width: 200px; display: inline-block; }
+        .inv-footer .for-company { font-weight: 700; color: #000; }
 
         /* Actions */
         .actions-bar { text-align: center; padding: 20px; background: #e9ecef; }
@@ -272,21 +281,22 @@ function numToWords($n) {
         .btn-new:hover { background: #16a34a; color: #fff; }
 
         @media (max-width: 768px) {
-            .invoice-page { margin: 8px; border-width: 1px; }
-            .inv-header { flex-direction: column; text-align: center; padding: 16px 14px; gap: 10px; }
+            .invoice-page { width: 100%; min-height: auto; margin: 8px; border-width: 1px; }
+            .inv-header { flex-direction: column; text-align: center; padding: 14px; gap: 8px; }
             .inv-header .brand h2 { font-size: 16px; }
             .inv-header .brand p { font-size: 10px; }
             .inv-header .inv-type { font-size: 12px; padding: 6px 14px; }
-            .gst-bar { flex-wrap: wrap; gap: 6px; padding: 8px 14px; font-size: 11px; }
-            .inv-info { flex-direction: column; gap: 12px; padding: 14px; }
+            .inv-meta-table td { font-size: 11px; padding: 4px 8px; }
+            .inv-info { flex-direction: column; gap: 10px; padding: 12px 14px; }
             .inv-info .block:last-child { text-align: left !important; }
-            .inv-table table { font-size: 12px; }
-            .inv-table thead th { padding: 6px 4px; font-size: 10px; }
+            .inv-table { padding: 0 10px; }
+            .inv-table table { font-size: 11px; }
+            .inv-table thead th { padding: 6px 4px; font-size: 9px; }
             .inv-table tbody td { padding: 6px 4px; font-size: 11px; }
             .inv-summary { padding: 10px 14px; justify-content: center; }
             .summary-box { width: 100%; }
-            .inv-words-bank { padding: 10px 14px; font-size: 11px; }
-            .inv-footer { flex-direction: column; gap: 12px; padding: 12px 14px; }
+            .inv-words-bank { padding: 8px 14px; font-size: 10px; }
+            .inv-footer { flex-direction: column; gap: 10px; padding: 10px 14px; }
             .inv-footer .sign { text-align: center; }
             .inv-footer .sign .line { width: 160px; }
             .actions-bar { padding: 14px 10px; }
@@ -294,13 +304,15 @@ function numToWords($n) {
         }
 
         @media print {
-            body { background: #fff; }
+            body { background: #fff; margin: 0; }
             .actions-bar { display: none !important; }
-            .invoice-page { border: 2px solid #000; margin: 0; box-shadow: none; max-width: 100%; }
+            .invoice-page {
+                width: 210mm; min-height: 297mm; border: 2px solid #000;
+                margin: 0; box-shadow: none; page-break-after: always;
+            }
             .inv-header { display: flex !important; flex-direction: row !important; justify-content: space-between !important; }
             .inv-info { display: flex !important; flex-direction: row !important; justify-content: space-between !important; }
             .inv-info .block:last-child { text-align: right !important; }
-            .gst-bar { display: flex !important; flex-direction: row !important; }
         }
     </style>
 </head>
@@ -324,23 +336,28 @@ function numToWords($n) {
         <div class="inv-type"><?php echo $page_title; ?></div>
     </div>
 
-    <!-- GST Bar -->
-    <div class="gst-bar">
-        <div><span>GSTIN:</span> <strong>33AAAPY1027F1Z3</strong></div>
-        <div><span>HSN Code:</span> <strong>68042110</strong></div>
-        <div><span>Invoice Number:</span> <strong><?php echo $bill; ?></strong></div>
-        <div><span>Date:</span> <strong><?php echo htmlspecialchars($date); ?></strong></div>
+    <!-- Invoice Meta Info - Bordered table rows -->
+    <table class="inv-meta-table">
+        <tr>
+            <td><span>GSTIN:</span> <strong>33AAAPY1027F1Z3</strong></td>
+            <td><span>HSN Code:</span> <strong>68042110</strong></td>
+            <td><span>Invoice No:</span> <strong><?php echo $bill; ?></strong></td>
+            <td class="right-cell"><span>Date:</span> <strong><?php echo htmlspecialchars($date); ?></strong></td>
+        </tr>
         <?php if ($challan_no > 0): ?>
-        <div><span>D.C. No:</span> <strong><?php echo $challan_no; ?></strong></div>
-        <div><span>D.C. Date:</span> <strong><?php echo htmlspecialchars($challan_date); ?></strong></div>
+        <tr>
+            <td colspan="2">&nbsp;</td>
+            <td><span>D.C. No:</span> <strong><?php echo $challan_no; ?></strong></td>
+            <td class="right-cell"><span>D.C. Date:</span> <strong><?php echo htmlspecialchars($challan_date); ?></strong></td>
+        </tr>
         <?php endif; ?>
-    </div>
+    </table>
 
-    <!-- Bill To / Ship To -->
+    <!-- Bill To / Customer GST -->
     <div class="inv-info">
         <div class="block">
             <h6>Bill To</h6>
-            <p><strong>M/S. <?php echo htmlspecialchars($company_name); ?></strong></p>
+            <p><strong><?php echo htmlspecialchars($company_name); ?></strong></p>
             <?php if ($address): ?><p><?php echo htmlspecialchars($address); ?></p><?php endif; ?>
         </div>
         <div class="block" style="text-align:right;">
@@ -349,6 +366,9 @@ function numToWords($n) {
             <p>Type: <?php echo strtoupper($gst_type); ?></p>
         </div>
     </div>
+
+    <!-- Body content area - grows to fill A4 page -->
+    <div class="inv-body">
 
     <!-- Items Table -->
     <?php if (count($items) > 0): ?>
@@ -393,69 +413,77 @@ function numToWords($n) {
     </div>
     <?php endif; ?>
 
-    <!-- Summary -->
-    <div class="inv-summary">
-        <div class="summary-box">
-            <div class="summary-row">
-                <span>Taxable Amount</span>
-                <span>&#8377; <?php echo number_format($taxable_amount, 2); ?></span>
+    <!-- Spacer to push footer to bottom -->
+    <div class="inv-spacer"></div>
+
+    <!-- Footer Section - pinned to bottom -->
+    <div class="inv-footer-section">
+        <!-- Summary (above amount in words) -->
+        <div class="inv-summary">
+            <div class="summary-box">
+                <div class="summary-row">
+                    <span>Taxable Amount</span>
+                    <span>&#8377; <?php echo number_format($taxable_amount, 2); ?></span>
+                </div>
+                <?php if ($gst_type === 'tngst'): ?>
+                <div class="summary-row">
+                    <span>CGST (9%)</span>
+                    <span>&#8377; <?php echo number_format($cgst, 2); ?></span>
+                </div>
+                <div class="summary-row">
+                    <span>SGST (9%)</span>
+                    <span>&#8377; <?php echo number_format($sgst, 2); ?></span>
+                </div>
+                <?php elseif ($gst_type === '25p'): ?>
+                <div class="summary-row">
+                    <span>CGST (12.5%)</span>
+                    <span>&#8377; <?php echo number_format($cgst, 2); ?></span>
+                </div>
+                <div class="summary-row">
+                    <span>SGST (12.5%)</span>
+                    <span>&#8377; <?php echo number_format($sgst, 2); ?></span>
+                </div>
+                <?php elseif ($gst_type === '6p'): ?>
+                <div class="summary-row">
+                    <span>CGST (3%)</span>
+                    <span>&#8377; <?php echo number_format($cgst, 2); ?></span>
+                </div>
+                <div class="summary-row">
+                    <span>SGST (3%)</span>
+                    <span>&#8377; <?php echo number_format($sgst, 2); ?></span>
+                </div>
+                <?php else: ?>
+                <div class="summary-row">
+                    <span>IGST (18%)</span>
+                    <span>&#8377; <?php echo number_format($igst, 2); ?></span>
+                </div>
+                <?php endif; ?>
+                <div class="summary-row total">
+                    <span>TOTAL</span>
+                    <span>&#8377; <?php echo number_format($total, 2); ?></span>
+                </div>
             </div>
-            <?php if ($gst_type === 'tngst'): ?>
-            <div class="summary-row">
-                <span>CGST (9%)</span>
-                <span>&#8377; <?php echo number_format($cgst, 2); ?></span>
+        </div>
+
+        <!-- Amount in Words & Bank Details -->
+        <div class="inv-words-bank">
+            <p class="words">Amount in words: RUPEES <?php echo numToWords($total); ?> ONLY.</p>
+            <p class="bank">BANK: UCO BANK, SOMARASAMPETTAI | A/C: 07640500000016 | IFSC: UCBA0000764</p>
+        </div>
+
+        <!-- Footer -->
+        <div class="inv-footer">
+            <div>
+                <p>E. & O. E.</p>
             </div>
-            <div class="summary-row">
-                <span>SGST (9%)</span>
-                <span>&#8377; <?php echo number_format($sgst, 2); ?></span>
-            </div>
-            <?php elseif ($gst_type === '25p'): ?>
-            <div class="summary-row">
-                <span>CGST (12.5%)</span>
-                <span>&#8377; <?php echo number_format($cgst, 2); ?></span>
-            </div>
-            <div class="summary-row">
-                <span>SGST (12.5%)</span>
-                <span>&#8377; <?php echo number_format($sgst, 2); ?></span>
-            </div>
-            <?php elseif ($gst_type === '6p'): ?>
-            <div class="summary-row">
-                <span>CGST (3%)</span>
-                <span>&#8377; <?php echo number_format($cgst, 2); ?></span>
-            </div>
-            <div class="summary-row">
-                <span>SGST (3%)</span>
-                <span>&#8377; <?php echo number_format($sgst, 2); ?></span>
-            </div>
-            <?php else: ?>
-            <div class="summary-row">
-                <span>IGST (18%)</span>
-                <span>&#8377; <?php echo number_format($igst, 2); ?></span>
-            </div>
-            <?php endif; ?>
-            <div class="summary-row total">
-                <span>TOTAL</span>
-                <span>&#8377; <?php echo number_format($total, 2); ?></span>
+            <div class="sign">
+                <p class="for-company">for DELVIN DIAMOND TOOL INDUSTRIES</p>
+                <div class="line">Proprietor / Manager</div>
             </div>
         </div>
     </div>
 
-    <!-- Amount in Words & Bank Details -->
-    <div class="inv-words-bank">
-        <p class="words">Amount in words: RUPEES <?php echo numToWords($total); ?> ONLY.</p>
-        <p class="bank">BANK: UCO BANK, SOMARASAMPETTAI | A/C: 07640500000016 | IFSC: UCBA0000764</p>
-    </div>
-
-    <!-- Footer -->
-    <div class="inv-footer">
-        <div>
-            <p>E. & O. E.</p>
-        </div>
-        <div class="sign">
-            <p class="for-company">for DELVIN DIAMOND TOOL INDUSTRIES</p>
-            <div class="line">Proprietor / Manager</div>
-        </div>
-    </div>
+    </div><!-- end inv-body -->
 </div>
 
 <!-- Action Buttons -->
@@ -495,7 +523,7 @@ function downloadPDF() {
     clone.style.margin = '0';
     clone.style.border = '2px solid #000';
     clone.style.background = '#fff';
-    var flexSections = clone.querySelectorAll('.inv-header, .gst-bar, .inv-info, .inv-footer');
+    var flexSections = clone.querySelectorAll('.inv-header, .inv-info, .inv-footer');
     for (var i = 0; i < flexSections.length; i++) {
         flexSections[i].style.display = 'flex';
         flexSections[i].style.flexDirection = 'row';

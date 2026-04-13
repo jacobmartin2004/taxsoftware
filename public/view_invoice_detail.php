@@ -10,7 +10,12 @@ if ($bill <= 0) { header('Location: view_invoices.php'); exit(); }
 $table = ($type === 'purchase') ? 'purchase' : 'delvin';
 $page_title = ($type === 'purchase') ? 'PURCHASE INVOICE' : 'TAX INVOICE';
 
-$stmt = $conn->prepare("SELECT GSTNO, cname, bill, taxamt, cgst, sgst, igst, Total, date, challan_no, challan_date FROM `$table` WHERE bill = ?");
+if ($type === 'purchase') {
+    $stmt = $conn->prepare("SELECT GSTNO, cname, bill, taxamt, cgst, sgst, igst, Total, date FROM `purchase` WHERE bill = ?");
+} else {
+    $stmt = $conn->prepare("SELECT GSTNO, cname, bill, taxamt, cgst, sgst, igst, Total, date, challan_no, challan_date FROM `delvin` WHERE bill = ?");
+}
+if (!$stmt) { echo "<p style='padding:40px;font-family:sans-serif;'>DB Error: " . htmlspecialchars($conn->error) . "</p>"; exit(); }
 $stmt->bind_param('i', $bill);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -105,16 +110,14 @@ function numToWords($n) {
             padding: 6px 18px; font-size: 13px; letter-spacing: 1px; white-space: nowrap;
         }
 
-        /* GST / Invoice Info Bar - right aligned, two rows */
-        .inv-meta {
-            padding: 8px 24px; border-bottom: 1px solid #000; font-size: 12px;
+        /* Meta rows with borders */
+        .inv-meta-table { width: 100%; border-collapse: collapse; }
+        .inv-meta-table td {
+            border: 1px solid #000; padding: 6px 12px; font-size: 12px; color: #000;
         }
-        .inv-meta-row {
-            display: flex; justify-content: flex-end; gap: 30px;
-        }
-        .inv-meta-row + .inv-meta-row { margin-top: 4px; }
-        .inv-meta-row .meta-item span { color: #000; }
-        .inv-meta-row .meta-item strong { color: #000; margin-left: 4px; }
+        .inv-meta-table td span { font-weight: 400; }
+        .inv-meta-table td strong { margin-left: 4px; }
+        .inv-meta-table .right-cell { text-align: right; }
 
         /* Info Section (Bill To / Customer GST) */
         .inv-info { padding: 14px 24px; display: flex; justify-content: space-between; border-bottom: 1px solid #000; }
@@ -149,10 +152,8 @@ function numToWords($n) {
         /* Spacer pushes footer down */
         .inv-spacer { flex: 1; }
 
-        /* Footer Section - bottom ~10% */
-        .inv-footer-section {
-            margin-top: auto;
-        }
+        /* Footer Section - bottom of page */
+        .inv-footer-section { margin-top: auto; }
         .inv-words-bank { padding: 8px 24px; border-top: 1px solid #000; font-size: 11px; color: #000; }
         .inv-words-bank .words { font-weight: 700; margin-bottom: 6px; }
         .inv-words-bank .bank { color: #000; }
@@ -188,8 +189,7 @@ function numToWords($n) {
             .inv-header .brand h2 { font-size: 16px; }
             .inv-header .brand p { font-size: 10px; }
             .inv-header .inv-type { font-size: 12px; padding: 6px 14px; }
-            .inv-meta { padding: 8px 14px; }
-            .inv-meta-row { justify-content: center; flex-wrap: wrap; gap: 10px; }
+            .inv-meta-table td { font-size: 11px; padding: 4px 8px; }
             .inv-info { flex-direction: column; gap: 10px; padding: 12px 14px; }
             .inv-info .block:last-child { text-align: left !important; }
             .inv-table { padding: 0 10px; }
@@ -216,7 +216,6 @@ function numToWords($n) {
             .inv-header { display: flex !important; flex-direction: row !important; justify-content: space-between !important; }
             .inv-info { display: flex !important; flex-direction: row !important; justify-content: space-between !important; }
             .inv-info .block:last-child { text-align: right !important; }
-            .inv-meta-row { display: flex !important; justify-content: flex-end !important; }
         }
     </style>
 </head>
@@ -234,27 +233,28 @@ function numToWords($n) {
         <div class="inv-type"><?php echo $page_title; ?></div>
     </div>
 
-    <!-- Invoice Meta Info - Right Aligned -->
-    <div class="inv-meta">
-        <div class="inv-meta-row">
-            <div class="meta-item"><span>GSTIN:</span> <strong>33AAAPY1027F1Z3</strong></div>
-            <div class="meta-item"><span>HSN Code:</span> <strong>68042110</strong></div>
-            <div class="meta-item"><span>Invoice No:</span> <strong><?php echo htmlspecialchars($inv['bill']); ?></strong></div>
-            <div class="meta-item"><span>Date:</span> <strong><?php echo htmlspecialchars($inv['date']); ?></strong></div>
-        </div>
+    <!-- Invoice Meta Info - Bordered table rows, right corner -->
+    <table class="inv-meta-table">
+        <tr>
+            <td><span>GSTIN:</span> <strong>33AAAPY1027F1Z3</strong></td>
+            <td><span>HSN Code:</span> <strong>68042110</strong></td>
+            <td><span>Invoice No:</span> <strong><?php echo htmlspecialchars($inv['bill']); ?></strong></td>
+            <td class="right-cell"><span>Date:</span> <strong><?php echo htmlspecialchars($inv['date']); ?></strong></td>
+        </tr>
         <?php if ($challan_no > 0): ?>
-        <div class="inv-meta-row">
-            <div class="meta-item"><span>D.C. No:</span> <strong><?php echo $challan_no; ?></strong></div>
-            <div class="meta-item"><span>D.C. Date:</span> <strong><?php echo htmlspecialchars($challan_date); ?></strong></div>
-        </div>
+        <tr>
+            <td colspan="2">&nbsp;</td>
+            <td><span>D.C. No:</span> <strong><?php echo $challan_no; ?></strong></td>
+            <td class="right-cell"><span>D.C. Date:</span> <strong><?php echo htmlspecialchars($challan_date); ?></strong></td>
+        </tr>
         <?php endif; ?>
-    </div>
+    </table>
 
     <!-- Bill To / Customer GST -->
     <div class="inv-info">
         <div class="block">
             <h6>Bill To</h6>
-            <p><strong>M/S. <?php echo htmlspecialchars($inv['cname']); ?></strong></p>
+            <p><strong><?php echo htmlspecialchars($inv['cname']); ?></strong></p>
             <?php if ($address): ?><p><?php echo htmlspecialchars($address); ?></p><?php endif; ?>
         </div>
         <div class="block" style="text-align:right;">
@@ -291,7 +291,6 @@ function numToWords($n) {
             <tbody>
             <?php
             $sno = 1;
-            $item_count = count($items);
             foreach ($items as $it):
                 $gross = $it['qty'] * $it['rate'];
                 $disc_amt = 0;
@@ -300,7 +299,6 @@ function numToWords($n) {
                     $disc_amt = $gross * $it['discount_pct'] / 100;
                     $net = $gross - $disc_amt;
                 }
-                // Distribute GST proportionally across items
                 $item_cgst = ($inv['taxamt'] > 0) ? ($net / $inv['taxamt']) * $inv['cgst'] : 0;
                 $item_sgst = ($inv['taxamt'] > 0) ? ($net / $inv['taxamt']) * $inv['sgst'] : 0;
                 $item_igst = ($inv['taxamt'] > 0) ? ($net / $inv['taxamt']) * $inv['igst'] : 0;
@@ -332,42 +330,42 @@ function numToWords($n) {
     </div>
     <?php endif; ?>
 
-    <!-- Summary -->
-    <div class="inv-summary">
-        <div class="summary-box">
-            <div class="summary-row">
-                <span>Taxable Amount</span>
-                <span>&#8377; <?php echo number_format($inv['taxamt'], 2); ?></span>
-            </div>
-            <?php if ($inv['cgst'] > 0 || $inv['sgst'] > 0): ?>
-            <div class="summary-row">
-                <span><?php echo $cgst_label; ?></span>
-                <span>&#8377; <?php echo number_format($inv['cgst'], 2); ?></span>
-            </div>
-            <div class="summary-row">
-                <span><?php echo $sgst_label; ?></span>
-                <span>&#8377; <?php echo number_format($inv['sgst'], 2); ?></span>
-            </div>
-            <?php endif; ?>
-            <?php if ($inv['igst'] > 0): ?>
-            <div class="summary-row">
-                <span>IGST (18%)</span>
-                <span>&#8377; <?php echo number_format($inv['igst'], 2); ?></span>
-            </div>
-            <?php endif; ?>
-            <div class="summary-row total">
-                <span>TOTAL</span>
-                <span>&#8377; <?php echo number_format($inv['Total'], 2); ?></span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Amount in Words & Bank Details -->
     <!-- Spacer to push footer to bottom -->
     <div class="inv-spacer"></div>
 
     <!-- Footer Section - pinned to bottom -->
     <div class="inv-footer-section">
+        <!-- Summary (above amount in words) -->
+        <div class="inv-summary">
+            <div class="summary-box">
+                <div class="summary-row">
+                    <span>Taxable Amount</span>
+                    <span>&#8377; <?php echo number_format($inv['taxamt'], 2); ?></span>
+                </div>
+                <?php if ($inv['cgst'] > 0 || $inv['sgst'] > 0): ?>
+                <div class="summary-row">
+                    <span><?php echo $cgst_label; ?></span>
+                    <span>&#8377; <?php echo number_format($inv['cgst'], 2); ?></span>
+                </div>
+                <div class="summary-row">
+                    <span><?php echo $sgst_label; ?></span>
+                    <span>&#8377; <?php echo number_format($inv['sgst'], 2); ?></span>
+                </div>
+                <?php endif; ?>
+                <?php if ($inv['igst'] > 0): ?>
+                <div class="summary-row">
+                    <span>IGST (18%)</span>
+                    <span>&#8377; <?php echo number_format($inv['igst'], 2); ?></span>
+                </div>
+                <?php endif; ?>
+                <div class="summary-row total">
+                    <span>TOTAL</span>
+                    <span>&#8377; <?php echo number_format($inv['Total'], 2); ?></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Amount in Words & Bank Details -->
         <div class="inv-words-bank">
             <p class="words">Amount in words: RUPEES <?php echo numToWords($inv['Total']); ?> ONLY.</p>
             <p class="bank">BANK: UCO BANK, SOMARASAMPETTAI | A/C: 07640500000016 | IFSC: UCBA0000764</p>
@@ -423,15 +421,11 @@ function downloadPDF() {
     clone.style.border = '2px solid #000';
     clone.style.background = '#fff';
     // Force desktop flex layout on cloned header/sections
-    var flexSections = clone.querySelectorAll('.inv-header, .inv-meta-row, .inv-info, .inv-footer');
+    var flexSections = clone.querySelectorAll('.inv-header, .inv-info, .inv-footer');
     for (var i = 0; i < flexSections.length; i++) {
         flexSections[i].style.display = 'flex';
         flexSections[i].style.flexDirection = 'row';
         flexSections[i].style.justifyContent = 'space-between';
-    }
-    var metaRows = clone.querySelectorAll('.inv-meta-row');
-    for (var m = 0; m < metaRows.length; m++) {
-        metaRows[m].style.justifyContent = 'flex-end';
     }
     var infoBlocks = clone.querySelectorAll('.inv-info .block:last-child');
     for (var j = 0; j < infoBlocks.length; j++) {
