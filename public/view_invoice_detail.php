@@ -84,69 +84,82 @@ function numToWords($n) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        @page { size: A4; margin: 10mm; }
+        @page { size: A4; margin: 0; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Segoe UI', Arial, sans-serif; background: #e9ecef; color: #000; }
         .invoice-page {
-            max-width: 800px; margin: 20px auto; background: #fff;
+            width: 210mm; min-height: 297mm; margin: 0 auto; background: #fff;
             border: 2px solid #000; position: relative;
+            display: flex; flex-direction: column;
         }
 
         /* Header */
         .inv-header {
-            padding: 20px 30px; border-bottom: 2px solid #000;
+            padding: 14px 24px 10px; border-bottom: 2px solid #000;
             display: flex; justify-content: space-between; align-items: center;
         }
-        .inv-header .brand h2 { font-size: 22px; font-weight: 900; letter-spacing: 1px; margin-bottom: 2px; color: #000; }
-        .inv-header .brand p { font-size: 11px; color: #000; }
+        .inv-header .brand h2 { font-size: 20px; font-weight: 900; letter-spacing: 1px; margin-bottom: 2px; color: #000; }
+        .inv-header .brand p { font-size: 10px; color: #000; line-height: 1.5; }
         .inv-header .inv-type {
             border: 2px solid #000; color: #000; font-weight: 800;
-            padding: 8px 20px; font-size: 14px; letter-spacing: 1px;
+            padding: 6px 18px; font-size: 13px; letter-spacing: 1px; white-space: nowrap;
         }
 
-        /* GST Bar */
-        .gst-bar {
-            padding: 10px 30px; border-bottom: 1px solid #000;
-            display: flex; justify-content: space-between; font-size: 12px;
+        /* GST / Invoice Info Bar - right aligned, two rows */
+        .inv-meta {
+            padding: 8px 24px; border-bottom: 1px solid #000; font-size: 12px;
         }
-        .gst-bar span { color: #000; }
-        .gst-bar strong { color: #000; }
+        .inv-meta-row {
+            display: flex; justify-content: flex-end; gap: 30px;
+        }
+        .inv-meta-row + .inv-meta-row { margin-top: 4px; }
+        .inv-meta-row .meta-item span { color: #000; }
+        .inv-meta-row .meta-item strong { color: #000; margin-left: 4px; }
 
-        /* Info Section */
-        .inv-info { padding: 20px 30px; display: flex; justify-content: space-between; border-bottom: 1px solid #000; }
-        .inv-info .block h6 { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #000; margin-bottom: 6px; }
-        .inv-info .block p { font-size: 13px; margin-bottom: 2px; color: #000; }
+        /* Info Section (Bill To / Customer GST) */
+        .inv-info { padding: 14px 24px; display: flex; justify-content: space-between; border-bottom: 1px solid #000; }
+        .inv-info .block h6 { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #000; margin-bottom: 4px; }
+        .inv-info .block p { font-size: 12px; margin-bottom: 2px; color: #000; }
         .inv-info .block p strong { color: #000; }
 
-        /* Summary */
-        .inv-summary { padding: 0 30px 20px; display: flex; justify-content: flex-end; }
-        .summary-box { width: 300px; border: 1px solid #000; overflow: hidden; }
-        .summary-row { display: flex; justify-content: space-between; padding: 8px 16px; font-size: 13px; border-bottom: 1px solid #000; color: #000; }
-        .summary-row.total { border-top: 2px solid #000; background: #fff; color: #000; font-weight: 800; font-size: 16px; border-bottom: none; padding: 12px 16px; }
+        /* Middle content grows to fill page */
+        .inv-body { flex: 1; display: flex; flex-direction: column; }
 
         /* Items Table */
-        .inv-table { padding: 0 30px 20px; margin-top: 10px; }
+        .inv-table { padding: 0 24px; margin-top: 10px; }
         .inv-table table { width: 100%; border-collapse: collapse; border: 1px solid #000; }
         .inv-table thead th {
-            background: #fff; color: #000; padding: 10px 12px;
-            font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; text-align: left;
+            background: #fff; color: #000; padding: 8px 10px;
+            font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; text-align: left;
             border-bottom: 2px solid #000; border-right: 1px solid #000;
         }
         .inv-table thead th:last-child { text-align: right; border-right: none; }
         .inv-table thead th.text-center { text-align: center; }
-        .inv-table tbody td { padding: 10px 12px; font-size: 13px; border-bottom: 1px solid #000; border-right: 1px solid #000; color: #000; }
+        .inv-table tbody td { padding: 8px 10px; font-size: 12px; border-bottom: 1px solid #000; border-right: 1px solid #000; color: #000; }
         .inv-table tbody td:last-child { text-align: right; border-right: none; }
         .inv-table tbody td.text-center { text-align: center; }
-        .inv-table .discount-sub { color: #000; font-size: 12px; font-style: italic; }
+        .inv-table .discount-sub { color: #000; font-size: 11px; font-style: italic; }
 
-        /* Footer Section */
-        .inv-words-bank { padding: 10px 30px; border-top: 1px solid #000; font-size: 12px; color: #000; }
-        .inv-words-bank .words { font-weight: 700; margin-bottom: 8px; }
+        /* Summary */
+        .inv-summary { padding: 10px 24px 10px; display: flex; justify-content: flex-end; }
+        .summary-box { width: 280px; border: 1px solid #000; overflow: hidden; }
+        .summary-row { display: flex; justify-content: space-between; padding: 6px 14px; font-size: 12px; border-bottom: 1px solid #000; color: #000; }
+        .summary-row.total { border-top: 2px solid #000; background: #fff; color: #000; font-weight: 800; font-size: 14px; border-bottom: none; padding: 10px 14px; }
+
+        /* Spacer pushes footer down */
+        .inv-spacer { flex: 1; }
+
+        /* Footer Section - bottom ~10% */
+        .inv-footer-section {
+            margin-top: auto;
+        }
+        .inv-words-bank { padding: 8px 24px; border-top: 1px solid #000; font-size: 11px; color: #000; }
+        .inv-words-bank .words { font-weight: 700; margin-bottom: 6px; }
         .inv-words-bank .bank { color: #000; }
         .inv-footer {
-            padding: 15px 30px; border-top: 2px solid #000;
+            padding: 12px 24px; border-top: 2px solid #000;
             display: flex; justify-content: space-between; align-items: flex-end;
-            font-size: 11px; color: #000;
+            font-size: 11px; color: #000; min-height: 80px;
         }
         .inv-footer .sign { text-align: right; }
         .inv-footer .sign .line { border-top: 1px solid #000; padding-top: 4px; margin-top: 30px; width: 200px; display: inline-block; }
@@ -170,22 +183,23 @@ function numToWords($n) {
         .btn-dash:hover { background: #16a34a; color: #fff; }
 
         @media (max-width: 768px) {
-            .invoice-page { margin: 8px; border-width: 1px; }
-            .inv-header { flex-direction: column; text-align: center; padding: 16px 14px; gap: 10px; }
+            .invoice-page { width: 100%; min-height: auto; margin: 8px; border-width: 1px; }
+            .inv-header { flex-direction: column; text-align: center; padding: 14px; gap: 8px; }
             .inv-header .brand h2 { font-size: 16px; }
             .inv-header .brand p { font-size: 10px; }
             .inv-header .inv-type { font-size: 12px; padding: 6px 14px; }
-            .gst-bar { flex-wrap: wrap; gap: 6px; padding: 8px 14px; font-size: 11px; }
-            .inv-info { flex-direction: column; gap: 12px; padding: 14px; }
+            .inv-meta { padding: 8px 14px; }
+            .inv-meta-row { justify-content: center; flex-wrap: wrap; gap: 10px; }
+            .inv-info { flex-direction: column; gap: 10px; padding: 12px 14px; }
             .inv-info .block:last-child { text-align: left !important; }
-            .inv-table { padding: 0 10px 14px; }
-            .inv-table table { font-size: 12px; }
-            .inv-table thead th { padding: 8px 6px; font-size: 10px; }
-            .inv-table tbody td { padding: 8px 6px; font-size: 12px; }
-            .inv-summary { padding: 0 14px 14px; justify-content: center; }
+            .inv-table { padding: 0 10px; }
+            .inv-table table { font-size: 11px; }
+            .inv-table thead th { padding: 6px 4px; font-size: 9px; }
+            .inv-table tbody td { padding: 6px 4px; font-size: 11px; }
+            .inv-summary { padding: 10px 14px; justify-content: center; }
             .summary-box { width: 100%; }
-            .inv-words-bank { padding: 10px 14px; font-size: 11px; }
-            .inv-footer { flex-direction: column; gap: 12px; padding: 12px 14px; }
+            .inv-words-bank { padding: 8px 14px; font-size: 10px; }
+            .inv-footer { flex-direction: column; gap: 10px; padding: 10px 14px; }
             .inv-footer .sign { text-align: center; }
             .inv-footer .sign .line { width: 160px; }
             .actions-bar { padding: 14px 10px; }
@@ -193,13 +207,16 @@ function numToWords($n) {
         }
 
         @media print {
-            body { background: #fff; }
+            body { background: #fff; margin: 0; }
             .actions-bar { display: none !important; }
-            .invoice-page { border: 2px solid #000; margin: 0; box-shadow: none; max-width: 100%; }
+            .invoice-page {
+                width: 210mm; min-height: 297mm; border: 2px solid #000;
+                margin: 0; box-shadow: none; page-break-after: always;
+            }
             .inv-header { display: flex !important; flex-direction: row !important; justify-content: space-between !important; }
             .inv-info { display: flex !important; flex-direction: row !important; justify-content: space-between !important; }
             .inv-info .block:last-child { text-align: right !important; }
-            .gst-bar { display: flex !important; flex-direction: row !important; }
+            .inv-meta-row { display: flex !important; justify-content: flex-end !important; }
         }
     </style>
 </head>
@@ -217,19 +234,23 @@ function numToWords($n) {
         <div class="inv-type"><?php echo $page_title; ?></div>
     </div>
 
-    <!-- GST Bar -->
-    <div class="gst-bar">
-        <div><span>GSTIN:</span> <strong>33AAAPY1027F1Z3</strong></div>
-        <div><span>HSN Code:</span> <strong>68042110</strong></div>
-        <div><span>Invoice Number:</span> <strong><?php echo htmlspecialchars($inv['bill']); ?></strong></div>
-        <div><span>Date:</span> <strong><?php echo htmlspecialchars($inv['date']); ?></strong></div>
+    <!-- Invoice Meta Info - Right Aligned -->
+    <div class="inv-meta">
+        <div class="inv-meta-row">
+            <div class="meta-item"><span>GSTIN:</span> <strong>33AAAPY1027F1Z3</strong></div>
+            <div class="meta-item"><span>HSN Code:</span> <strong>68042110</strong></div>
+            <div class="meta-item"><span>Invoice No:</span> <strong><?php echo htmlspecialchars($inv['bill']); ?></strong></div>
+            <div class="meta-item"><span>Date:</span> <strong><?php echo htmlspecialchars($inv['date']); ?></strong></div>
+        </div>
         <?php if ($challan_no > 0): ?>
-        <div><span>D.C. No:</span> <strong><?php echo $challan_no; ?></strong></div>
-        <div><span>D.C. Date:</span> <strong><?php echo htmlspecialchars($challan_date); ?></strong></div>
+        <div class="inv-meta-row">
+            <div class="meta-item"><span>D.C. No:</span> <strong><?php echo $challan_no; ?></strong></div>
+            <div class="meta-item"><span>D.C. Date:</span> <strong><?php echo htmlspecialchars($challan_date); ?></strong></div>
+        </div>
         <?php endif; ?>
     </div>
 
-    <!-- Bill To / Ship To -->
+    <!-- Bill To / Customer GST -->
     <div class="inv-info">
         <div class="block">
             <h6>Bill To</h6>
@@ -242,6 +263,9 @@ function numToWords($n) {
             <p>Type: <?php echo $gst_type_display; ?></p>
         </div>
     </div>
+
+    <!-- Body content area - grows to fill A4 page -->
+    <div class="inv-body">
 
     <!-- Items Table -->
     <?php if (count($items) > 0): ?>
@@ -339,21 +363,29 @@ function numToWords($n) {
     </div>
 
     <!-- Amount in Words & Bank Details -->
-    <div class="inv-words-bank">
-        <p class="words">Amount in words: RUPEES <?php echo numToWords($inv['Total']); ?> ONLY.</p>
-        <p class="bank">BANK: UCO BANK, SOMARASAMPETTAI | A/C: 07640500000016 | IFSC: UCBA0000764</p>
+    <!-- Spacer to push footer to bottom -->
+    <div class="inv-spacer"></div>
+
+    <!-- Footer Section - pinned to bottom -->
+    <div class="inv-footer-section">
+        <div class="inv-words-bank">
+            <p class="words">Amount in words: RUPEES <?php echo numToWords($inv['Total']); ?> ONLY.</p>
+            <p class="bank">BANK: UCO BANK, SOMARASAMPETTAI | A/C: 07640500000016 | IFSC: UCBA0000764</p>
+        </div>
+
+        <!-- Footer -->
+        <div class="inv-footer">
+            <div>
+                <p>E. & O. E.</p>
+            </div>
+            <div class="sign">
+                <p class="for-company">for DELVIN DIAMOND TOOL INDUSTRIES</p>
+                <div class="line">Proprietor / Manager</div>
+            </div>
+        </div>
     </div>
 
-    <!-- Footer -->
-    <div class="inv-footer">
-        <div>
-            <p>E. & O. E.</p>
-        </div>
-        <div class="sign">
-            <p class="for-company">for DELVIN DIAMOND TOOL INDUSTRIES</p>
-            <div class="line">Proprietor / Manager</div>
-        </div>
-    </div>
+    </div><!-- end inv-body -->
 </div>
 
 <!-- Action Buttons -->
@@ -391,11 +423,15 @@ function downloadPDF() {
     clone.style.border = '2px solid #000';
     clone.style.background = '#fff';
     // Force desktop flex layout on cloned header/sections
-    var flexSections = clone.querySelectorAll('.inv-header, .gst-bar, .inv-info, .inv-footer');
+    var flexSections = clone.querySelectorAll('.inv-header, .inv-meta-row, .inv-info, .inv-footer');
     for (var i = 0; i < flexSections.length; i++) {
         flexSections[i].style.display = 'flex';
         flexSections[i].style.flexDirection = 'row';
         flexSections[i].style.justifyContent = 'space-between';
+    }
+    var metaRows = clone.querySelectorAll('.inv-meta-row');
+    for (var m = 0; m < metaRows.length; m++) {
+        metaRows[m].style.justifyContent = 'flex-end';
     }
     var infoBlocks = clone.querySelectorAll('.inv-info .block:last-child');
     for (var j = 0; j < infoBlocks.length; j++) {
