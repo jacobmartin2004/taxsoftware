@@ -191,7 +191,7 @@ function numToWords($n) {
         body { font-family: 'Segoe UI', Arial, sans-serif; background: #e9ecef; color: #000; }
         .invoice-page {
             width: 210mm; min-height: 297mm; margin: 0 auto; background: #fff;
-            border: 2px solid #000; position: relative;
+            padding: 10mm 0; border: 2px solid #000; position: relative;
             display: flex; flex-direction: column;
         }
 
