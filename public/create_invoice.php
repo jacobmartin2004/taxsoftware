@@ -3,9 +3,9 @@ require_once '../src/auth.php';
 require_once '../src/conn.php';
 
 $companies = [];
-$res = $conn->query("SELECT id, companyname, gstno, gsttype, address, state, district FROM companydata ORDER BY companyname");
+$res = $conn->query("SELECT id, companyname, gstno, gsttype, address FROM companydata ORDER BY companyname");
 if ($res) { while ($row = $res->fetch_assoc()) $companies[] = $row; }
-else { die("<b>DB Error:</b> companydata table may be missing columns (address, state, district). Please import sql/delvin.sql. MySQL said: " . $conn->error); }
+else { die("<b>DB Error:</b> companydata table may be missing columns. Please import sql/delvin.sql. MySQL said: " . $conn->error); }
 
 $tools = [];
 $res = $conn->query("SELECT id, toolname, rate FROM tools ORDER BY toolname");
@@ -15,6 +15,10 @@ else { die("<b>DB Error:</b> 'tools' table not found. Please import sql/delvin.s
 $inv_res = $conn->query("SELECT MAX(bill) as maxbill FROM delvin");
 $inv_row = $inv_res ? $inv_res->fetch_assoc() : null;
 $next_bill = ($inv_row['maxbill'] ?? 0) + 1;
+
+$challan_res = $conn->query("SELECT MAX(challan_no) as max_challan FROM delvin");
+$challan_row = $challan_res ? $challan_res->fetch_assoc() : null;
+$next_challan = ($challan_row['max_challan'] ?? 0) + 1;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -92,8 +96,6 @@ $next_bill = ($inv_row['maxbill'] ?? 0) + 1;
                         data-gstno="<?php echo htmlspecialchars($c['gstno']); ?>"
                         data-gsttype="<?php echo htmlspecialchars($c['gsttype']); ?>"
                         data-address="<?php echo htmlspecialchars($c['address'] ?? ''); ?>"
-                        data-state="<?php echo htmlspecialchars($c['state'] ?? ''); ?>"
-                        data-district="<?php echo htmlspecialchars($c['district'] ?? ''); ?>"
                         data-name="<?php echo htmlspecialchars($c['companyname']); ?>">
                         <?php echo htmlspecialchars($c['companyname']); ?>
                     </option>
@@ -109,20 +111,26 @@ $next_bill = ($inv_row['maxbill'] ?? 0) + 1;
             <div class="col-md-4">
                 <label class="form-label">GST No:</label>
                 <input type="text" class="form-control" id="gst_no" name="gst_no" readonly>
-            </div>
-            <div class="col-md-4">
-                <label class="form-label">State:</label>
-                <input type="text" class="form-control" id="company_state" name="company_state" readonly>
                 <input type="hidden" id="gst_type" name="gst_type" value="">
             </div>
             <div class="col-md-4">
                 <label class="form-label">Date:</label>
                 <input type="date" class="form-control" name="date" value="<?php echo date('Y-m-d'); ?>" required>
             </div>
+            <div class="col-md-4">
+                <label class="form-label">Address:</label>
+                <input type="text" class="form-control" id="company_address" readonly>
+            </div>
         </div>
-        <div class="row mb-2">
-            <div class="col-md-3"><strong>Address:</strong></div>
-            <div class="col-md-9"><span id="company_address">-</span></div>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label class="form-label fw-bold">Delivery Challan No:</label>
+                <input type="number" class="form-control" name="challan_no" value="<?php echo $next_challan; ?>" required>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-bold">Delivery Challan Date:</label>
+                <input type="date" class="form-control" name="challan_date" value="<?php echo date('Y-m-d'); ?>" required>
+            </div>
         </div>
         <hr>
         <h5>Items</h5>
@@ -164,8 +172,7 @@ $(document).ready(function(){
         var opt = $(this).find(':selected');
         $('#gst_no').val(opt.data('gstno') || '');
         $('#gst_type').val(opt.data('gsttype') || '');
-        $('#company_state').val(opt.data('state') || '');
-        $('#company_address').text((opt.data('address') || '') + ', ' + (opt.data('district') || '') + ', ' + (opt.data('state') || ''));
+        $('#company_address').val(opt.data('address') || '');
         $('#hid_cname').val(opt.data('name') || '');
         recalculate();
     });

@@ -21,6 +21,13 @@ $igst = floatval($_POST['igst']);
 $total = intval($_POST['total']);
 $delivery_challan = isset($_POST['delivery_challan']) ? trim($_POST['delivery_challan']) : '';
 $despatch = isset($_POST['despatch']) ? trim($_POST['despatch']) : 'COURIER';
+$challan_no = isset($_POST['challan_no']) ? intval($_POST['challan_no']) : 0;
+$challan_date_raw = isset($_POST['challan_date']) ? $_POST['challan_date'] : '';
+$challan_date = '';
+if ($challan_date_raw) {
+    $cd_obj = DateTime::createFromFormat('Y-m-d', $challan_date_raw);
+    $challan_date = $cd_obj ? $cd_obj->format('d-m-Y') : $challan_date_raw;
+}
 
 // Format the date to DD-MM-YYYY for storage
 $date_obj = DateTime::createFromFormat('Y-m-d', $date_raw);
@@ -57,24 +64,15 @@ if (isset($_POST['items'])) {
 
 // Get company address info
 $address = '';
-$state = '';
-$district = '';
-$state_code = '';
 if ($company_id > 0) {
-    $stmt = $conn->prepare("SELECT address, state, district FROM companydata WHERE id = ?");
+    $stmt = $conn->prepare("SELECT address FROM companydata WHERE id = ?");
     $stmt->bind_param('i', $company_id);
     $stmt->execute();
     $cres = $stmt->get_result();
     if ($crow = $cres->fetch_assoc()) {
         $address = $crow['address'] ?? '';
-        $state = $crow['state'] ?? '';
-        $district = $crow['district'] ?? '';
     }
     $stmt->close();
-}
-// Extract state code from GST number (first 2 digits)
-if (strlen($gst_no) >= 2) {
-    $state_code = substr($gst_no, 0, 2);
 }
 
 $db_error = '';
@@ -82,11 +80,11 @@ $saved = false;
 
 if ($invoice_type === 'invoice') {
     if ($gst_type === 'tngst' || $gst_type === '25p' || $gst_type === '6p') {
-        $stmt = $conn->prepare("INSERT INTO delvin (GSTNO, cname, bill, taxamt, cgst, sgst, Total, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param('ssidddis', $gst_no, $company_name, $bill, $taxable_amount, $cgst, $sgst, $total, $date);
+        $stmt = $conn->prepare("INSERT INTO delvin (GSTNO, cname, bill, taxamt, cgst, sgst, Total, date, challan_no, challan_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param('ssidddisis', $gst_no, $company_name, $bill, $taxable_amount, $cgst, $sgst, $total, $date, $challan_no, $challan_date);
     } else {
-        $stmt = $conn->prepare("INSERT INTO delvin (GSTNO, cname, bill, taxamt, igst, Total, date) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param('ssiddis', $gst_no, $company_name, $bill, $taxable_amount, $igst, $total, $date);
+        $stmt = $conn->prepare("INSERT INTO delvin (GSTNO, cname, bill, taxamt, igst, Total, date, challan_no, challan_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param('ssiddisis', $gst_no, $company_name, $bill, $taxable_amount, $igst, $total, $date, $challan_no, $challan_date);
     }
     if (!$stmt->execute()) { $db_error = $conn->error; } else { $saved = true; }
 } elseif ($invoice_type === 'purchase') {
@@ -332,6 +330,10 @@ function numToWords($n) {
         <div><span>HSN Code:</span> <strong>68042110</strong></div>
         <div><span>Invoice Number:</span> <strong><?php echo $bill; ?></strong></div>
         <div><span>Date:</span> <strong><?php echo htmlspecialchars($date); ?></strong></div>
+        <?php if ($challan_no > 0): ?>
+        <div><span>D.C. No:</span> <strong><?php echo $challan_no; ?></strong></div>
+        <div><span>D.C. Date:</span> <strong><?php echo htmlspecialchars($challan_date); ?></strong></div>
+        <?php endif; ?>
     </div>
 
     <!-- Bill To / Ship To -->
@@ -340,13 +342,11 @@ function numToWords($n) {
             <h6>Bill To</h6>
             <p><strong>M/S. <?php echo htmlspecialchars($company_name); ?></strong></p>
             <?php if ($address): ?><p><?php echo htmlspecialchars($address); ?></p><?php endif; ?>
-            <p><?php echo htmlspecialchars($district); ?><?php echo $district && $state ? ', ' : ''; ?><?php echo htmlspecialchars($state); ?></p>
         </div>
         <div class="block" style="text-align:right;">
             <h6>Customer GST</h6>
             <p><strong><?php echo htmlspecialchars($gst_no); ?></strong></p>
             <p>Type: <?php echo strtoupper($gst_type); ?></p>
-            <?php if ($state_code): ?><p>State Code: <?php echo htmlspecialchars($state_code); ?></p><?php endif; ?>
         </div>
     </div>
 

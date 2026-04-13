@@ -16,11 +16,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $gstno = $_POST['gstno'];
     $gsttype = $_POST['gsttype'];
     $address = $_POST['address'];
-    $state = $_POST['state'];
-    $district = $_POST['district'];
     $id = intval($_POST['id']);
-    $stmt = $conn->prepare("UPDATE companydata SET companyname=?, gstno=?, gsttype=?, address=?, state=?, district=? WHERE id=?");
-    $stmt->bind_param('ssssssi', $companyname, $gstno, $gsttype, $address, $state, $district, $id);
+    $stmt = $conn->prepare("UPDATE companydata SET companyname=?, gstno=?, gsttype=?, address=? WHERE id=?");
+    $stmt->bind_param('ssssi', $companyname, $gstno, $gsttype, $address, $id);
     $stmt->execute();
     header('Location: ../src/companydata.php');
     exit();
@@ -91,15 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
     <div class="mb-3">
         <label class="form-label">Address:</label>
-        <textarea class="form-control" name="address" rows="2" required><?php echo htmlspecialchars($company['address'] ?? ''); ?></textarea>
-    </div>
-    <div class="mb-3">
-        <label class="form-label">State:</label>
-        <input type="text" class="form-control" name="state" value="<?php echo htmlspecialchars($company['state'] ?? ''); ?>" required>
-    </div>
-    <div class="mb-3">
-        <label class="form-label">District:</label>
-        <input type="text" class="form-control" name="district" value="<?php echo htmlspecialchars($company['district'] ?? ''); ?>" required>
+        <textarea class="form-control" name="address" rows="2" placeholder="Full address including district, state" required><?php echo htmlspecialchars($company['address'] ?? ''); ?></textarea>
     </div>
     <button type="submit" class="btn btn-primary">Update Company</button>
     <a href="../src/companydata.php" class="btn btn-secondary">Cancel</a>

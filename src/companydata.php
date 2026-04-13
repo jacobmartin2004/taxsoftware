@@ -8,11 +8,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_record'])) {
     $gstno = $_POST['GSTno'];
     $gsttype = $_POST['gsttype'];
     $address = $_POST['address'];
-    $state = $_POST['state'];
-    $district = $_POST['district'];
 
-    $stmt = $conn->prepare("INSERT INTO companydata (companyname, gstno, gsttype, address, state, district) VALUES (?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param('ssssss', $companyname, $gstno, $gsttype, $address, $state, $district);
+    $stmt = $conn->prepare("INSERT INTO companydata (companyname, gstno, gsttype, address) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param('ssss', $companyname, $gstno, $gsttype, $address);
     if ($stmt->execute()) {
         $msg = '<div class="alert alert-success alert-dismissible fade show" role="alert">New record created successfully!<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>';
     } else {
@@ -123,17 +121,9 @@ $result = $conn->query($sql);
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-12 mb-3">
                         <label for="address" class="form-label fw-bold">Address:</label>
-                        <input type="text" class="form-control" id="address" name="address" required>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <label for="state" class="form-label fw-bold">State:</label>
-                        <input type="text" class="form-control" id="state" name="state" required>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <label for="district" class="form-label fw-bold">District:</label>
-                        <input type="text" class="form-control" id="district" name="district" required>
+                        <input type="text" class="form-control" id="address" name="address" placeholder="Full address including district, state" required>
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary" name="add_record"><i class="bi bi-plus-lg me-1"></i>Add Company</button>
@@ -155,8 +145,6 @@ $result = $conn->query($sql);
                             <th>GST No</th>
                             <th>Type</th>
                             <th>Address</th>
-                            <th>State</th>
-                            <th>District</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -172,8 +160,6 @@ $result = $conn->query($sql);
                                 echo "<td><small>" . htmlspecialchars($row['gstno']) . "</small></td>";
                                 echo "<td><span class='" . $badge_class . "'>" . strtoupper(htmlspecialchars($row['gsttype'])) . "</span></td>";
                                 echo "<td>" . htmlspecialchars($row['address'] ?? '') . "</td>";
-                                echo "<td>" . htmlspecialchars($row['state'] ?? '') . "</td>";
-                                echo "<td>" . htmlspecialchars($row['district'] ?? '') . "</td>";
                                 echo "<td>";
                                 echo "<a href='../public/edit_company.php?id=" . $row['id'] . "' class='btn btn-warning btn-sm me-1'><i class='bi bi-pencil'></i></a>";
                                 echo "<form method='POST' action='' style='display:inline-block;'>";
@@ -185,7 +171,7 @@ $result = $conn->query($sql);
                                 $si_no++;
                             }
                         } else {
-                            echo "<tr><td colspan='8' class='text-center text-muted py-4'>No companies found</td></tr>";
+                            echo "<tr><td colspan='6' class='text-center text-muted py-4'>No companies found</td></tr>";
                         }
                         ?>
                     </tbody>

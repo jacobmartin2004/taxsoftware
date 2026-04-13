@@ -710,17 +710,13 @@ $month_names = ['', 'January', 'February', 'March', 'April', 'May', 'June', 'Jul
         $pdf_records = [];
         foreach ($records as $r) {
             $addr = '';
-            $st = '';
-            $dist = '';
             $gtype = '';
-            $cs = $conn->prepare("SELECT address, state, district, gsttype FROM companydata WHERE gstno = ?");
+            $cs = $conn->prepare("SELECT address, gsttype FROM companydata WHERE gstno = ?");
             $cs->bind_param('s', $r['GSTNO']);
             $cs->execute();
             $cr = $cs->get_result();
             if ($cw = $cr->fetch_assoc()) {
                 $addr = $cw['address'] ?? '';
-                $st = $cw['state'] ?? '';
-                $dist = $cw['district'] ?? '';
                 $gtype = strtoupper($cw['gsttype'] ?? '');
             }
             $cs->close();
@@ -746,8 +742,6 @@ $month_names = ['', 'January', 'February', 'March', 'April', 'May', 'June', 'Jul
                 'Total' => floatval($r['Total']),
                 'date' => $r['date'],
                 'address' => $addr,
-                'state' => $st,
-                'district' => $dist,
                 'gsttype' => $gtype,
                 'items' => $items_json
             ];
@@ -811,7 +805,6 @@ $month_names = ['', 'January', 'February', 'March', 'April', 'May', 'June', 'Jul
             }
 
             function buildInvoiceHTML(r) {
-                var loc = (r.district || '') + (r.district && r.state ? ', ' : '') + (r.state || '');
                 var taxRows = '';
                 var cgst_label = 'CGST (9%)',
                     sgst_label = 'SGST (9%)';
@@ -861,7 +854,7 @@ $month_names = ['', 'January', 'February', 'March', 'April', 'May', 'June', 'Jul
                     '<div class="iinfo">' +
                     '<div class="blk"><h6>Bill To</h6><p><b>M/S. ' + r.cname + '</b></p>' +
                     (r.address ? '<p>' + r.address + '</p>' : '') +
-                    '<p>' + loc + '</p></div>' +
+                    '</div>' +
                     '<div class="blk" style="text-align:right;"><h6>Customer GST</h6><p><b>' + r.GSTNO + '</b></p><p>Type: ' + r.gsttype + '</p></div>' +
                     '</div>' +
                     (itemsHTML ? '<div class="items-sec">' + itemsHTML + '</div>' : '') +

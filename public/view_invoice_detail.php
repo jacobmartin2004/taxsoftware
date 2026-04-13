@@ -10,7 +10,7 @@ if ($bill <= 0) { header('Location: view_invoices.php'); exit(); }
 $table = ($type === 'purchase') ? 'purchase' : 'delvin';
 $page_title = ($type === 'purchase') ? 'PURCHASE INVOICE' : 'TAX INVOICE';
 
-$stmt = $conn->prepare("SELECT GSTNO, cname, bill, taxamt, cgst, sgst, igst, Total, date FROM `$table` WHERE bill = ?");
+$stmt = $conn->prepare("SELECT GSTNO, cname, bill, taxamt, cgst, sgst, igst, Total, date, challan_no, challan_date FROM `$table` WHERE bill = ?");
 $stmt->bind_param('i', $bill);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -21,26 +21,20 @@ if (!$inv) { echo "<p style='padding:40px;font-family:sans-serif;'>Invoice not f
 
 // Get company address
 $address = '';
-$state = '';
-$district = '';
 $gst_type_display = '';
-$cstmt = $conn->prepare("SELECT address, state, district, gsttype FROM companydata WHERE gstno = ?");
+$cstmt = $conn->prepare("SELECT address, gsttype FROM companydata WHERE gstno = ?");
 $cstmt->bind_param('s', $inv['GSTNO']);
 $cstmt->execute();
 $cres = $cstmt->get_result();
 if ($crow = $cres->fetch_assoc()) {
     $address = $crow['address'] ?? '';
-    $state = $crow['state'] ?? '';
-    $district = $crow['district'] ?? '';
     $gst_type_display = strtoupper($crow['gsttype'] ?? '');
 }
 $cstmt->close();
 
-// Extract state code from GST number
-$state_code = '';
-if (strlen($inv['GSTNO']) >= 2) {
-    $state_code = substr($inv['GSTNO'], 0, 2);
-}
+// Get challan info
+$challan_no = isset($inv['challan_no']) ? intval($inv['challan_no']) : 0;
+$challan_date = isset($inv['challan_date']) ? $inv['challan_date'] : '';
 
 // Fetch invoice items
 $items = [];
@@ -229,6 +223,10 @@ function numToWords($n) {
         <div><span>HSN Code:</span> <strong>68042110</strong></div>
         <div><span>Invoice Number:</span> <strong><?php echo htmlspecialchars($inv['bill']); ?></strong></div>
         <div><span>Date:</span> <strong><?php echo htmlspecialchars($inv['date']); ?></strong></div>
+        <?php if ($challan_no > 0): ?>
+        <div><span>D.C. No:</span> <strong><?php echo $challan_no; ?></strong></div>
+        <div><span>D.C. Date:</span> <strong><?php echo htmlspecialchars($challan_date); ?></strong></div>
+        <?php endif; ?>
     </div>
 
     <!-- Bill To / Ship To -->
@@ -237,13 +235,11 @@ function numToWords($n) {
             <h6>Bill To</h6>
             <p><strong>M/S. <?php echo htmlspecialchars($inv['cname']); ?></strong></p>
             <?php if ($address): ?><p><?php echo htmlspecialchars($address); ?></p><?php endif; ?>
-            <p><?php echo htmlspecialchars($district); ?><?php echo $district && $state ? ', ' : ''; ?><?php echo htmlspecialchars($state); ?></p>
         </div>
         <div class="block" style="text-align:right;">
             <h6>Customer GST</h6>
             <p><strong><?php echo htmlspecialchars($inv['GSTNO']); ?></strong></p>
             <p>Type: <?php echo $gst_type_display; ?></p>
-            <?php if ($state_code): ?><p>State Code: <?php echo htmlspecialchars($state_code); ?></p><?php endif; ?>
         </div>
     </div>
 

@@ -7,7 +7,7 @@ if ($conn->connect_error) {
 
 if (isset($_POST['companyname'])) {
     $companyname = $_POST['companyname'];
-    $stmt = $conn->prepare("SELECT gstno, gsttype, address, state, district FROM companydata WHERE companyname = ?");
+    $stmt = $conn->prepare("SELECT gstno, gsttype, address FROM companydata WHERE companyname = ?");
     $stmt->bind_param('s', $companyname);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -17,17 +17,13 @@ if (isset($_POST['companyname'])) {
         echo json_encode([
             'gstno' => $row['gstno'],
             'gsttype' => $row['gsttype'],
-            'address' => $row['address'] ?? '',
-            'state' => $row['state'] ?? '',
-            'district' => $row['district'] ?? ''
+            'address' => $row['address'] ?? ''
         ]);
     } else {
         echo json_encode([
             'gstno' => '',
             'gsttype' => '',
-            'address' => '',
-            'state' => '',
-            'district' => ''
+            'address' => ''
         ]);
     }
 }
