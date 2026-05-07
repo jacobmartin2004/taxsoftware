@@ -401,7 +401,11 @@ function numToWords($n) {
                 <tr>
                     <td><?php echo $sno++; ?></td>
                     <td>
-                        <?php echo htmlspecialchars(strtoupper($it['tool_name'])); ?>
+                        <?php
+                            $tool_lines = array_map('trim', explode(',', strtoupper($it['tool_name'])));
+                            $tool_lines = array_filter($tool_lines, function ($line) { return $line !== ''; });
+                            echo nl2br(htmlspecialchars(implode("\n", $tool_lines)));
+                        ?>
                         <?php if ($it['discount_pct'] > 0): ?>
                         <br><span class="discount-sub">&nbsp;&nbsp;Less: Discount <?php echo $it['discount_pct']; ?>% = &#8377;<?php echo number_format($disc_amt, 2); ?></span>
                         <?php endif; ?>
