@@ -89,13 +89,13 @@ function numToWords($n) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        @page { size: A4; margin: 0; }
+        @page { size: A4; margin: 12mm 10mm 12mm 18mm; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Segoe UI', Arial, sans-serif; background: #e9ecef; color: #000; }
         .invoice-page {
-            --pad-left: 44px;
+            --pad-left: 50px;
             --pad-right: 20px;
-            width: 210mm; min-height: 297mm; margin: 0 auto; background: #fff;
+            width: 182mm; min-height: 271mm; margin: 0 auto; background: #fff;
             padding: 14mm 0 10mm; border: 2px solid #000; position: relative;
             display: flex; flex-direction: column;
         }
@@ -213,7 +213,7 @@ function numToWords($n) {
             body { background: #fff; margin: 0; }
             .actions-bar { display: none !important; }
             .invoice-page {
-                width: 210mm; min-height: 297mm; border: 2px solid #000;
+                width: 182mm; min-height: 271mm; border: 2px solid #000;
                 margin: 0; box-shadow: none; page-break-after: always;
             }
             .inv-header { display: flex !important; flex-direction: row !important; justify-content: space-between !important; }
