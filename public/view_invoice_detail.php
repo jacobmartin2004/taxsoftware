@@ -105,6 +105,13 @@ function numToWords($n) {
             padding: 16px var(--pad-right) 12px var(--pad-left); border-bottom: 2px solid #000;
             display: flex; justify-content: space-between; align-items: center;
         }
+        .inv-header .brand-wrap {
+            display: flex; align-items: center; gap: 14px; min-width: 0;
+        }
+        .inv-header .brand-logo {
+            width: 64px; height: 64px; object-fit: contain; flex-shrink: 0;
+        }
+        .inv-header .brand { min-width: 0; }
         .inv-header .brand h2 { font-size: 22px; font-weight: 900; letter-spacing: 1px; margin-bottom: 4px; color: #000; }
         .inv-header .brand p { font-size: 11px; color: #000; line-height: 1.55; }
         .inv-header .inv-type {
@@ -188,6 +195,8 @@ function numToWords($n) {
         @media (max-width: 768px) {
             .invoice-page { --pad-left: 14px; --pad-right: 14px; width: 100%; min-height: auto; margin: 8px; border-width: 1px; }
             .inv-header { flex-direction: column; text-align: center; padding: 14px; gap: 8px; }
+            .inv-header .brand-wrap { flex-direction: column; gap: 10px; }
+            .inv-header .brand-logo { width: 54px; height: 54px; }
             .inv-header .brand h2 { font-size: 16px; }
             .inv-header .brand p { font-size: 10px; }
             .inv-header .inv-type { font-size: 12px; padding: 6px 14px; }
@@ -227,11 +236,14 @@ function numToWords($n) {
 <div class="invoice-page" id="invoicePage">
     <!-- Header -->
     <div class="inv-header">
-        <div class="brand">
-            <h2>DELVIN DIAMOND TOOL INDUSTRIES</h2>
-            <p>1/56, Easu Street, Somarasampettai (PO), Trichy - 620 102</p>
-            <p>Ph: 0431-2607224 | 0431-2607524 | 9842407224</p>
-            <p>Email: delvinvincent@yahoo.com</p>
+        <div class="brand-wrap">
+            <img src="../delvin_logo.png" alt="Delvin Logo" class="brand-logo">
+            <div class="brand">
+                <h2>DELVIN DIAMOND TOOL INDUSTRIES</h2>
+                <p>1/56, Easu Street, Somarasampettai (PO), Trichy - 620 102</p>
+                <p>Ph: 0431-2607224 | 0431-2607524 | 9842407224</p>
+                <p>Email: delvinvincent@yahoo.com</p>
+            </div>
         </div>
         <div class="inv-type"><?php echo $page_title; ?></div>
     </div>
