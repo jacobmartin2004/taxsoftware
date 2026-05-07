@@ -190,10 +190,10 @@ function numToWords($n) {
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Segoe UI', Arial, sans-serif; background: #e9ecef; color: #000; }
         .invoice-page {
-            --pad-left: 34px;
+            --pad-left: 44px;
             --pad-right: 20px;
             width: 210mm; min-height: 297mm; margin: 0 auto; background: #fff;
-            padding: 10mm 0; border: 2px solid #000; position: relative;
+            padding: 14mm 0 10mm; border: 2px solid #000; position: relative;
             display: flex; flex-direction: column;
         }
 
