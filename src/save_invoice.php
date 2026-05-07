@@ -200,20 +200,20 @@ function numToWords($n) {
         /* Header */
         .inv-header {
             padding: 16px var(--pad-right) 12px var(--pad-left); border-bottom: 2px solid #000;
-            display: flex; justify-content: space-between; align-items: center;
+            display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;
         }
         .inv-header .brand-wrap {
-            display: flex; align-items: center; gap: 14px; min-width: 0;
+            display: flex; align-items: center; gap: 14px; min-width: 0; flex: 1;
         }
         .inv-header .brand-logo {
-            width: 64px; height: 64px; object-fit: contain; flex-shrink: 0;
+            width: 76px; height: 76px; object-fit: contain; flex-shrink: 0;
         }
         .inv-header .brand { min-width: 0; }
         .inv-header .brand h2 { font-size: 22px; font-weight: 900; letter-spacing: 1px; margin-bottom: 4px; color: #000; }
         .inv-header .brand p { font-size: 11px; color: #000; line-height: 1.55; }
         .inv-header .inv-type {
             border: 2px solid #000; color: #000; font-weight: 800;
-            padding: 7px 18px; font-size: 15px; letter-spacing: 1px; white-space: nowrap;
+            padding: 7px 18px; font-size: 15px; letter-spacing: 1px; white-space: nowrap; flex-shrink: 0;
         }
 
         /* Meta rows with borders */
@@ -293,7 +293,7 @@ function numToWords($n) {
             .invoice-page { --pad-left: 14px; --pad-right: 14px; width: 100%; min-height: auto; margin: 8px; border-width: 1px; }
             .inv-header { flex-direction: column; text-align: center; padding: 14px; gap: 8px; }
             .inv-header .brand-wrap { flex-direction: column; gap: 10px; }
-            .inv-header .brand-logo { width: 54px; height: 54px; }
+            .inv-header .brand-logo { width: 58px; height: 58px; }
             .inv-header .brand h2 { font-size: 16px; }
             .inv-header .brand p { font-size: 10px; }
             .inv-header .inv-type { font-size: 12px; padding: 6px 14px; }
@@ -322,7 +322,10 @@ function numToWords($n) {
                 width: 182mm; min-height: 271mm; border: 2px solid #000;
                 margin: 0; box-shadow: none; page-break-after: always;
             }
-            .inv-header { display: flex !important; flex-direction: row !important; justify-content: space-between !important; }
+            .inv-header { display: flex !important; flex-direction: row !important; justify-content: space-between !important; align-items: flex-start !important; gap: 12px !important; }
+            .inv-header .brand-wrap { display: flex !important; flex-direction: row !important; align-items: center !important; gap: 14px !important; flex: 1 !important; }
+            .inv-header .brand-logo { width: 76px !important; height: 76px !important; }
+            .inv-header .inv-type { flex-shrink: 0 !important; }
             .inv-info { display: flex !important; flex-direction: row !important; justify-content: space-between !important; }
             .inv-info .block:last-child { text-align: right !important; }
         }
